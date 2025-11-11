@@ -1,21 +1,17 @@
 interface Props {
-	children?: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 export default function ProfileName({ children }: Props) {
-	const style: React.CSSProperties = {
-		color: "oklch(0.6 0 0)",
-		fontFamily: "Avenir",
-		fontSize: 9,
-		fontWeight: 500,
-		overflow: "hidden",
-		whiteSpace: "nowrap",
-		textOverflow: "ellipsis",
-	};
+    const style: React.CSSProperties = {
+        color: "oklch(0.6 0 0)",
+        fontFamily: "Avenir",
+        fontSize: 9,
+        fontWeight: 500,
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+    };
 
-	return (
-		<>
-			<span style={style}>{children}</span>
-		</>
-	);
+    return <span style={style}>{children}</span>;
 }
