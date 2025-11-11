@@ -14,7 +14,9 @@ export interface IProfileModalProps {
 
 export interface IModalButtonProps {
     icon?: React.ReactNode;
-    onClick?: React.MouseEventHandler<HTMLButtonElement> | React.MouseEventHandler<HTMLDivElement>;
+    onClick?:
+        | React.MouseEventHandler<HTMLButtonElement>
+        | React.MouseEventHandler<HTMLDivElement>;
     children?: React.ReactNode;
 }
 

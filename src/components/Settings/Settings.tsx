@@ -183,9 +183,20 @@ export default function Settings(_props: Props) {
                     Hydrogen
                 </Client>
             </div>
-            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <div
+                style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
                 {/* @ts-ignore */}
-                <Button variant="settings" color="blue" onClick={switchDecompiler} style={{ width: "100%", maxWidth: "300px" }}>
+                <Button
+                    variant="settings"
+                    color="blue"
+                    onClick={switchDecompiler}
+                    style={{ width: "100%", maxWidth: "300px" }}
+                >
                     {config.config.decompiler.charAt(0).toUpperCase() +
                         config.config.decompiler.slice(1)}
                 </Button>

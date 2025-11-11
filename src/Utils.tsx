@@ -13,7 +13,11 @@ import {
 import type { IProfile } from "./types/profile";
 import type { IState } from "./types/state";
 import type { IConfig } from "./types/config";
-import type { IRobloxVersion, IMacsploitVersion, IHydrogenVersion } from "./types/version";
+import type {
+    IRobloxVersion,
+    IMacsploitVersion,
+    IHydrogenVersion,
+} from "./types/version";
 
 export async function notify() {
     let permissionGranted = await isPermissionGranted();

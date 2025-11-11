@@ -3,7 +3,11 @@ import type { IProfile } from "./types/profile";
 import type { IState } from "./types/state";
 import type { IModal } from "./types/modal";
 import type { IConfig } from "./types/config";
-import type { IRobloxVersion, IMacsploitVersion, IHydrogenVersion } from "./types/version";
+import type {
+    IRobloxVersion,
+    IMacsploitVersion,
+    IHydrogenVersion,
+} from "./types/version";
 
 export interface StoreState {
     profiles: IProfile[];

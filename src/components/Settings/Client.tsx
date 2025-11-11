@@ -1,5 +1,9 @@
 import type { IClient } from "../../types/config";
-import type { IRobloxVersion, IMacsploitVersion, IHydrogenVersion } from "../../types/version";
+import type {
+    IRobloxVersion,
+    IMacsploitVersion,
+    IHydrogenVersion,
+} from "../../types/version";
 import Button from "../Shared/Button";
 import Status from "./Status";
 import Text from "./Text";
@@ -72,21 +76,37 @@ export default function Client({
             <div style={buttonContainerStyle}>
                 {installation ? (
                     currentVersion === latestVersion ? (
-                        <Button variant="settings" color="blue" onClick={() => onInstall(client)}>
+                        <Button
+                            variant="settings"
+                            color="blue"
+                            onClick={() => onInstall(client)}
+                        >
                             Reinstall
                         </Button>
                     ) : (
-                        <Button variant="settings" color="green" onClick={() => onInstall(client)}>
+                        <Button
+                            variant="settings"
+                            color="green"
+                            onClick={() => onInstall(client)}
+                        >
                             Update
                         </Button>
                     )
                 ) : (
-                    <Button variant="settings" color="blue" onClick={() => onInstall(client)}>
+                    <Button
+                        variant="settings"
+                        color="blue"
+                        onClick={() => onInstall(client)}
+                    >
                         Install
                     </Button>
                 )}
                 {installation && (
-                    <Button variant="settings" color="red" onClick={() => onRemove(client)}>
+                    <Button
+                        variant="settings"
+                        color="red"
+                        onClick={() => onRemove(client)}
+                    >
                         Remove
                     </Button>
                 )}

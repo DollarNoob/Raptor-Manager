@@ -36,12 +36,12 @@ export type ButtonProps =
     | MainButtonProps
     | SettingsButtonProps
     | StatusButtonProps;
-    
+
 export type {
     BaseButtonProps,
     DefaultButtonProps,
     HeaderButtonProps,
     MainButtonProps,
     SettingsButtonProps,
-    StatusButtonProps
+    StatusButtonProps,
 };

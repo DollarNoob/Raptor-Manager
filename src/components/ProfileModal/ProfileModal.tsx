@@ -196,9 +196,15 @@ export default function ProfileModal({ destruct }: Props) {
                     defaultValue="This is the default note."
                 />
                 <div style={buttonContainerStyle}>
-                    <SharedButton variant="modal" onClick={destruct}>Cancel</SharedButton>
-                    <SharedButton variant="modal" onClick={importCookies}>Import</SharedButton>
-                    <SharedButton variant="modal" onClick={createProfile}>Save</SharedButton>
+                    <SharedButton variant="modal" onClick={destruct}>
+                        Cancel
+                    </SharedButton>
+                    <SharedButton variant="modal" onClick={importCookies}>
+                        Import
+                    </SharedButton>
+                    <SharedButton variant="modal" onClick={createProfile}>
+                        Save
+                    </SharedButton>
                 </div>
             </div>
             <div style={blurStyle} />
