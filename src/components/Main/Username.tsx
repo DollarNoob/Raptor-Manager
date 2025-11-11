@@ -16,10 +16,8 @@ export default function Username({ displayName, username }: Props) {
     };
 
     return (
-        <>
             <span style={style}>
                 {displayName} (@{username})
             </span>
-        </>
     );
 }

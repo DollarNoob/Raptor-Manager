@@ -14,8 +14,6 @@ export default function Title({ children }: Props) {
     };
 
     return (
-        <>
             <span style={style}>{children}</span>
-        </>
     );
 }

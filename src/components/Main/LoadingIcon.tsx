@@ -11,7 +11,6 @@ export default function LoadingIcon({}: Props) {
     };
 
     return (
-        <>
             <svg
                 style={style}
                 viewBox="0 0 40 40"
@@ -34,6 +33,5 @@ export default function LoadingIcon({}: Props) {
                     </g>
                 </g>
             </svg>
-        </>
     );
 }

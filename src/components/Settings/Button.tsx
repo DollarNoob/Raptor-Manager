@@ -34,11 +34,9 @@ export default function Button({ icon, color, onClick, children }: Props) {
     };
 
     return (
-        <>
             <div style={style} onClick={onClick}>
                 {icon}
                 {children && <span style={textStyle}>{children}</span>}
             </div>
-        </>
     );
 }

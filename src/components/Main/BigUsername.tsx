@@ -28,11 +28,9 @@ export default function BigUsername({ displayName, username }: Props) {
     };
 
     return (
-        <>
             <div style={style}>
                 <span style={displayNameStyle}>{displayName}</span>
                 <span style={usernameStyle}>@{username}</span>
             </div>
-        </>
     );
 }

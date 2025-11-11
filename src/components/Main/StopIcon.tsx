@@ -10,7 +10,6 @@ export default function StopIcon({}: Props) {
     };
 
     return (
-        <>
             <svg
                 style={style}
                 xmlns="http://www.w3.org/2000/svg"
@@ -23,6 +22,5 @@ export default function StopIcon({}: Props) {
                     clipRule="evenodd"
                 />
             </svg>
-        </>
     );
 }

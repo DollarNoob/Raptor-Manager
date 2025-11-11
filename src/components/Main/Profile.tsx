@@ -1,7 +1,7 @@
+import type { IProfile } from "../../types";
+import Note from "./Note";
 import ProfileName from "./ProfileName";
 import Username from "./Username";
-import Note from "./Note";
-import { IProfile } from "../../types";
 
 interface Props {
     profile: IProfile;
@@ -16,10 +16,9 @@ export default function Profile({ profile }: Props) {
     };
 
     return (
-        <>
             <div style={style}>
                 <ProfileName>
-                    {profile.name ?? "Profile: " + profile.id}
+                    {profile.name ?? `Profile: ${profile.id}`}
                 </ProfileName>
                 <Username
                     displayName={profile.displayName}
@@ -27,6 +26,5 @@ export default function Profile({ profile }: Props) {
                 />
                 <Note lastPlayedAt={profile.lastPlayedAt}>{profile.note}</Note>
             </div>
-        </>
     );
 }

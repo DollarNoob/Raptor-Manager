@@ -23,7 +23,6 @@ export default function StaticInfo({}: Props) {
     };
 
     return (
-        <>
             <div style={style}>
                 <span style={textStyle}>
                     Raptor Manager is currently on BETA!
@@ -41,6 +40,5 @@ export default function StaticInfo({}: Props) {
                     execution properly, not us. This is not what I can fix.
                 </span>
             </div>
-        </>
     );
 }
