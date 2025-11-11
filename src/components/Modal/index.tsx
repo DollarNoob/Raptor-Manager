@@ -1,4 +1,4 @@
 import Modal from "./Modal";
 
 export default Modal;
-export { default as ModalButton } from "./Button";
+export { default as ModalButton } from "../Shared/ModalButton";

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../Utils";
-import Button from "./Button";
+import Button from "../Shared/Button";
 import Client from "./Client";
 
 interface Props {
@@ -133,6 +133,7 @@ export default function Settings(_props: Props) {
         flexDirection: "column",
         flexGrow: 1,
         gap: 12,
+        width: "100%",
     };
 
     const clientContainerStyle: React.CSSProperties = {
@@ -182,10 +183,13 @@ export default function Settings(_props: Props) {
                     Hydrogen
                 </Client>
             </div>
-            <Button color="blue" onClick={switchDecompiler}>
-                {config.config.decompiler.charAt(0).toUpperCase() +
-                    config.config.decompiler.slice(1)}
-            </Button>
+            <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                {/* @ts-ignore */}
+                <Button variant="settings" color="blue" onClick={switchDecompiler} style={{ width: "100%", maxWidth: "300px" }}>
+                    {config.config.decompiler.charAt(0).toUpperCase() +
+                        config.config.decompiler.slice(1)}
+                </Button>
+            </div>
         </main>
     );
 }

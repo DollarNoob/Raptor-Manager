@@ -3,10 +3,10 @@ import { listen } from "@tauri-apps/api/event";
 import type React from "react";
 import { useEffect, useRef } from "react";
 import { useModalStore } from "../../store";
-import type { IProfile, IRobloxProfile } from "../../types";
+import type { IProfile, IRobloxProfile } from "../../types/profile";
 import { addProfile } from "../../Utils";
-import Button from "./Button";
-import Input from "./Input";
+import SharedButton from "../Shared/Button";
+import Input from "../Shared/Input";
 import Text from "./Text";
 import Title from "./Title";
 
@@ -196,9 +196,9 @@ export default function ProfileModal({ destruct }: Props) {
                     defaultValue="This is the default note."
                 />
                 <div style={buttonContainerStyle}>
-                    <Button onClick={destruct}>Cancel</Button>
-                    <Button onClick={importCookies}>Import</Button>
-                    <Button onClick={createProfile}>Save</Button>
+                    <SharedButton variant="modal" onClick={destruct}>Cancel</SharedButton>
+                    <SharedButton variant="modal" onClick={importCookies}>Import</SharedButton>
+                    <SharedButton variant="modal" onClick={createProfile}>Save</SharedButton>
                 </div>
             </div>
             <div style={blurStyle} />

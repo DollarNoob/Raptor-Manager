@@ -1,4 +1,4 @@
-import type { IProfile } from "../../types";
+import type { IProfile } from "../../types/profile";
 import Note from "./Note";
 import ProfileName from "./ProfileName";
 import Username from "./Username";

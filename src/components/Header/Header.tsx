@@ -7,10 +7,10 @@ import {
     readProfiles,
     writeConfig,
 } from "../../Utils";
+import ClientIcon from "../icons/ClientIcon";
+import SettingsIcon from "../icons/SettingsIcon";
 import Modal, { ModalButton } from "../Modal";
-import Button from "./Button";
-import ClientIcon from "./ClientIcon";
-import SettingsIcon from "./SettingsIcon";
+import Button from "../Shared/Button";
 import Title from "./Title";
 
 interface Props {
@@ -109,10 +109,15 @@ export default function Header(_props: Props) {
             )}
             <header style={style} data-tauri-drag-region>
                 <Title version={version}>Raptor Manager</Title>
-                <Button icon={<ClientIcon />} onClick={switchClient}>
+                <Button
+                    variant="header"
+                    icon={<ClientIcon />}
+                    onClick={switchClient}
+                >
                     {config.config.client}
                 </Button>
                 <Button
+                    variant="header"
                     active={tab.tab === 1}
                     icon={<SettingsIcon />}
                     onClick={settings}

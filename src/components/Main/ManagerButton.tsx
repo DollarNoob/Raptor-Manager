@@ -24,7 +24,7 @@ export default function ManagerButton({
         borderRadius: 8,
         alignItems: "center",
         justifyContent: "center",
-        cursor: active === false ? "default" : "pointer", // defaults to true
+        cursor: active === false ? "default" : "pointer",
     };
 
     const textStyle: React.CSSProperties = {

@@ -1,22 +1,22 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type React from "react";
+import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
+import { UI_STYLES } from "../../constants/ui";
 import { useModalStore } from "../../store";
-import type { IProfile, IRobloxProfile } from "../../types";
+import type { IProfile, IRobloxProfile } from "../../types/profile";
+import type { IEditProfileModalProps } from "../../types/editProfileModal";
 import { updateProfile } from "../../Utils";
-import Button from "./Button";
+import Button from "../Shared/Button";
 import Input from "./Input";
 import Text from "./Text";
 import Title from "./Title";
 
-interface Props {
-    profile: IProfile;
-    destruct: () => void;
-    children?: React.ReactNode;
-}
-
-export default function EditProfileModal({ profile, destruct }: Props) {
+export default function EditProfileModal({
+    profile,
+    destruct,
+}: IEditProfileModalProps) {
     const modal = useModalStore();
     const cookieRef =
         useRef<[string, React.Dispatch<React.SetStateAction<string>>]>(null);
@@ -150,28 +150,28 @@ export default function EditProfileModal({ profile, destruct }: Props) {
         destruct();
     }
 
-    const style: React.CSSProperties = {
+    const style: CSSProperties = {
         position: "fixed",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
         display: "flex",
         flexDirection: "column",
-        minWidth: 240,
-        padding: 12,
-        backgroundColor: "oklch(0.24 0 0)",
-        border: "1px solid #FFFFFF20",
-        borderRadius: 12,
+        minWidth: UI_STYLES.DIMENSIONS.MODAL_MIN_WIDTH,
+        padding: UI_STYLES.SPACING.XLARGE,
+        backgroundColor: UI_STYLES.COLORS.BACKGROUND_DARK,
+        border: `1px solid ${UI_STYLES.COLORS.BORDER}`,
+        borderRadius: UI_STYLES.DIMENSIONS.MODAL_BORDER_RADIUS,
         zIndex: 1,
     };
 
-    const buttonContainerStyle: React.CSSProperties = {
+    const buttonContainerStyle: CSSProperties = {
         display: "flex",
-        gap: 8,
-        marginTop: 4,
+        gap: UI_STYLES.SPACING.MEDIUM,
+        marginTop: UI_STYLES.SPACING.TINY,
     };
 
-    const blurStyle: React.CSSProperties = {
+    const blurStyle: CSSProperties = {
         position: "fixed",
         top: 0,
         left: 0,

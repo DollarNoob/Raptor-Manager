@@ -2,7 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
 import { useState } from "react";
 import { useModalStore } from "../../store";
-import type { IProfile, IState } from "../../types";
+import type { IProfile } from "../../types/profile";
+import type { IState } from "../../types/state";
 import { removeProfile } from "../../Utils";
 import EditProfileModal from "../EditProfileModal";
 import Profile from "./Profile";
@@ -26,7 +27,6 @@ export default function Account({ active, profile, state, onClick }: Props) {
     // Create a function to handle activation that can be called from both mouse and keyboard events
     const handleActivate = () => {
         if (onClick) {
-            // Create a synthetic click event
             onClick({} as React.MouseEvent<HTMLButtonElement>);
         }
     };

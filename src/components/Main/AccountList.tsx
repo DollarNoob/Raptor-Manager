@@ -1,5 +1,5 @@
 import { useFilterStore, useStore } from "../../store";
-import type { IProfile } from "../../types";
+import type { IProfile } from "../../types/profile";
 import Account from "./Account";
 import AccountManager from "./AccountManager";
 

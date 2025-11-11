@@ -1,15 +1,16 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { useConfigStore, useModalStore, useStore } from "../../store";
-import type { ICloseState, IProfile, IState } from "../../types";
+import type { IProfile } from "../../types/profile";
+import type { IState, ICloseState } from "../../types/state";
 import { launchClient, stopClient } from "../../Utils";
+import LaunchIcon from "../icons/LaunchIcon";
+import LoadingIcon from "../icons/LoadingIcon";
+import StopIcon from "../icons/StopIcon";
+import SharedButton from "../Shared/Button";
 import BigUsername from "./BigUsername";
-import Button from "./Button";
-import LaunchIcon from "./LaunchIcon";
-import LoadingIcon from "./LoadingIcon";
 import StaticInfo from "./StaticInfo";
 import Status from "./Status";
-import StopIcon from "./StopIcon";
 import Thumbnail from "./Thumbnail";
 
 interface Props {
@@ -68,7 +69,9 @@ export default function AccountInfo({ profile, state }: Props) {
 
     async function launch(client = config.config.client) {
         if (!profile || !state) return;
-        if (!state.connected && state.pid) return; // launching
+
+        // laucnhing the instance
+        if (!state.connected && state.pid) return;
 
         if (state.connected) {
             setForceQuit(true);
@@ -228,14 +231,15 @@ export default function AccountInfo({ profile, state }: Props) {
                         />
                     </div>
                     <div style={bottomContainerStyle}>
-                        <Button
+                        <SharedButton
+                            variant="main"
                             color={launchColor}
                             cursor={state.connected || !state.pid}
                             icon={launchIcon}
                             onClick={() => launch()}
                         >
                             {launchText}
-                        </Button>
+                        </SharedButton>
                     </div>
                 </div>
             ) : (

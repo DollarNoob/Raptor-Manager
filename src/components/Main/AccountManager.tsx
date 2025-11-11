@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useFilterStore, useModalStore, useStore } from "../../store";
 import { removeProfile } from "../../Utils";
+import FunnelIcon from "../icons/FunnelIcon";
+import MinusIcon from "../icons/MinusIcon";
+import PlusIcon from "../icons/PlusIcon";
 import ProfileModal from "../ProfileModal";
-import FunnelIcon from "./FunnelIcon";
 import ManagerButton from "./ManagerButton";
-import MinusIcon from "./MinusIcon";
-import PlusIcon from "./PlusIcon";
 
 interface Props {
     children?: React.ReactNode;
