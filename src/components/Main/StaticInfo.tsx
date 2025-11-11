@@ -2,7 +2,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function StaticInfo({}: Props) {
+export default function StaticInfo(_props: Props) {
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -23,22 +23,20 @@ export default function StaticInfo({}: Props) {
     };
 
     return (
-            <div style={style}>
-                <span style={textStyle}>
-                    Raptor Manager is currently on BETA!
-                </span>
-                <span style={textStyle}>
-                    Expect random changes and improvements.
-                </span>
-                <span style={textStyle}>
-                    Vanilla and Hydrogen are supported, however they are not
-                    fully tested. If you experience any bugs please report them!
-                </span>
-                <span style={textStyle}>
-                    It is normal for Hydrogen to use the port 6969 across all
-                    instances. It is Hydrogen not supporting multi instance
-                    execution properly, not us. This is not what I can fix.
-                </span>
-            </div>
+        <div style={style}>
+            <span style={textStyle}>Raptor Manager is currently on BETA!</span>
+            <span style={textStyle}>
+                Expect random changes and improvements.
+            </span>
+            <span style={textStyle}>
+                Vanilla and Hydrogen are supported, however they are not fully
+                tested. If you experience any bugs please report them!
+            </span>
+            <span style={textStyle}>
+                It is normal for Hydrogen to use the port 6969 across all
+                instances. It is Hydrogen not supporting multi instance
+                execution properly, not us. This is not what I can fix.
+            </span>
+        </div>
     );
 }

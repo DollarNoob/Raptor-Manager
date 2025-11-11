@@ -13,7 +13,5 @@ export default function Text({ children }: Props) {
         textAlign: "center",
     };
 
-    return (
-            <span style={style}>{children}</span>
-    );
+    return <span style={style}>{children}</span>;
 }

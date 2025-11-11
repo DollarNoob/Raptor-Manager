@@ -16,15 +16,15 @@ export default function Profile({ profile }: Props) {
     };
 
     return (
-            <div style={style}>
-                <ProfileName>
-                    {profile.name ?? `Profile: ${profile.id}`}
-                </ProfileName>
-                <Username
-                    displayName={profile.displayName}
-                    username={profile.username}
-                />
-                <Note lastPlayedAt={profile.lastPlayedAt}>{profile.note}</Note>
-            </div>
+        <div style={style}>
+            <ProfileName>
+                {profile.name ?? `Profile: ${profile.id}`}
+            </ProfileName>
+            <Username
+                displayName={profile.displayName}
+                username={profile.username}
+            />
+            <Note lastPlayedAt={profile.lastPlayedAt}>{profile.note}</Note>
+        </div>
     );
 }

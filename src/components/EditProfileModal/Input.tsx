@@ -35,11 +35,11 @@ export default function Input({ ref, placeholder, defaultValue }: Props) {
     };
 
     return (
-            <input
-                style={style}
-                placeholder={placeholder}
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-            />
+        <input
+            style={style}
+            placeholder={placeholder}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+        />
     );
 }

@@ -2,7 +2,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function PlusIcon({}: Props) {
+export default function PlusIcon(_props: Props) {
     const style: React.CSSProperties = {
         width: 18,
         height: 18,
@@ -17,7 +17,10 @@ export default function PlusIcon({}: Props) {
             viewBox="0 0 24 24"
             strokeWidth={2.5}
             stroke="currentColor"
+            role="img"
+            aria-label="Plus Icon"
         >
+            <title>Plus Icon</title>
             <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

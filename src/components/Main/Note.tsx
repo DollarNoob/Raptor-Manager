@@ -21,8 +21,8 @@ export default function Note({ lastPlayedAt, children }: Props) {
     dateText += ` ${date.getHours() < 12 ? "AM" : "PM"}`;
 
     return (
-            <span style={style}>
-                {dateText} | {children}
-            </span>
+        <span style={style}>
+            {dateText} | {children}
+        </span>
     );
 }

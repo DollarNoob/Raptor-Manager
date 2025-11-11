@@ -11,7 +11,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function AccountManager({}: Props) {
+export default function AccountManager(_props: Props) {
     const store = useStore();
     const modal = useModalStore();
     const filter = useFilterStore();

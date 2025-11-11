@@ -21,6 +21,7 @@ export default function Thumbnail({ thumbnail, size }: Props) {
                 "/420/420/AvatarHeadshot/Png/noFilter"
             }
             style={style}
+            alt={`Thumbnail for ${thumbnail}`}
             draggable={false}
         />
     );

@@ -8,7 +8,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function Settings({}: Props) {
+export default function Settings(_props: Props) {
     const modal = useModalStore();
     const config = useConfigStore();
     const version = useVersionStore();
