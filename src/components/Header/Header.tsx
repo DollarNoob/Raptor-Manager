@@ -11,7 +11,6 @@ import ClientIcon from "../icons/ClientIcon";
 import SettingsIcon from "../icons/SettingsIcon";
 import Modal, { ModalButton } from "../Modal";
 import Button from "../Shared/Button";
-import Title from "./Title";
 
 interface Props {
     children?: React.ReactNode;
