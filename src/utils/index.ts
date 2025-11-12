@@ -1,24 +1,24 @@
-// Profile operations
-export {
-    addProfile,
-    updateProfile,
-    removeProfile,
-    readProfiles,
-} from "./profiles";
-
 // Client operations
 export {
-    launchClient,
-    stopClient,
     installClient,
+    launchClient,
     removeClient,
+    stopClient,
 } from "./clients";
 
 // Configuration operations
 export { readConfig, writeConfig } from "./config";
 
-// Version operations
-export { fetchClientVersions } from "./versions";
-
 // Notification operations
 export { notify } from "./notifications";
+
+// Profile operations
+export {
+    addProfile,
+    readProfiles,
+    removeProfile,
+    updateProfile,
+} from "./profiles";
+
+// Version operations
+export { fetchClientVersions } from "./versions";

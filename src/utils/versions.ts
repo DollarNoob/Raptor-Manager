@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useModalStore, useVersionStore } from "../store";
 import type {
-    IRobloxVersion,
-    IMacsploitVersion,
     IHydrogenVersion,
+    IMacsploitVersion,
+    IRobloxVersion,
 } from "../types/version";
 
 export async function fetchClientVersions() {

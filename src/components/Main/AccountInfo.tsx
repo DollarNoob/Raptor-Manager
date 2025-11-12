@@ -2,7 +2,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import { useConfigStore, useModalStore, useStore } from "../../store";
 import type { IProfile } from "../../types/profile";
-import type { IState, ICloseState } from "../../types/state";
+import type { ICloseState, IState } from "../../types/state";
 import { launchClient, stopClient } from "../../utils";
 import LaunchIcon from "../icons/LaunchIcon";
 import LoadingIcon from "../icons/LoadingIcon";
@@ -162,10 +162,10 @@ export default function AccountInfo({ profile, state }: Props) {
             }
 
             if (client === "Vanilla") {
-                launched.connected = true;
-                launched.client = "Vanilla";
+                (launched as IState).connected = true;
+                (launched as IState).client = "Vanilla";
             }
-            store.updateState(launched);
+            store.updateState(launched as IState);
         }
     }
 

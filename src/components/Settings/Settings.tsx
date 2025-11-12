@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../utils";
-import Button from "../Shared/Button";
 import Client from "./Client";
+import SharedButton from "../Shared/Button";
 
 interface Props {
     children?: React.ReactNode;
@@ -190,8 +190,7 @@ export default function Settings(_props: Props) {
                     justifyContent: "center",
                 }}
             >
-                {/* @ts-ignore */}
-                <Button
+                <SharedButton
                     variant="settings"
                     color="blue"
                     onClick={switchDecompiler}
@@ -199,7 +198,7 @@ export default function Settings(_props: Props) {
                 >
                     {config.config.decompiler.charAt(0).toUpperCase() +
                         config.config.decompiler.slice(1)}
-                </Button>
+                </SharedButton>
             </div>
         </main>
     );
