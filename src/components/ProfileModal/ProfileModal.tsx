@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect, useRef } from "react";
 import { useModalStore } from "../../store";
 import type { IProfile, IRobloxProfile } from "../../types/profile";
-import { addProfile } from "../../Utils";
+import { addProfile } from "../../utils";
 import SharedButton from "../Shared/Button";
 import Input from "../Shared/Input";
 import Text from "./Text";

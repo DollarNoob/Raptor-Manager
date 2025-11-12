@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useConfigStore, useModalStore, useStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import type { IState, ICloseState } from "../../types/state";
-import { launchClient, stopClient } from "../../Utils";
+import { launchClient, stopClient } from "../../utils";
 import LaunchIcon from "../icons/LaunchIcon";
 import LoadingIcon from "../icons/LoadingIcon";
 import StopIcon from "../icons/StopIcon";

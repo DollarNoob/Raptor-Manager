@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
-import { installClient, removeClient, writeConfig } from "../../Utils";
+import { installClient, removeClient, writeConfig } from "../../utils";
 import Button from "../Shared/Button";
 import Client from "./Client";
 

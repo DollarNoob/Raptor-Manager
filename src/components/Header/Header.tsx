@@ -6,7 +6,7 @@ import {
     readConfig,
     readProfiles,
     writeConfig,
-} from "../../Utils";
+} from "../../utils";
 import ClientIcon from "../icons/ClientIcon";
 import SettingsIcon from "../icons/SettingsIcon";
 import Modal, { ModalButton } from "../Modal";

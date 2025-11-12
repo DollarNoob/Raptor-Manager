@@ -7,7 +7,7 @@ import { UI_STYLES } from "../../constants/ui";
 import { useModalStore } from "../../store";
 import type { IProfile, IRobloxProfile } from "../../types/profile";
 import type { IEditProfileModalProps } from "../../types/editProfileModal";
-import { updateProfile } from "../../Utils";
+import { updateProfile } from "../../utils";
 import Button from "../Shared/Button";
 import Input from "./Input";
 import Text from "./Text";
