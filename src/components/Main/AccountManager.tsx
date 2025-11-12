@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { FILTERS } from "../../constants";
 import { useFilterStore, useModalStore, useStore } from "../../store";
 import { removeProfile } from "../../utils";
-import { FILTERS } from "../../constants";
 import FunnelIcon from "../icons/FunnelIcon";
 import MinusIcon from "../icons/MinusIcon";
 import PlusIcon from "../icons/PlusIcon";

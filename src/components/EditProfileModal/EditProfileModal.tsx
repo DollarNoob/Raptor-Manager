@@ -3,16 +3,16 @@ import { listen } from "@tauri-apps/api/event";
 import type React from "react";
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
-import { UI_STYLES } from "../../constants/ui";
-import { useModalStore } from "../../store";
-import type { IEditProfileModalProps } from "../../types/editProfileModal";
-import type { IProfile, IRobloxProfile } from "../../types/profile";
-import { updateProfile } from "../../utils";
 import {
     COOKIE_PLACEHOLDER,
     DEFAULT_NOTE,
     DEFAULT_PROFILE_NAME,
 } from "../../constants";
+import { UI_STYLES } from "../../constants/ui";
+import { useModalStore } from "../../store";
+import type { IEditProfileModalProps } from "../../types/editProfileModal";
+import type { IProfile, IRobloxProfile } from "../../types/profile";
+import { updateProfile } from "../../utils";
 import Button from "../Shared/Button";
 import Input from "./Input";
 import Text from "./Text";

@@ -2,14 +2,14 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type React from "react";
 import { useEffect, useRef } from "react";
-import { useModalStore } from "../../store";
-import type { IProfile, IRobloxProfile } from "../../types/profile";
-import { addProfile } from "../../utils";
 import {
     COOKIE_PLACEHOLDER,
     DEFAULT_NOTE,
     DEFAULT_PROFILE_NAME,
 } from "../../constants";
+import { useModalStore } from "../../store";
+import type { IProfile, IRobloxProfile } from "../../types/profile";
+import { addProfile } from "../../utils";
 import SharedButton from "../Shared/Button";
 import Input from "../Shared/Input";
 import Text from "./Text";
