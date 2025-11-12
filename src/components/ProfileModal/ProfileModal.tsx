@@ -5,6 +5,11 @@ import { useEffect, useRef } from "react";
 import { useModalStore } from "../../store";
 import type { IProfile, IRobloxProfile } from "../../types/profile";
 import { addProfile } from "../../utils";
+import {
+    COOKIE_PLACEHOLDER,
+    DEFAULT_NOTE,
+    DEFAULT_PROFILE_NAME,
+} from "../../constants";
 import SharedButton from "../Shared/Button";
 import Input from "../Shared/Input";
 import Text from "./Text";
@@ -186,14 +191,14 @@ export default function ProfileModal({ destruct }: Props) {
             <div style={style}>
                 <Title>Create Profile</Title>
                 <Text>Please input your cookie.</Text>
-                <Input ref={cookieRef} placeholder=".ROBLOSECURITY" />
+                <Input ref={cookieRef} placeholder={COOKIE_PLACEHOLDER} />
                 <Text>Please input a profile name. (optional)</Text>
-                <Input ref={nameRef} placeholder="Profile: Nexus42" />
+                <Input ref={nameRef} placeholder={DEFAULT_PROFILE_NAME} />
                 <Text>Please input a note. (optional)</Text>
                 <Input
                     ref={noteRef}
-                    placeholder="This is the default note."
-                    defaultValue="This is the default note."
+                    placeholder={DEFAULT_NOTE}
+                    defaultValue={DEFAULT_NOTE}
                 />
                 <div style={buttonContainerStyle}>
                     <SharedButton variant="modal" onClick={destruct}>

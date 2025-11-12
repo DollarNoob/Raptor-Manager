@@ -9,7 +9,6 @@ import LoadingIcon from "../icons/LoadingIcon";
 import StopIcon from "../icons/StopIcon";
 import SharedButton from "../Shared/Button";
 import BigUsername from "./BigUsername";
-import StaticInfo from "./StaticInfo";
 import Status from "./Status";
 import Thumbnail from "./Thumbnail";
 
@@ -242,9 +241,7 @@ export default function AccountInfo({ profile, state }: Props) {
                         </SharedButton>
                     </div>
                 </div>
-            ) : (
-                <StaticInfo />
-            )}
+            ) : null}
         </>
     );
 }

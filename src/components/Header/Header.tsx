@@ -73,19 +73,66 @@ export default function Header(_props: Props) {
         tab.setTab((tab.tab + 1) % tab.tabCount);
     }
 
-    const style: React.CSSProperties = {
-        display: "flex",
+    const headerStyle: React.CSSProperties = {
         position: "relative",
         height: 46,
-        gap: 6,
         paddingLeft: 8,
         paddingRight: 8,
         backgroundColor: "oklch(0.22 0 0)",
         border: "1px solid #FFFFFF20",
         borderRadius: 12,
-        justifyContent: "end",
-        alignItems: "center",
         zIndex: 3,
+    };
+
+    const centerSectionStyle: React.CSSProperties = {
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+    };
+
+    const rightSectionStyle: React.CSSProperties = {
+        position: "absolute",
+        right: 8,
+        top: "50%",
+        transform: "translateY(-50%)",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+    };
+
+    const titleTextStyle: React.CSSProperties = {
+        color: "oklch(0.9 0 0)",
+        fontFamily: "Avenir",
+        fontSize: 20,
+        fontWeight: 800,
+    };
+
+    const versionStyle: React.CSSProperties = {
+        paddingLeft: 4,
+        paddingRight: 4,
+        backgroundColor: "oklch(0.4 0 0)",
+        color: "oklch(0.9 0 0)",
+        border: "1px solid #FFFFFF20",
+        borderRadius: 12,
+        fontFamily: "Avenir",
+        fontSize: 10,
+        fontWeight: 500,
+    };
+
+    const betaStyle: React.CSSProperties = {
+        paddingLeft: 4,
+        paddingRight: 4,
+        backgroundColor: "oklch(0.68 0.22 30)",
+        color: "white",
+        border: "1px solid #FFFFFF20",
+        borderRadius: 12,
+        fontFamily: "Avenir",
+        fontSize: 10,
+        fontWeight: 500,
     };
 
     return (
@@ -107,21 +154,35 @@ export default function Header(_props: Props) {
                     ))}
                 </Modal>
             )}
-            <header style={style} data-tauri-drag-region>
-                <Title version={version}>Raptor Manager</Title>
-                <Button
-                    variant="header"
-                    icon={<ClientIcon />}
-                    onClick={switchClient}
-                >
-                    {config.config.client}
-                </Button>
-                <Button
-                    variant="header"
-                    active={tab.tab === 1}
-                    icon={<SettingsIcon />}
-                    onClick={settings}
-                ></Button>
+            <header style={headerStyle} data-tauri-drag-region>
+                <div style={centerSectionStyle} data-tauri-drag-region>
+                    <span style={titleTextStyle} data-tauri-drag-region>
+                        Raptor Manager
+                    </span>
+                    {version && (
+                        <div style={versionStyle} data-tauri-drag-region>
+                            v{version}
+                        </div>
+                    )}
+                    <div style={betaStyle} data-tauri-drag-region>
+                        BETA
+                    </div>
+                </div>
+                <div style={rightSectionStyle}>
+                    <Button
+                        variant="header"
+                        icon={<ClientIcon />}
+                        onClick={switchClient}
+                    >
+                        {config.config.client}
+                    </Button>
+                    <Button
+                        variant="header"
+                        active={tab.tab === 1}
+                        icon={<SettingsIcon />}
+                        onClick={settings}
+                    ></Button>
+                </div>
             </header>
         </>
     );

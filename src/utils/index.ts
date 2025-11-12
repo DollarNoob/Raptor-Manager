@@ -1,4 +1,3 @@
-// Client operations
 export {
     installClient,
     launchClient,
@@ -6,13 +5,10 @@ export {
     stopClient,
 } from "./clients";
 
-// Configuration operations
 export { readConfig, writeConfig } from "./config";
 
-// Notification operations
 export { notify } from "./notifications";
 
-// Profile operations
 export {
     addProfile,
     readProfiles,
@@ -20,5 +16,4 @@ export {
     updateProfile,
 } from "./profiles";
 
-// Version operations
 export { fetchClientVersions } from "./versions";

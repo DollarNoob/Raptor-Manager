@@ -1,8 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
+import { DECOMPILER_LIST } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../utils";
-import Client from "./Client";
 import SharedButton from "../Shared/Button";
+import Client from "./Client";
 
 interface Props {
     children?: React.ReactNode;
@@ -109,11 +110,11 @@ export default function Settings(_props: Props) {
     }
 
     async function switchDecompiler() {
-        const decompilerList = ["medal", "konstant"];
-
-        const index = decompilerList.indexOf(config.config.decompiler);
+        const index = DECOMPILER_LIST.indexOf(
+            config.config.decompiler as (typeof DECOMPILER_LIST)[number],
+        );
         const newDecompiler =
-            decompilerList[(index + 1) % decompilerList.length];
+            DECOMPILER_LIST[(index + 1) % DECOMPILER_LIST.length];
 
         await invoke<void>("update_decompiler", { decompiler: newDecompiler });
 
