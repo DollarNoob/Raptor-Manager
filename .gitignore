@@ -23,3 +23,11 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
+
+# Coding agents
+.claude
+.qwen
+.gemini
+CLAUDE.MD
+GEMINI.MD
+QWEN.MD
