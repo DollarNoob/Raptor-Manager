@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { FILTERS } from "../../constants";
 import { useFilterStore, useModalStore, useStore } from "../../store";
-import { removeProfile } from "../../Utils";
+import { removeProfile } from "../../utils";
 import FunnelIcon from "../icons/FunnelIcon";
 import MinusIcon from "../icons/MinusIcon";
 import PlusIcon from "../icons/PlusIcon";
@@ -62,19 +63,6 @@ export default function AccountManager(_props: Props) {
         gap: 4,
     };
 
-    const filters = [
-        "Recently Added",
-        "Least Recently Added",
-        "Recently Played",
-        "Least Recently Played",
-        "A to Z (Display Name)",
-        "Z to A (Display Name)",
-        "A to Z (Username)",
-        "Z to A (Username)",
-        "A to Z (Profile Name)",
-        "Z to A (Profile Name)",
-    ];
-
     return (
         <>
             {profileModal}
@@ -89,7 +77,7 @@ export default function AccountManager(_props: Props) {
                 </div>
                 <div style={leftContainerStyle}>
                     <ManagerButton icon={<FunnelIcon />} onClick={onFilter}>
-                        {filters[filter.filter]}
+                        {FILTERS[filter.filter]}
                     </ManagerButton>
                 </div>
             </div>

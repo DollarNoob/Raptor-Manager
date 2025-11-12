@@ -3,11 +3,16 @@ import { listen } from "@tauri-apps/api/event";
 import type React from "react";
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
+import {
+    COOKIE_PLACEHOLDER,
+    DEFAULT_NOTE,
+    DEFAULT_PROFILE_NAME,
+} from "../../constants";
 import { UI_STYLES } from "../../constants/ui";
 import { useModalStore } from "../../store";
-import type { IProfile, IRobloxProfile } from "../../types/profile";
 import type { IEditProfileModalProps } from "../../types/editProfileModal";
-import { updateProfile } from "../../Utils";
+import type { IProfile, IRobloxProfile } from "../../types/profile";
+import { updateProfile } from "../../utils";
 import Button from "../Shared/Button";
 import Input from "./Input";
 import Text from "./Text";
@@ -188,19 +193,19 @@ export default function EditProfileModal({
                 <Text>Please input your cookie.</Text>
                 <Input
                     ref={cookieRef}
-                    placeholder=".ROBLOSECURITY"
+                    placeholder={COOKIE_PLACEHOLDER}
                     defaultValue={profile.cookie}
                 />
                 <Text>Please input a profile name. (optional)</Text>
                 <Input
                     ref={nameRef}
-                    placeholder="Profile: Nexus42"
+                    placeholder={DEFAULT_PROFILE_NAME}
                     defaultValue={profile.name ?? ""}
                 />
                 <Text>Please input a note. (optional)</Text>
                 <Input
                     ref={noteRef}
-                    placeholder="This is the default note."
+                    placeholder={DEFAULT_NOTE}
                     defaultValue={profile.note}
                 />
                 <div style={buttonContainerStyle}>

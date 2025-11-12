@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useModalStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import type { IState } from "../../types/state";
-import { removeProfile } from "../../Utils";
+import { removeProfile } from "../../utils";
 import EditProfileModal from "../EditProfileModal";
 import Profile from "./Profile";
 import Status from "./Status";

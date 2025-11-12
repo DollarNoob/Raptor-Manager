@@ -1,8 +1,11 @@
+import type { CSSProperties } from "react";
+
 interface BaseButtonProps {
     icon?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLElement>;
     children?: React.ReactNode;
     className?: string;
+    style?: CSSProperties;
 }
 
 interface DefaultButtonProps extends BaseButtonProps {

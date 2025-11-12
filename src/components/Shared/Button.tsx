@@ -3,7 +3,7 @@ import { BUTTON_COLOR_THEMES, UI_STYLES } from "../../constants/ui";
 import type { ButtonProps } from "../../types/button";
 
 export default function Button(props: ButtonProps) {
-    const { icon, onClick, children, className } = props;
+    const { icon, onClick, children, className, style } = props;
 
     // default to 'default' if not specified
     const variant:
@@ -29,7 +29,7 @@ export default function Button(props: ButtonProps) {
             : undefined;
     const cursor = "cursor" in props ? props.cursor : true;
 
-    let style: CSSProperties = {
+    let computedStyle: CSSProperties = {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -50,8 +50,8 @@ export default function Button(props: ButtonProps) {
 
     switch (variant) {
         case "header":
-            style = {
-                ...style,
+            computedStyle = {
+                ...computedStyle,
                 backgroundColor: BUTTON_COLOR_THEMES.header.background(
                     active as boolean,
                 ),
@@ -59,8 +59,8 @@ export default function Button(props: ButtonProps) {
             break;
         case "main":
             if (mainColor) {
-                style = {
-                    ...style,
+                computedStyle = {
+                    ...computedStyle,
                     width: "100%",
                     height: 36,
                     backgroundColor: BUTTON_COLOR_THEMES.main[mainColor],
@@ -71,8 +71,8 @@ export default function Button(props: ButtonProps) {
             break;
         case "settings":
             if (settingsColor) {
-                style = {
-                    ...style,
+                computedStyle = {
+                    ...computedStyle,
                     backgroundColor:
                         BUTTON_COLOR_THEMES.settings[settingsColor],
                     flex: 1,
@@ -82,8 +82,8 @@ export default function Button(props: ButtonProps) {
             break;
         case "status":
             if (statusColor) {
-                style = {
-                    ...style,
+                computedStyle = {
+                    ...computedStyle,
                     backgroundColor: BUTTON_COLOR_THEMES.status[statusColor],
                     color: UI_STYLES.COLORS.TEXT_BRIGHT,
                     width: "fit-content",
@@ -98,8 +98,8 @@ export default function Button(props: ButtonProps) {
             }
             break;
         default:
-            style = {
-                ...style,
+            computedStyle = {
+                ...computedStyle,
                 backgroundColor: BUTTON_COLOR_THEMES.default.background,
                 color: BUTTON_COLOR_THEMES.default.text,
             };
@@ -120,11 +120,13 @@ export default function Button(props: ButtonProps) {
         };
     }
 
+    const finalStyle = style ? { ...computedStyle, ...style } : computedStyle;
+
     if (variant === "main") {
         // Use div for main variant
         return (
             <div
-                style={style}
+                style={finalStyle}
                 onClick={onClick as React.MouseEventHandler<HTMLDivElement>}
                 className={className}
             >
@@ -139,7 +141,7 @@ export default function Button(props: ButtonProps) {
         return (
             <button
                 type="button"
-                style={style}
+                style={finalStyle}
                 onClick={onClick}
                 className={className}
             >
