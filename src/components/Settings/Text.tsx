@@ -7,7 +7,7 @@ export default function Text({ children }: Props) {
         paddingLeft: 12,
         paddingRight: 12,
         color: "oklch(0.9 0 0)",
-        fontFamily: "DM Sans",
+        fontFamily: "TASA Explorer",
         fontSize: 18,
         fontWeight: 700,
         textAlign: "center",

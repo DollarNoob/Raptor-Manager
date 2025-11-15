@@ -13,16 +13,16 @@ export default function BigUsername({ displayName, username }: Props) {
 
     const displayNameStyle: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "DM Sans",
+        fontFamily: "TASA Explorer",
         fontSize: 16,
-        fontWeight: 800,
+        fontWeight: 700,
         textAlign: "center",
         wordBreak: "break-all",
     };
 
     const usernameStyle: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "DM Sans",
+        fontFamily: "TASA Explorer",
         fontSize: 12,
         fontWeight: 500,
     };

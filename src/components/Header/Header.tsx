@@ -106,9 +106,9 @@ export default function Header(_props: Props) {
 
     const titleTextStyle: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "DM Sans",
+        fontFamily: "TASA Explorer",
         fontSize: 20,
-        fontWeight: 900,
+        fontWeight: 700,
     };
 
     console.log(modal.modals);

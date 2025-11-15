@@ -7,7 +7,7 @@ export default function Title({ children }: Props) {
         paddingLeft: 12,
         paddingRight: 12,
         color: "oklch(0.9 0 0)",
-        fontFamily: "DM Sans",
+        fontFamily: "TASA Explorer",
         fontSize: 20,
         fontWeight: 700,
         textAlign: "center",

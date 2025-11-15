@@ -1,19 +1,24 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
-import { useConfigStore, useContextStore, useModalStore, useStore } from "../../store";
+import {
+    useConfigStore,
+    useContextStore,
+    useModalStore,
+    useStore,
+} from "../../store";
+import type { IMessage } from "../../types/message";
 import type { IProfile } from "../../types/profile";
 import type { ICloseState, IState } from "../../types/state";
 import { launchClient, stopClient } from "../../utils";
+import { setContext } from "../../utils/context";
+import ContextIcon from "../icons/ContextIcon";
 import LaunchIcon from "../icons/LaunchIcon";
 import LoadingIcon from "../icons/LoadingIcon";
 import StopIcon from "../icons/StopIcon";
 import SharedButton from "../Shared/Button";
-import BigUsername from "./BigUsername";
 import Status from "../Shared/Status";
+import BigUsername from "./BigUsername";
 import Thumbnail from "./Thumbnail";
-import ContextIcon from "../icons/ContextIcon";
-import { setContext } from "../../utils/context";
-import { IMessage } from "../../types/message";
 
 interface Props {
     profile: IProfile | null;
@@ -259,18 +264,23 @@ export default function AccountInfo({ profile, state }: Props) {
                         />
                     </div>
                     <div style={bottomContainerStyle}>
-                        {
-                            state.client === "Hydrogen" && state.connected && state.pid &&
+                        {state.client === "Hydrogen" &&
+                            state.connected &&
+                            state.pid && (
                                 <SharedButton
                                     variant="main"
-                                    color={context.id === profile.id ? "darkgreen" : "green"}
+                                    color={
+                                        context.id === profile.id
+                                            ? "darkgreen"
+                                            : "green"
+                                    }
                                     cursor={context.id !== profile.id}
                                     icon={<ContextIcon />}
                                     onClick={() => updateContext()}
                                 >
                                     Set Context
                                 </SharedButton>
-                        }
+                            )}
                         <SharedButton
                             variant="main"
                             color={launchColor}

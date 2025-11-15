@@ -12,7 +12,7 @@ export const UI_STYLES = {
     },
 
     TYPOGRAPHY: {
-        FONT_FAMILY_AVENIR: "DM Sans",
+        FONT_FAMILY_AVENIR: "TASA Explorer",
         FONT_SIZE_SMALL: 12,
         FONT_SIZE_NORMAL: 14,
         FONT_SIZE_LARGE: 20,
