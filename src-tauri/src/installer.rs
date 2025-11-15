@@ -516,3 +516,29 @@ pub async fn remove_client(app_handle: AppHandle, client: String) -> Result<(), 
     fs::remove_dir_all(&client_dir).map_err(|e| e.to_string())?;
     Ok(())
 }
+
+#[tauri::command]
+pub async fn clean_cache(app_handle: AppHandle) -> Result<u64, String> {
+    let app_data_dir = app_handle.path().app_data_dir().unwrap();
+
+    let clients_dir = app_data_dir.join("clients");
+    if !clients_dir.exists() {
+        return Ok(0);
+    }
+
+    let mut cleaned_bytes = 0;
+    for entry in fs::read_dir(&clients_dir).map_err(|e| e.to_string())? {
+        let e = entry.map_err(|e| e.to_string())?;
+        if !e.file_name().to_str().unwrap().ends_with(".app") {
+            let metadata = e.metadata().unwrap();
+            if metadata.is_dir() {
+                fs::remove_dir_all(e.path()).map_err(|e| e.to_string())?;
+            } else if metadata.is_file() {
+                fs::remove_file(e.path()).map_err(|e| e.to_string())?;
+            }
+            cleaned_bytes += metadata.len();
+        }
+    }
+
+    Ok(cleaned_bytes)
+}

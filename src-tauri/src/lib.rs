@@ -35,7 +35,8 @@ pub fn run() {
             installer::get_macsploit_version,
             installer::get_hydrogen_version,
             installer::install_client,
-            installer::remove_client
+            installer::remove_client,
+            installer::clean_cache
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();

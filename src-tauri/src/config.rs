@@ -167,13 +167,15 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let environment_dir = app_data_dir.join("environments");
-    let profile_dir = environment_dir.join(&id);
-    if !profile_dir.exists() {
-        fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
+    if !environment_dir.exists() {
+        fs::create_dir_all(&environment_dir).map_err(|e| e.to_string())?;
         return Ok(());
     }
 
-    fs::remove_dir_all(&profile_dir).map_err(|e| e.to_string())?;
+    let profile_dir = environment_dir.join(&id);
+    if profile_dir.exists() {
+        fs::remove_dir_all(&profile_dir).map_err(|e| e.to_string())?;
+    }
 
     let data_dir = app_handle.path().data_dir().unwrap();
     let library_dir = data_dir.parent().unwrap(); // $HOME/Library

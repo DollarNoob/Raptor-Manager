@@ -2,8 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { DECOMPILER_LIST } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../utils";
-import SharedButton from "../Shared/Button";
 import Client from "./Client";
+import Option from "./Option";
 
 interface Props {
     children?: React.ReactNode;
@@ -129,6 +129,54 @@ export default function Settings(_props: Props) {
         config.setConfig(newConfig);
     }
 
+    async function cleanCache() {
+        const cleaned = await invoke<number>("clean_cache").catch((err: Error) => err);
+        if (cleaned instanceof Error) {
+            const id = crypto.randomUUID();
+            modal.add({
+                id,
+                title: "Failed to clean cache",
+                text: cleaned.message,
+                buttons: [
+                    {
+                        text: "Okay",
+                        onClick: () => modal.remove(id),
+                    },
+                ],
+            });
+            return;
+        }
+
+        if (cleaned === 0) {
+            const id = crypto.randomUUID();
+            modal.add({
+                id,
+                title: "No Cache",
+                text: "You do not have any installation cache left on your device!",
+                buttons: [
+                    {
+                        text: "Okay",
+                        onClick: () => modal.remove(id),
+                    },
+                ],
+            });
+            return;
+        }
+
+        const id = crypto.randomUUID();
+        modal.add({
+            id,
+            title: "Cleaned Cache",
+            text: `Freed ${(cleaned / 1024 / 1024).toFixed(1)} MB from your device!`,
+            buttons: [
+                {
+                    text: "Okay",
+                    onClick: () => modal.remove(id),
+                },
+            ],
+        });
+    }
+
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -137,9 +185,8 @@ export default function Settings(_props: Props) {
         width: "100%",
     };
 
-    const clientContainerStyle: React.CSSProperties = {
+    const containerStyle: React.CSSProperties = {
         display: "flex",
-        flexGrow: 1,
         gap: 12,
     };
 
@@ -155,7 +202,7 @@ export default function Settings(_props: Props) {
 
     return (
         <main style={style}>
-            <div style={clientContainerStyle}>
+            <div style={containerStyle}>
                 <Client
                     installation={robloxInstallation}
                     version={version.roblox}
@@ -184,22 +231,22 @@ export default function Settings(_props: Props) {
                     Hydrogen
                 </Client>
             </div>
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                }}
-            >
-                <SharedButton
-                    variant="settings"
-                    color="blue"
-                    onClick={switchDecompiler}
-                    style={{ width: "100%", maxWidth: "300px" }}
+            <div style={containerStyle}>
+                <Option
+                    title="Clean Installation Cache"
+                    onClick={cleanCache}
                 >
-                    {config.config.decompiler.charAt(0).toUpperCase() +
-                        config.config.decompiler.slice(1)}
-                </SharedButton>
+                    Clean Up
+                </Option>
+                <Option
+                    title="Decompiler"
+                    onClick={switchDecompiler}
+                >
+                    {
+                        config.config.decompiler.charAt(0).toUpperCase() +
+                        config.config.decompiler.slice(1)
+                    }
+                </Option>
             </div>
         </main>
     );

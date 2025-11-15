@@ -8,7 +8,7 @@ export default function Text({ children }: Props) {
         paddingRight: 12,
         color: "oklch(0.9 0 0)",
         fontFamily: "DM Sans",
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700,
         textAlign: "center",
     };
