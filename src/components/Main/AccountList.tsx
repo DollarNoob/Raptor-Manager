@@ -41,7 +41,7 @@ export default function AccountList(_props: Props) {
             <AccountManager />
             {store.profiles.sort(filters[filter.filter]).map((profile, i) => (
                 <Account
-                    key={profile.id}
+                    key={JSON.stringify(profile)}
                     active={store.selectedIndex === i}
                     profile={profile}
                     state={

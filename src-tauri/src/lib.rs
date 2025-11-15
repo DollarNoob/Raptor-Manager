@@ -1,6 +1,8 @@
 use std::sync::Arc;
+use serde::Serialize;
 use tokio::sync::Mutex;
-use tauri::Manager;
+use std::collections::HashMap;
+use tauri::{Emitter, Listener, Manager};
 
 pub mod binarycookies;
 mod client;
@@ -9,6 +11,13 @@ mod cookies;
 mod config;
 mod installer;
 mod decompiler;
+mod hydrobridge;
+
+#[derive(Debug, Clone, Serialize)]
+pub struct Message {
+    title: String,
+    description: String
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -17,6 +26,7 @@ pub fn run() {
             config::read_config,
             config::write_config,
             config::update_decompiler,
+            config::update_hydrobridge,
             config::read_profiles,
             config::write_profiles,
             config::create_environment,
@@ -48,8 +58,39 @@ pub fn run() {
 
             app.manage(state.clone());
 
+            let decompiler_app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                decompiler::serve(state).await;
+                if let Err(err) = decompiler::serve(state).await {
+                    let window = decompiler_app_handle.get_webview_window("main").unwrap();
+
+                    window.listen("ready", move |_| {
+                        let _ = decompiler_app_handle.emit_to("main", "message", Message {
+                            title: "Failed to run decompiler server".into(),
+                            description: format!("{}\nPlease free port 6767 and restart Manager to use decompiler.", err)
+                        });
+                    });
+                }
+            });
+
+            let bridge_state = hydrobridge::AppState {
+                queue: Arc::new(Mutex::new(HashMap::new())),
+                id: Arc::new(Mutex::new("".to_string()))
+            };
+
+            app.manage(bridge_state.clone());
+
+            let hydrobridge_app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                if let Err(err) = hydrobridge::serve(bridge_state).await {
+                    let window = hydrobridge_app_handle.get_webview_window("main").unwrap();
+
+                    window.listen("ready", move |_| {
+                        let _ = hydrobridge_app_handle.emit_to("main", "message", Message {
+                            title: "Failed to run Hydrobridge".into(),
+                            description: format!("{}\nPlease close open instances and restart Manager to use Hydrobridge.", err)
+                        });
+                    });
+                }
             });
 
             Ok(())

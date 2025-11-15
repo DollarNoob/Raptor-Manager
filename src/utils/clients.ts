@@ -1,11 +1,20 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useConfigStore, useVersionStore } from "../store";
+import { useConfigStore, useStore, useVersionStore } from "../store";
+import { updateProfile } from "./profiles";
 
 export async function launchClient(
     client: string,
     profileId: string,
     cookie: string,
 ) {
+    const store = useStore.getState();
+
+    const profile = store.profiles.find(p => p.id === profileId);
+    if (!profile)
+        throw new Error(
+            "Profile not found. Please try again."
+        );
+
     const unlocked = await invoke<number>("unlock_keychain", {
         profileId,
     }).catch((err) => new Error(err));
@@ -35,6 +44,13 @@ export async function launchClient(
         profileId,
     }).catch((err) => new Error(err));
     if (launched instanceof Error) throw launched;
+
+    const newProfile = {
+        ...profile,
+        lastPlayedAt: Date.now(),
+    };
+
+    await updateProfile(newProfile);
 
     return launched;
 }

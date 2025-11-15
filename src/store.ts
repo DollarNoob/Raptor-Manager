@@ -143,3 +143,13 @@ export const useFilterStore = create<FilterState>()((set) => ({
     filterCount: 10,
     setFilter: (filter) => set(() => ({ filter })),
 }));
+
+export interface ContextState {
+    id: string;
+    setId: (id: string) => void;
+}
+
+export const useContextStore = create<ContextState>()((set) => ({
+    id: "",
+    setId: (id) => set(() => ({ id })),
+}));

@@ -44,7 +44,12 @@ export default function Modal({ title, text, children }: Props) {
         <>
             <div style={style}>
                 <Title>{title}</Title>
-                <Text>{text}</Text>
+                <Text>
+                    {
+                        text.split("\n")
+                            .map((line, i) => <React.Fragment key={i}>{line}<br/></React.Fragment>)
+                    }
+                </Text>
                 {React.Children.count(children) !== 0 && (
                     <div style={buttonContainerStyle}>{children}</div>
                 )}

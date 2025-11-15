@@ -376,7 +376,7 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
 
                     fs::remove_file(&hydrogen_zip_dir).map_err(|e| e.to_string())?;
 
-                    // Fifth, take Hydrogen dylib file from the app.
+                    // Finally, take Hydrogen dylib file from the app.
                     let executable_dir = hydrogen_dir.join("Contents").join("MacOS");
                     let hydrogen_dylib_dir;
                     if std::env::consts::ARCH == "aarch64" {

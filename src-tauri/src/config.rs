@@ -62,6 +62,13 @@ pub async fn update_decompiler(state: tauri::State<'_, crate::decompiler::AppSta
     Ok(())
 }
 
+#[tauri::command]
+pub async fn update_hydrobridge(state: tauri::State<'_, crate::hydrobridge::AppState>, id: String) -> Result<(), ()> {
+    let mut profile_id = state.id.lock().await;
+    *profile_id = id;
+    Ok(())
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(non_snake_case)]
 pub struct Profile {
@@ -113,14 +120,37 @@ pub fn write_profiles(app_handle: AppHandle, profiles: Vec<Profile>) -> Result<(
 
 #[tauri::command]
 pub fn create_environment(app_handle: AppHandle, id: String) -> Result<(), String> {
-    let init_script = "-- Raptor Manager Init Script; DO NOT TOUCH!
+    let init_script = format!("-- Raptor Manager Init Script; DO NOT TOUCH!
+
 getgenv().decompile = function(script)
-    return request({
+    return request({{
         Url = 'http://localhost:6767/decompile',
         Method = 'POST',
         Body = getscriptbytecode(script)
-    }).Body
-end";
+    }}).Body
+end
+
+local executor = identifyexecutor()
+if executor == 'Hydrogen' then
+    task.defer(function()
+        local HttpService = game:GetService('HttpService')
+        while task.wait(1) do
+            local queue = request({{
+                Url = 'http://localhost:6969/queue/{}'
+            }}).Body
+            queue = HttpService:JSONDecode(queue)
+
+            for i, v in pairs(queue) do
+                local func, err = loadstring(v)
+                if func then
+                    task.defer(func)
+                else
+                    task.spawn(error, err)
+                end
+            end
+        end
+    end)
+end", &id);
 
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
