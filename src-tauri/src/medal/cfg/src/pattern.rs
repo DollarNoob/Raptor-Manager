@@ -36,12 +36,14 @@ pub type PatternEdge = BlockEdge;
 pub type PatternGraph = StableDiGraph<PatternNode, PatternEdge>;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Pattern {
     root: NodeIndex,
     graph: PatternGraph,
 }
 
 impl Pattern {
+    #[allow(dead_code)]
     fn new(root: NodeIndex, graph: PatternGraph) -> Self {
         // make sure all nodes in pattern are connected
         assert!(Dfs::new(&graph, root).iter(&graph).count() == graph.node_count());
@@ -50,6 +52,7 @@ impl Pattern {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct PatternChecker<'a> {
     pattern: &'a Pattern,
     function: &'a Function,
@@ -58,8 +61,10 @@ pub struct PatternChecker<'a> {
 }
 
 impl<'a> PatternChecker<'a> {
+    #[allow(dead_code)]
     fn check_successors(&self, _node: NodeIndex) {}
 
+    #[allow(dead_code)]
     fn check_pattern_rec(&self, pattern_node: NodeIndex, function_node: NodeIndex) -> bool {
         let _function_successors = self
             .function
@@ -92,6 +97,7 @@ impl<'a> PatternChecker<'a> {
         true
     }
 
+    #[allow(dead_code)]
     fn check_pattern(mut self, root: NodeIndex) -> bool {
         self.mapping.insert(self.pattern.root, root);
         self.check_pattern_rec(self.pattern.root, root)
@@ -99,6 +105,7 @@ impl<'a> PatternChecker<'a> {
 }
 
 impl Pattern {
+    #[allow(dead_code)]
     fn node_matches(&self, _function: &Function, _node: NodeIndex) -> bool {
         let _mapping = FxHashMap::<NodeIndex, NodeIndex>::default();
 

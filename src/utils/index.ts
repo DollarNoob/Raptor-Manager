@@ -7,8 +7,6 @@ export {
 
 export { readConfig, writeConfig } from "./config";
 
-export { notify } from "./notifications";
-
 export {
     addProfile,
     readProfiles,

@@ -1,15 +1,23 @@
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
-import { useConfigStore, useModalStore, useStore } from "../../store";
+import {
+    useConfigStore,
+    useContextStore,
+    useModalStore,
+    useStore,
+} from "../../store";
+import type { IMessage } from "../../types/message";
 import type { IProfile } from "../../types/profile";
 import type { ICloseState, IState } from "../../types/state";
 import { launchClient, stopClient } from "../../utils";
+import { setContext } from "../../utils/context";
+import ContextIcon from "../icons/ContextIcon";
 import LaunchIcon from "../icons/LaunchIcon";
 import LoadingIcon from "../icons/LoadingIcon";
 import StopIcon from "../icons/StopIcon";
 import SharedButton from "../Shared/Button";
+import Status from "../Shared/Status";
 import BigUsername from "./BigUsername";
-import Status from "./Status";
 import Thumbnail from "./Thumbnail";
 
 interface Props {
@@ -22,6 +30,7 @@ export default function AccountInfo({ profile, state }: Props) {
     const store = useStore();
     const modal = useModalStore();
     const config = useConfigStore();
+    const context = useContextStore();
     const [forceQuit, setForceQuit] = useState(false);
 
     useEffect(() => {
@@ -65,6 +74,27 @@ export default function AccountInfo({ profile, state }: Props) {
             unlistenClose.then((unlisten) => unlisten());
         };
     }, [forceQuit, store.updateState, store.profiles, modal.add, modal.remove]);
+
+    useEffect(() => {
+        const unlisten = listen<IMessage>("message", (event) => {
+            const id = crypto.randomUUID();
+            modal.add({
+                id,
+                title: event.payload.title,
+                text: event.payload.description,
+                buttons: [
+                    {
+                        text: "Okay",
+                        onClick: () => modal.remove(id),
+                    },
+                ],
+            });
+        });
+
+        return () => {
+            unlisten.then((unlisten) => unlisten());
+        };
+    }, [modal.add, modal.remove]);
 
     async function launch(client = config.config.client) {
         if (!profile || !state) return;
@@ -168,6 +198,10 @@ export default function AccountInfo({ profile, state }: Props) {
         }
     }
 
+    async function updateContext() {
+        setContext(profile?.id ?? "");
+    }
+
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -230,6 +264,23 @@ export default function AccountInfo({ profile, state }: Props) {
                         />
                     </div>
                     <div style={bottomContainerStyle}>
+                        {state.client === "Hydrogen" &&
+                            state.connected &&
+                            state.pid && (
+                                <SharedButton
+                                    variant="main"
+                                    color={
+                                        context.id === profile.id
+                                            ? "darkgreen"
+                                            : "green"
+                                    }
+                                    cursor={context.id !== profile.id}
+                                    icon={<ContextIcon />}
+                                    onClick={() => updateContext()}
+                                >
+                                    Set Context
+                                </SharedButton>
+                            )}
                         <SharedButton
                             variant="main"
                             color={launchColor}

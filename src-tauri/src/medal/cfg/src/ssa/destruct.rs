@@ -111,6 +111,7 @@ impl<'a> Destructor<'a> {
         self.sequentialize();
     }
 
+    #[allow(dead_code)]
     fn add_liveness_comments(&mut self) {
         for node in self.function.graph().node_indices().collect::<Vec<_>>() {
             let liveness = &self.liveness[&node];

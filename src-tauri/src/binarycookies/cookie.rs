@@ -1,5 +1,5 @@
-use crate::binarycookies::utils::{system_time_to_mac_epoch, write_f64_le, write_u32_le};
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
+use crate::binarycookies::utils::to_cocoa_timestamp;
 
 #[derive(Debug, Clone)]
 pub struct Cookie {
@@ -7,42 +7,36 @@ pub struct Cookie {
     pub name: String,
     pub path: Option<String>,
     pub value: String,
-    pub secure: bool,
-    pub http_only: bool,
+    pub secure: Option<bool>,
+    pub http_only: Option<bool>,
     pub expiration: Option<SystemTime>,
-    pub creation: Option<SystemTime>,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub struct CookieFlags {
-    pub secure: bool,
-    pub http_only: bool,
+    pub creation: Option<SystemTime>
 }
 
 impl Cookie {
     pub fn new(
         domain: String,
         name: String,
-        value: String,
         path: Option<String>,
-        flags: CookieFlags,
+        value: String,
+        secure: Option<bool>,
+        http_only: Option<bool>,
         expiration: Option<SystemTime>,
-        creation: Option<SystemTime>,
+        creation: Option<SystemTime>
     ) -> Self {
         Self {
             domain,
             name,
             path,
             value,
-            secure: flags.secure,
-            http_only: flags.http_only,
+            secure,
+            http_only,
             expiration,
-            creation,
+            creation
         }
     }
 
     pub fn build(&self) -> Vec<u8> {
-        // Convert text fields to null-terminated UTF-8 byte arrays
         let domain_bytes = {
             let mut v = self.domain.clone().into_bytes();
             v.push(0);
@@ -64,58 +58,49 @@ impl Cookie {
             v
         };
 
-        // --- Layout offsets (exactly like the TS version) ---
-        let domain_offset = 56u32;
-        let name_offset = domain_offset + domain_bytes.len() as u32;
-        let path_offset = name_offset + name_bytes.len() as u32;
-        let value_offset = path_offset + path_bytes.len() as u32;
-        let size = value_offset + value_bytes.len() as u32;
-
-        // --- Flags ---
+        let domain_offset: u32 = 56;
+        let name_offset: u32 = domain_offset + domain_bytes.len() as u32;
+        let path_offset: u32 = name_offset + name_bytes.len() as u32;
+        let value_offset: u32 = path_offset + path_bytes.len() as u32;
+        let size: u32 = value_offset + value_bytes.len() as u32;
         let mut flags: u32 = 0;
-        if self.secure {
-            flags |= 1;
+        if let Some(secure) = self.secure {
+            if secure {
+                flags |= 1;
+            }
         }
-        if self.http_only {
-            flags |= 1 << 2;
+        if let Some(http_only) = self.http_only {
+            if http_only {
+                flags |= 1 << 2;
+            }
         }
 
-        // --- Dates (convert to Cocoa epoch seconds) ---
-        let expiration_secs = self
-            .expiration
-            .map(system_time_to_mac_epoch)
-            .unwrap_or_else(|| system_time_to_mac_epoch(std::time::SystemTime::now()));
-        let creation_secs = self
-            .creation
-            .map(system_time_to_mac_epoch)
-            .unwrap_or_else(|| system_time_to_mac_epoch(std::time::SystemTime::now()));
+        // default: 1 month
+        let expiration = self.expiration
+            .map(to_cocoa_timestamp)
+            .unwrap_or_else(|| to_cocoa_timestamp(SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 30)));
+        let creation = self.creation
+            .map(to_cocoa_timestamp)
+            .unwrap_or_else(|| to_cocoa_timestamp(SystemTime::now()));
 
-        // --- Allocate full buffer ---
-        let mut buf = Vec::with_capacity(size as usize);
+        let mut bytes = Vec::with_capacity(size as usize);
+        bytes.extend_from_slice(&size.to_le_bytes());          // size
+        bytes.extend_from_slice(&(1 as u32).to_le_bytes());    // version
+        bytes.extend_from_slice(&flags.to_le_bytes());         // flags
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // has port
+        bytes.extend_from_slice(&domain_offset.to_le_bytes()); // domain offset
+        bytes.extend_from_slice(&name_offset.to_le_bytes());   // name offset
+        bytes.extend_from_slice(&path_offset.to_le_bytes());   // path offset
+        bytes.extend_from_slice(&value_offset.to_le_bytes());  // value offset
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // comment offset
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // comment url offset
+        bytes.extend_from_slice(&expiration.to_le_bytes());    // expiration cocoa timestamp (in seconds)
+        bytes.extend_from_slice(&creation.to_le_bytes());      // creation cocoa timestamp (in seconds)
+        bytes.extend_from_slice(&domain_bytes);                // domain
+        bytes.extend_from_slice(&name_bytes);                  // name
+        bytes.extend_from_slice(&path_bytes);                  // path
+        bytes.extend_from_slice(&value_bytes);                 // value
 
-        // Header = 12 Int32 (4 bytes each) + 2 Double (8 bytes each) = 56 bytes
-        buf.resize(56, 0);
-
-        // Fill header fields (LE like TypeScript’s toInt32LE)
-        write_u32_le(&mut buf, 0, size); // size
-        write_u32_le(&mut buf, 4, 1); // version
-        write_u32_le(&mut buf, 8, flags); // flags
-        write_u32_le(&mut buf, 12, 0); // has port
-        write_u32_le(&mut buf, 16, domain_offset);
-        write_u32_le(&mut buf, 20, name_offset);
-        write_u32_le(&mut buf, 24, path_offset);
-        write_u32_le(&mut buf, 28, value_offset);
-        write_u32_le(&mut buf, 32, 0); // comment offset
-        write_u32_le(&mut buf, 36, 0); // comment URL offset
-        write_f64_le(&mut buf, 40, expiration_secs);
-        write_f64_le(&mut buf, 48, creation_secs);
-
-        // Append string data
-        buf.extend_from_slice(&domain_bytes);
-        buf.extend_from_slice(&name_bytes);
-        buf.extend_from_slice(&path_bytes);
-        buf.extend_from_slice(&value_bytes);
-
-        buf
+        bytes
     }
 }

@@ -2,10 +2,11 @@ import { STATUS_COLORS, UI_STYLES } from "../../constants/ui";
 
 interface Props {
     color: keyof typeof STATUS_COLORS;
+    draggable?: boolean;
     children?: React.ReactNode;
 }
 
-export default function Status({ color, children }: Props) {
+export default function Status({ color, draggable, children }: Props) {
     const style: React.CSSProperties = {
         width: "fit-content",
         minWidth: "fit-content",
@@ -24,5 +25,5 @@ export default function Status({ color, children }: Props) {
         fontWeight: UI_STYLES.TYPOGRAPHY.FONT_WEIGHT_NORMAL,
     };
 
-    return <div style={style}>{children}</div>;
+    return <div style={style} data-tauri-drag-region={draggable}>{children}</div>;
 }

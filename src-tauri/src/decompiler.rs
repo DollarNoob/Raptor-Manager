@@ -15,13 +15,15 @@ pub struct AppState {
     pub decompiler: Arc<Mutex<String>>
 }
 
-pub async fn serve(state: AppState) {
+pub async fn serve(state: AppState) -> Result<(), String> {
     let app = Router::new()
         .route("/decompile", post(decompile))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:6767").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:6767").await.map_err(|e| e.to_string())?;
+    axum::serve(listener, app).await.map_err(|e| e.to_string())?;
+
+    Ok(())
 }
 
 async fn decompile(State(state): State<AppState>, body: Bytes) -> String {

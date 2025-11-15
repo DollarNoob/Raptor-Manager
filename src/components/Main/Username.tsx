@@ -7,7 +7,7 @@ interface Props {
 export default function Username({ displayName, username }: Props) {
     const style: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "Avenir",
+        fontFamily: "TASA Explorer",
         fontSize: 16,
         fontWeight: 700,
         overflow: "hidden",

@@ -12,12 +12,12 @@ use super::{
 use crate::{instruction::*, op_code::OpCode};
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Function {
     pub max_stack_size: u8,
     pub num_parameters: u8,
     pub num_upvalues: u8,
     pub is_vararg: bool,
-    //pub instructions: Vec<u32>,
     pub instructions: Vec<Instruction>,
     pub constants: Vec<Constant>,
     pub functions: Vec<usize>,
@@ -113,7 +113,7 @@ impl Function {
         let (input, num_upvalues) = le_u8(input)?;
         let (input, is_vararg) = le_u8(input)?;
 
-        let (input, flags) = le_u8(input)?;
+        let (input, _flags) = le_u8(input)?;
         let (input, _) = parse_list(input, le_u8)?;
 
         let (input, u32_instructions) = parse_list(input, le_u32)?;
@@ -152,20 +152,20 @@ impl Function {
         };
         let input = match le_u8(input)? {
             (input, 0) => input,
-            (input, _) => {
+            (_input, _) => {
                 panic!("we have debug info");
-                let (mut input, num_locvars) = leb128_usize(input)?;
-                for _ in 0..num_locvars {
-                    (input, _) = leb128_usize(input)?;
-                    (input, _) = leb128_usize(input)?;
-                    (input, _) = leb128_usize(input)?;
-                    (input, _) = le_u8(input)?;
-                }
-                let (mut input, num_upvalues) = leb128_usize(input)?;
-                for _ in 0..num_upvalues {
-                    (input, _) = leb128_usize(input)?;
-                }
-                input
+                // let (mut input, num_locvars) = leb128_usize(input)?;
+                // for _ in 0..num_locvars {
+                //     (input, _) = leb128_usize(input)?;
+                //     (input, _) = leb128_usize(input)?;
+                //     (input, _) = leb128_usize(input)?;
+                //     (input, _) = le_u8(input)?;
+                // }
+                // let (mut input, num_upvalues) = leb128_usize(input)?;
+                // for _ in 0..num_upvalues {
+                //     (input, _) = leb128_usize(input)?;
+                // }
+                // input
             }
         };
         Ok((

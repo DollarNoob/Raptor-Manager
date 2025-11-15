@@ -11,6 +11,7 @@ import ClientIcon from "../icons/ClientIcon";
 import SettingsIcon from "../icons/SettingsIcon";
 import Modal, { ModalButton } from "../Modal";
 import Button from "../Shared/Button";
+import Status from "../Shared/Status";
 
 interface Props {
     children?: React.ReactNode;
@@ -105,35 +106,12 @@ export default function Header(_props: Props) {
 
     const titleTextStyle: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "Avenir",
+        fontFamily: "TASA Explorer",
         fontSize: 20,
-        fontWeight: 800,
+        fontWeight: 700,
     };
 
-    const versionStyle: React.CSSProperties = {
-        paddingLeft: 4,
-        paddingRight: 4,
-        backgroundColor: "oklch(0.4 0 0)",
-        color: "oklch(0.9 0 0)",
-        border: "1px solid #FFFFFF20",
-        borderRadius: 12,
-        fontFamily: "Avenir",
-        fontSize: 10,
-        fontWeight: 500,
-    };
-
-    const betaStyle: React.CSSProperties = {
-        paddingLeft: 4,
-        paddingRight: 4,
-        backgroundColor: "oklch(0.68 0.22 30)",
-        color: "white",
-        border: "1px solid #FFFFFF20",
-        borderRadius: 12,
-        fontFamily: "Avenir",
-        fontSize: 10,
-        fontWeight: 500,
-    };
-
+    console.log(modal.modals);
     return (
         <>
             {modal.modals.length !== 0 && (
@@ -159,13 +137,13 @@ export default function Header(_props: Props) {
                         Raptor Manager
                     </span>
                     {version && (
-                        <div style={versionStyle} data-tauri-drag-region>
+                        <Status color="gray" draggable={true}>
                             v{version}
-                        </div>
+                        </Status>
                     )}
-                    <div style={betaStyle} data-tauri-drag-region>
+                    <Status color="red" draggable={true}>
                         BETA
-                    </div>
+                    </Status>
                 </div>
                 <div style={rightSectionStyle}>
                     <Button

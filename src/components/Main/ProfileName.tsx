@@ -5,9 +5,10 @@ interface Props {
 export default function ProfileName({ children }: Props) {
     const style: React.CSSProperties = {
         color: "oklch(0.6 0 0)",
-        fontFamily: "Avenir",
+        fontFamily: "TASA Explorer",
         fontSize: 9,
         fontWeight: 500,
+        textAlign: "start",
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",

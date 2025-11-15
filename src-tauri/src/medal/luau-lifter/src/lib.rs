@@ -76,7 +76,7 @@ pub fn decompile_bytecode(bytecode: &[u8], encode_key: u8) -> Result<String, Str
                                 static BACKTRACE: RefCell<Option<Backtrace>> = const { RefCell::new(None) };
                             }
 
-                            let function_id = function.id;
+                            let _function_id = function.id;
                             let mut args = std::panic::AssertUnwindSafe(Some((
                                 ast_function.clone(),
                                 function,
@@ -97,7 +97,7 @@ pub fn decompile_bytecode(bytecode: &[u8], encode_key: u8) -> Result<String, Str
                             match result {
                                 Ok(r) => r,
                                 Err(e) => {
-                                    let panic_information = match e.downcast::<String>() {
+                                    let _panic_information = match e.downcast::<String>() {
                                         Ok(v) => *v,
                                         Err(e) => match e.downcast::<&str>() {
                                             Ok(v) => v.to_string(),

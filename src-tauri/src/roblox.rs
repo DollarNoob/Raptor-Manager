@@ -12,10 +12,7 @@ pub struct RobloxProfile {
 }
 
 #[tauri::command]
-pub async fn get_roblox_profile(
-    app_handle: AppHandle,
-    cookie: String,
-) -> Result<RobloxProfile, String> {
+pub async fn get_roblox_profile(app_handle: AppHandle, cookie: String) -> Result<RobloxProfile, String> {
     let client = Client::new();
     let response = client
         .get("https://users.roblox.com/v1/users/authenticated")
@@ -28,23 +25,16 @@ pub async fn get_roblox_profile(
             )
         )
         .send()
-        .await;
+        .await
+        .map_err(|e| e.to_string())?;
 
-    match response {
-        Ok(response) => {
-            let status = response.status();
-            if !status.is_success() {
-                return Err(status.to_string());
-            }
-
-            let body = response.json().await;
-            match body {
-                Ok(profile) => Ok(profile),
-                Err(err) => Err(err.to_string())
-            }
-        }
-        Err(err) => Err(err.to_string()),
+    let status = response.status();
+    if !status.is_success() {
+        return Err(status.to_string());
     }
+
+    let profile = response.json::<RobloxProfile>().await.map_err(|e| e.to_string())?;
+    Ok(profile)
 }
 
 #[derive(Debug, Deserialize)]
@@ -75,32 +65,23 @@ pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result
             )
         )
         .send()
-        .await;
+        .await
+        .map_err(|e| e.to_string())?;
 
-    match response {
-        Ok(response) => {
-            let status = response.status();
-            if !status.is_success() {
-                return Err(status.to_string());
-            }
-
-            let body: Result<RobloxThumbnailData, reqwest::Error> = response.json().await;
-            match body {
-                Ok(body) => {
-                    if body.data.len() == 0 {
-                        return Err("404 Not Found".into());
-                    }
-
-                    let profile = body.data.first().expect("profile does not exist");
-                    if profile.state != "Completed" {
-                        return Err(profile.state.clone());
-                    }
-
-                    Ok(profile.imageUrl.clone())
-                }
-                Err(err) => Err(err.to_string())
-            }
-        }
-        Err(err) => Err(err.to_string()),
+    let status = response.status();
+    if !status.is_success() {
+        return Err(status.to_string());
     }
+
+    let body = response.json::<RobloxThumbnailData>().await.map_err(|e| e.to_string())?;
+    if body.data.len() == 0 {
+        return Err("404 Not Found".into());
+    }
+
+    let profile = body.data.first().expect("profile does not exist");
+    if profile.state != "Completed" {
+        return Err(profile.state.clone());
+    }
+
+    Ok(profile.imageUrl.clone())
 }

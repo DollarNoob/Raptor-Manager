@@ -29,7 +29,7 @@ export default function ManagerButton({
 
     const textStyle: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "Avenir",
+        fontFamily: "TASA Explorer",
         fontSize: 14,
         fontWeight: 700,
         marginTop: 1,

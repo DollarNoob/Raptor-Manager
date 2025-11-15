@@ -6,9 +6,10 @@ interface Props {
 export default function Note({ lastPlayedAt, children }: Props) {
     const style: React.CSSProperties = {
         color: "oklch(0.6 0 0)",
-        fontFamily: "Avenir",
-        fontSize: 11,
-        fontWeight: 500,
+        fontFamily: "TASA Explorer",
+        fontSize: 10,
+        fontWeight: 600,
+        textAlign: "start",
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",

@@ -12,12 +12,12 @@ export const UI_STYLES = {
     },
 
     TYPOGRAPHY: {
-        FONT_FAMILY_AVENIR: "Avenir",
+        FONT_FAMILY_AVENIR: "TASA Explorer",
         FONT_SIZE_SMALL: 12,
         FONT_SIZE_NORMAL: 14,
         FONT_SIZE_LARGE: 20,
         FONT_WEIGHT_NORMAL: 500,
-        FONT_WEIGHT_MEDIUM: 700,
+        FONT_WEIGHT_MEDIUM: 600,
         FONT_WEIGHT_BOLD: 700,
     },
 
@@ -42,6 +42,9 @@ export const BUTTON_COLOR_THEMES = {
         background: UI_STYLES.COLORS.BACKGROUND_MEDIUM,
         text: UI_STYLES.COLORS.TEXT_BRIGHT,
     },
+    modal: {
+        black: "oklch(0.22 0 0)",
+    } as const,
     header: {
         background: (active: boolean) =>
             active ? UI_STYLES.COLORS.BACKGROUND_DARK : "oklch(0.24 0 0)",
@@ -68,4 +71,5 @@ export const STATUS_COLORS = {
     red: "oklch(0.64 0.18 30)",
     green: "oklch(0.64 0.18 150)",
     orange: "oklch(0.64 0.18 60)",
+    gray: "oklch(0.4 0 0)",
 } as const;

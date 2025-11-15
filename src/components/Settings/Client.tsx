@@ -5,7 +5,7 @@ import type {
     IHydrogenVersion,
 } from "../../types/version";
 import Button from "../Shared/Button";
-import Status from "./Status";
+import Status from "../Shared/Status";
 import Text from "./Text";
 import Thumbnail from "./Thumbnail";
 

@@ -190,11 +190,11 @@ export default function ProfileModal({ destruct }: Props) {
         <>
             <div style={style}>
                 <Title>Create Profile</Title>
-                <Text>Please input your cookie.</Text>
+                <Text>Please enter your cookie.</Text>
                 <Input ref={cookieRef} placeholder={COOKIE_PLACEHOLDER} />
-                <Text>Please input a profile name. (optional)</Text>
+                <Text>Please enter the profile name. (optional)</Text>
                 <Input ref={nameRef} placeholder={DEFAULT_PROFILE_NAME} />
-                <Text>Please input a note. (optional)</Text>
+                <Text>Please enter a note. (optional)</Text>
                 <Input
                     ref={noteRef}
                     placeholder={DEFAULT_NOTE}

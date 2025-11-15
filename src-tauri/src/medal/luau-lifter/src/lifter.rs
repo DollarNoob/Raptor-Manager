@@ -1276,8 +1276,7 @@ impl<'a> Lifter<'a> {
                         ));
                     }
                     _ => unreachable!("{:?}", instruction),
-                },
-                _ => unimplemented!("{:?}", instruction),
+                }
             }
         }
 

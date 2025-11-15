@@ -7,7 +7,7 @@ import type { IState } from "../../types/state";
 import { removeProfile } from "../../utils";
 import EditProfileModal from "../EditProfileModal";
 import Profile from "./Profile";
-import Status from "./Status";
+import Status from "../Shared/Status";
 import Thumbnail from "./Thumbnail";
 
 interface Props {
@@ -130,7 +130,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
 
     const style: React.CSSProperties = {
         display: "flex",
-        height: 44,
+        height: 64,
         gap: 10,
         backgroundColor: active ? "oklch(0.28 0 0)" : "inherit",
         padding: 10,
