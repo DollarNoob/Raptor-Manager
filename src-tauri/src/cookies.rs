@@ -16,15 +16,16 @@ pub async fn write_cookies(app_handle: AppHandle, profile_id: String, cookie: St
         name: ".ROBLOSECURITY".into(),
         path: Some("/".into()),
         value: cookie,
-        secure: true,
-        http_only: true,
+        secure: Some(true),
+        http_only: Some(true),
         expiration: Some(SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 30)), // 30 days
         creation: Some(SystemTime::now())
     };
 
     let page = Page::new(vec![cookie]);
 
-    let bytes = BinaryCookies::build(&[page]);
+    let binary_cookies = BinaryCookies::new(vec![page]);
+    let bytes = binary_cookies.build();
 
     let mut file = File::create(&file_dir).map_err(|e| e.to_string())?;
     file.write_all(&bytes).map_err(|e| e.to_string())?;
