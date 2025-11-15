@@ -130,7 +130,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
 
     const style: React.CSSProperties = {
         display: "flex",
-        height: 44,
+        height: 64,
         gap: 10,
         backgroundColor: active ? "oklch(0.28 0 0)" : "inherit",
         padding: 10,

@@ -42,6 +42,9 @@ export const BUTTON_COLOR_THEMES = {
         background: UI_STYLES.COLORS.BACKGROUND_MEDIUM,
         text: UI_STYLES.COLORS.TEXT_BRIGHT,
     },
+    modal: {
+        black: "oklch(0.22 0 0)",
+    } as const,
     header: {
         background: (active: boolean) =>
             active ? UI_STYLES.COLORS.BACKGROUND_DARK : "oklch(0.24 0 0)",

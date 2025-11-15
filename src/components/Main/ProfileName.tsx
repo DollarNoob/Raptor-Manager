@@ -8,6 +8,7 @@ export default function ProfileName({ children }: Props) {
         fontFamily: "Avenir",
         fontSize: 9,
         fontWeight: 500,
+        textAlign: "start",
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",

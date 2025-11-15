@@ -9,6 +9,7 @@ export default function Note({ lastPlayedAt, children }: Props) {
         fontFamily: "Avenir",
         fontSize: 11,
         fontWeight: 500,
+        textAlign: "start",
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",

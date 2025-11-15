@@ -41,6 +41,7 @@ export default function Button(props: ButtonProps) {
         paddingRight: children ? UI_STYLES.SPACING.SMALL : 0,
         border: `1px solid ${UI_STYLES.COLORS.BORDER}`,
         borderRadius: UI_STYLES.SPACING.MEDIUM,
+        boxSizing: "border-box",
         cursor: "pointer",
         outline: "none",
         fontFamily: UI_STYLES.TYPOGRAPHY.FONT_FAMILY_AVENIR,
@@ -49,6 +50,13 @@ export default function Button(props: ButtonProps) {
     };
 
     switch (variant) {
+        case "modal":
+            computedStyle = {
+                ...computedStyle,
+                flex: 1,
+                backgroundColor: BUTTON_COLOR_THEMES.modal.black,
+            };
+            break;
         case "header":
             computedStyle = {
                 ...computedStyle,
