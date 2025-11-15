@@ -31,6 +31,7 @@ impl From<PatternOperator> for ast::BinaryOperation {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct ConditionalAssignmentPattern {
     assigner: NodeIndex,
     next: NodeIndex,
@@ -41,6 +42,7 @@ pub struct ConditionalAssignmentPattern {
     operator: PatternOperator,
 }
 
+#[allow(dead_code)]
 type ConditionalSequenceConfiguration = (bool, bool);
 
 #[derive(Debug)]
@@ -54,6 +56,7 @@ pub struct ConditionalSequencePattern {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct GenericForNextPattern {
     body_node: NodeIndex,
     res_locals: Vec<ast::RcLocal>,

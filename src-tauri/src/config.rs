@@ -26,54 +26,33 @@ pub fn read_config(app_handle: AppHandle) -> Result<Config, String> {
             clients: vec![],
             decompiler: "medal".into()
         };
-        match write_config(app_handle, default_config.clone()) {
-            Ok(_) => return Ok(default_config),
-            Err(err) => return Err(err)
-        }
+        write_config(app_handle, default_config.clone()).map_err(|e| e.to_string())?;
+        return Ok(default_config);
     }
 
-    match File::open(&config_dir) {
-        Ok(mut file) => {
-            let mut contents = String::new();
-            match file.read_to_string(&mut contents) {
-                Ok(_) => {
-                    match serde_json::from_str::<Config>(&contents) {
-                        Ok(config) => Ok(config),
-                        Err(err) => Err(err.to_string())
-                    }
-                },
-                Err(err) => Err(err.to_string())
-            }
-        },
-        Err(err) => Err(err.to_string())
-    }
+    let mut file = File::open(&config_dir).map_err(|e| e.to_string())?;
+
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).map_err(|e| e.to_string())?;
+
+    let config = serde_json::from_str::<Config>(&contents).map_err(|e| e.to_string())?;
+    Ok(config)
 }
 
 #[tauri::command]
 pub fn write_config(app_handle: AppHandle, config: Config) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
     if !app_data_dir.exists() {
-        if let Err(err) = fs::create_dir_all(&app_data_dir) {
-            return Err(err.to_string())
-        }
+        fs::create_dir_all(&app_data_dir).map_err(|e| e.to_string())?;
     }
 
     let config_dir = app_data_dir.join("config.json");
 
-    match serde_json::to_string::<Config>(&config) {
-        Ok(contents) => {
-            match File::create(&config_dir) {
-                Ok(mut file) => {
-                    match file.write_all(&contents.as_bytes()) {
-                        Ok(_) => Ok(()),
-                        Err(err) => Err(err.to_string())
-                    }
-                },
-                Err(err) => Err(err.to_string())
-            }
-        },
-        Err(err) => Err(err.to_string())
-    }
+    let contents = serde_json::to_string::<Config>(&config).map_err(|e| e.to_string())?;
+
+    let mut file = File::create(&config_dir).map_err(|e| e.to_string())?;
+    file.write_all(&contents.as_bytes()).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -103,27 +82,17 @@ pub fn read_profiles(app_handle: AppHandle) -> Result<Vec<Profile>, String> {
 
     let profile_dir = app_data_dir.join("profiles.json");
     if !profile_dir.exists() {
-        match write_profiles(app_handle, vec![]) {
-            Ok(_) => return Ok(vec![]),
-            Err(err) => return Err(err)
-        }
+        write_profiles(app_handle, vec![]).map_err(|e| e.to_string())?;
+        return Ok(vec![]);
     }
 
-    match File::open(&profile_dir) {
-        Ok(mut file) => {
-            let mut contents = String::new();
-            match file.read_to_string(&mut contents) {
-                Ok(_) => {
-                    match serde_json::from_str::<Vec<Profile>>(&contents) {
-                        Ok(profiles) => Ok(profiles),
-                        Err(err) => Err(err.to_string())
-                    }
-                },
-                Err(err) => Err(err.to_string())
-            }
-        },
-        Err(err) => Err(err.to_string())
-    }
+    let mut file = File::open(&profile_dir).map_err(|e| e.to_string())?;
+
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).map_err(|e| e.to_string())?;
+
+    let profiles = serde_json::from_str::<Vec<Profile>>(&contents).map_err(|e| e.to_string())?;
+    Ok(profiles)
 }
 
 #[tauri::command]
@@ -132,55 +101,34 @@ pub fn write_profiles(app_handle: AppHandle, profiles: Vec<Profile>) -> Result<(
 
     let profile_dir = app_data_dir.join("profiles.json");
     if !profile_dir.exists() {
-        if let Err(err) = fs::create_dir_all(&app_data_dir) {
-            return Err(err.to_string());
-        }
+        fs::create_dir_all(&app_data_dir).map_err(|e| e.to_string())?;
     }
 
-    let profile_string = serde_json::to_string::<Vec<Profile>>(&profiles);
-    match profile_string {
-        Ok(profile) => {
-            match File::create(&profile_dir) {
-                Ok(mut file) => {
-                    match file.write_all(&profile.as_bytes()) {
-                        Ok(_) => Ok(()),
-                        Err(err) => Err(err.to_string())
-                    }
-                },
-                Err(err) => Err(err.to_string())
-            }
-        },
-        Err(err) => Err(err.to_string())
-    }
+    let profile = serde_json::to_string::<Vec<Profile>>(&profiles).map_err(|e| e.to_string())?;
+
+    let mut file = File::create(&profile_dir).map_err(|e| e.to_string())?;
+    file.write_all(&profile.as_bytes()).map_err(|e| e.to_string())?;
+    Ok(())
 }
 
 #[tauri::command]
 pub fn create_environment(app_handle: AppHandle, id: String) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
-    let environment_dir = app_data_dir.join("environments");
-    let profile_dir = environment_dir.join(id);
-    if let Err(err) = fs::create_dir_all(&profile_dir) {
-        return Err(err.to_string());
-    }
+    let profile_dir = app_data_dir.join("environments").join(id);
+    fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
 
     // MacSploit - Documents
     let documents_dir = profile_dir.join("Documents");
-    if let Err(err) = fs::create_dir_all(&documents_dir) {
-        return Err(err.to_string());
-    }
+    fs::create_dir_all(&documents_dir).map_err(|e| e.to_string())?;
 
     // MacSploit - Downloads
     let downloads_dir = profile_dir.join("Downloads");
-    if let Err(err) = fs::create_dir_all(&downloads_dir) {
-        return Err(err.to_string());
-    }
+    fs::create_dir_all(&downloads_dir).map_err(|e| e.to_string())?;
 
     // Roblox - Custom Assets
     let content_dir = profile_dir.join("Applications").join("Roblox.app").join("Contents").join("Resources").join("content");
-    if let Err(err) = fs::create_dir_all(&content_dir) {
-        return Err(err.to_string());
-    }
+    fs::create_dir_all(&content_dir).map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -190,22 +138,21 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let environment_dir = app_data_dir.join("environments");
-    let profile_dir = environment_dir.join(id);
+    let profile_dir = environment_dir.join(&id);
     if !profile_dir.exists() {
-        if let Err(err) = fs::create_dir_all(&environment_dir) {
-            return Err(err.to_string());
-        }
+        fs::create_dir_all(&environment_dir).map_err(|e| e.to_string())?;
         return Ok(());
     }
 
-    if let Err(err) = fs::remove_dir_all(&profile_dir) {
-        return Err(err.to_string());
-    }
+    fs::remove_dir_all(&profile_dir).map_err(|e| e.to_string())?;
 
-    // TODO: remove
-    // com.roblox.RobloxPlayer.{profile_id} (folder)
-    // com.roblox.RobloxPlayer.{profile_id}.binarycookies
-    // from HTTPStorages folder
+    let data_dir = app_handle.path().data_dir().unwrap();
+    let library_dir = data_dir.parent().unwrap(); // $HOME/Library
+    let http_storages_dir = library_dir.join("HTTPStorages");
+
+    fs::remove_dir_all(http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}", &id))).map_err(|e| e.to_string())?;
+    fs::remove_file(http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id))).map_err(|e| e.to_string())?;
+
     Ok(())
 }
 
@@ -214,33 +161,20 @@ pub fn open_profile_folder(app_handle: AppHandle, id: String) -> Result<i32, Str
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let profile_dir = app_data_dir.join("environments").join(id);
-    match fs::exists(&profile_dir) {
-        Ok(exists) => {
-            if !exists {
-                return Err("Profile folder does not exist. Please delete and create a profile again.".into());
-            }
+    let exists = fs::exists(&profile_dir).map_err(|e| e.to_string())?;
+    if !exists {
+        return Err("Profile folder does not exist. Please delete and create a profile again.".into());
+    }
 
-            let child = Command::new("open")
-                .args(&profile_dir.to_str())
-                .spawn();
+    let mut child = Command::new("open")
+        .args(&profile_dir.to_str())
+        .spawn()
+        .map_err(|e| e.to_string())?;
 
-            match child {
-                Ok(mut child) => {
-                    let status = child.wait();
-                    match status {
-                        Ok(status) => {
-                            if let Some(code) = status.code() {
-                                Ok(code)
-                            } else {
-                                Ok(-1)
-                            }
-                        }
-                        Err(err) => Err(err.to_string())
-                    }
-                }
-                Err(err) => Err(err.to_string())
-            }
-        }
-        Err(err) => Err(err.to_string())
+    let status = child.wait().map_err(|e| e.to_string())?;
+    if let Some(code) = status.code() {
+        Ok(code)
+    } else {
+        Ok(-1)
     }
 }

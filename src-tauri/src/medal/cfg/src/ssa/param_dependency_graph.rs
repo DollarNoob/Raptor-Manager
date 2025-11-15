@@ -64,6 +64,7 @@ impl ParamDependencyGraph {
 
     // This function computes a directed feedback vertex (directed fvs) set of a given graph.
     // Since this problem is NP-hard, we only compute an approximate solution.
+    #[allow(dead_code)]
     pub fn compute_directed_fvs(&self) -> IndexSet<NodeIndex> {
         let mut directed_fvs = IndexSet::new();
         let mut dfs_post_order = DfsPostOrder::empty(&self.graph);

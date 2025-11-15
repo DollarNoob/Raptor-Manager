@@ -431,7 +431,7 @@ impl<'a, W: fmt::Write> Formatter<'a, W> {
     }
 
     // TODO: PERF: Cow like from_utf8_lossy
-    pub(crate) fn escape_string(string: &[u8]) -> Cow<str> {
+    pub(crate) fn escape_string(string: &[u8]) -> Cow<'_, str> {
         let mut owned: Option<String> = None;
         let mut iter = string.iter().enumerate().peekable();
         while let Some((i, &c)) = iter.next() {

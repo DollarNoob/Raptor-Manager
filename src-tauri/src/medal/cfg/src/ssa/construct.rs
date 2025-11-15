@@ -277,6 +277,7 @@ impl<'a> SsaConstructor<'a> {
         param_local
     }
 
+    #[allow(dead_code)]
     fn try_remove_trivial_param(&mut self, node: NodeIndex, param_local: RcLocal) -> RcLocal {
         let mut same = None;
         let args_in = self.function.edges_to_block(node).map(|(_, e)| {

@@ -74,11 +74,11 @@ impl Function {
         self.graph.node_weights_mut()
     }
 
-    pub fn successor_blocks(&self, block: NodeIndex) -> Neighbors<BlockEdge> {
+    pub fn successor_blocks(&self, block: NodeIndex) -> Neighbors<'_, BlockEdge> {
         self.graph.neighbors_directed(block, Direction::Outgoing)
     }
 
-    pub fn predecessor_blocks(&self, block: NodeIndex) -> Neighbors<BlockEdge> {
+    pub fn predecessor_blocks(&self, block: NodeIndex) -> Neighbors<'_, BlockEdge> {
         self.graph.neighbors_directed(block, Direction::Incoming)
     }
 
@@ -94,7 +94,7 @@ impl Function {
         })
     }
 
-    pub fn edges(&self, node: NodeIndex) -> impl Iterator<Item = EdgeReference<BlockEdge>> {
+    pub fn edges(&self, node: NodeIndex) -> impl Iterator<Item = EdgeReference<'_, BlockEdge>> {
         self.graph.edges_directed(node, Direction::Outgoing)
     }
 
@@ -126,7 +126,7 @@ impl Function {
     pub fn conditional_edges(
         &self,
         node: NodeIndex,
-    ) -> Option<(EdgeReference<BlockEdge>, EdgeReference<BlockEdge>)> {
+    ) -> Option<(EdgeReference<'_, BlockEdge>, EdgeReference<'_, BlockEdge>)> {
         let edges = self
             .graph
             .edges_directed(node, Direction::Outgoing)
@@ -144,7 +144,7 @@ impl Function {
         }
     }
 
-    pub fn unconditional_edge(&self, node: NodeIndex) -> Option<EdgeReference<BlockEdge>> {
+    pub fn unconditional_edge(&self, node: NodeIndex) -> Option<EdgeReference<'_, BlockEdge>> {
         let edges = self
             .graph
             .edges_directed(node, Direction::Outgoing)

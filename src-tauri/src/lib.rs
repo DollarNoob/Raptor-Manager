@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tauri::Manager;
 
 pub mod binarycookies;
 mod client;
@@ -8,28 +9,11 @@ mod cookies;
 mod config;
 mod installer;
 mod decompiler;
-use tauri::Manager;
-
-// #[tauri::command]
-// async fn test(body: Vec<u8>) -> Result<String, String> {
-//     let decompiled = luau_lifter::decompile_bytecode(&body, 203);
-//     println!("Successfully decompiled bytecode.");
-//     Ok(decompiled)
-// }
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet,
             config::read_config,
             config::write_config,
             config::update_decompiler,
@@ -45,7 +29,6 @@ pub fn run() {
             client::modify_bundle_identifier,
             client::launch_client,
             client::stop_client,
-            cookies::read_cookies,
             cookies::write_cookies,
             cookies::import_cookies,
             installer::get_roblox_version,
@@ -67,6 +50,7 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 decompiler::serve(state).await;
             });
+
             Ok(())
         })
         .run(tauri::generate_context!())
