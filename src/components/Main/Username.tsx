@@ -7,9 +7,9 @@ interface Props {
 export default function Username({ displayName, username }: Props) {
     const style: React.CSSProperties = {
         color: "oklch(0.9 0 0)",
-        fontFamily: "Avenir",
+        fontFamily: "DM Sans",
         fontSize: 16,
-        fontWeight: 700,
+        fontWeight: 800,
         overflow: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",

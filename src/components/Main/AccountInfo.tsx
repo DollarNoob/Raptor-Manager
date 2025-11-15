@@ -9,7 +9,7 @@ import LoadingIcon from "../icons/LoadingIcon";
 import StopIcon from "../icons/StopIcon";
 import SharedButton from "../Shared/Button";
 import BigUsername from "./BigUsername";
-import Status from "./Status";
+import Status from "../Shared/Status";
 import Thumbnail from "./Thumbnail";
 
 interface Props {

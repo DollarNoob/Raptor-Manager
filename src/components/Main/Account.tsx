@@ -7,7 +7,7 @@ import type { IState } from "../../types/state";
 import { removeProfile } from "../../utils";
 import EditProfileModal from "../EditProfileModal";
 import Profile from "./Profile";
-import Status from "./Status";
+import Status from "../Shared/Status";
 import Thumbnail from "./Thumbnail";
 
 interface Props {
