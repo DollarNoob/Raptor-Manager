@@ -1,6 +1,6 @@
 [package]
 name = "manager"
-version = "0.1.0"
+version = "0.1.1"
 description = "An account manager for Roblox clients."
 authors = ["DollarNoob"]
 edition = "2021"
