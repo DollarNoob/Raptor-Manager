@@ -9,8 +9,7 @@ export default function Thumbnail({ thumbnail, size }: Props) {
         width: size,
         minWidth: size,
         height: size,
-        minHeight: size,
-        borderRadius: 4,
+        minHeight: size
     };
 
     return (

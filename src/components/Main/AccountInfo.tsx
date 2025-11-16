@@ -26,6 +26,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
+// TODO: Rework AccountsList UX, not an optimal solution right now
 export default function AccountInfo({ profile, state }: Props) {
     const store = useStore();
     const modal = useModalStore();
@@ -257,11 +258,69 @@ export default function AccountInfo({ profile, state }: Props) {
                                 ? `${state.port ? `${state.client} ${state.port}` : state.client} | PID ${state.pid}`
                                 : "Offline"}
                         </Status>
-                        <Thumbnail thumbnail={profile.thumbnail} size={100} />
                         <BigUsername
                             displayName={profile.displayName}
                             username={profile.username}
                         />
+                        <Thumbnail thumbnail={profile.thumbnail} size={100} />
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 4,
+                                width: "100%",
+                            }}
+                        >
+                            {profile.note && (
+                                <span
+                                    style={{
+                                        color: "oklch(0.9 0 0 / 0.8)",
+                                        fontFamily: "TASA Explorer",
+                                        fontSize: 11,
+                                        textAlign: "center",
+                                        wordBreak: "break-all",
+                                        maxWidth: "90%",
+                                    }}
+                                >
+                                    {profile.note}
+                                </span>
+                            )}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    gap: 2,
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        color: "oklch(0.7 0 0)",
+                                        fontFamily: "TASA Explorer",
+                                        fontSize: 10,
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    ID: {profile.userId}
+                                </span>
+                                {profile.lastPlayedAt > 0 && (
+                                    <span
+                                        style={{
+                                            color: "oklch(0.7 0 0)",
+                                            fontFamily: "TASA Explorer",
+                                            fontSize: 10,
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        Last Played:{" "}
+                                        {new Date(
+                                            profile.lastPlayedAt * 1000,
+                                        ).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
                     <div style={bottomContainerStyle}>
                         {state.client === "Hydrogen" &&
