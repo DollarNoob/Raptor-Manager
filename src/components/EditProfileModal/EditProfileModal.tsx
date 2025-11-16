@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type React from "react";
@@ -160,6 +161,7 @@ export default function EditProfileModal({
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
+        transformOrigin: "center",
         display: "flex",
         flexDirection: "column",
         minWidth: UI_STYLES.DIMENSIONS.MODAL_MIN_WIDTH,
@@ -188,7 +190,17 @@ export default function EditProfileModal({
 
     return (
         <>
-            <div style={style}>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                transition={{ duration: 0.2 }}
+                style={{
+                    ...style,
+                    top: "50%",
+                    left: "50%",
+                }}
+            >
                 <Title>Edit Profile</Title>
                 <Text>Please enter your cookie.</Text>
                 <Input
@@ -213,8 +225,14 @@ export default function EditProfileModal({
                     <Button variant="modal" onClick={importCookies}>Import</Button>
                     <Button variant="modal" onClick={update}>Save</Button>
                 </div>
-            </div>
-            <div style={blurStyle} />
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={blurStyle}
+            />
         </>
     );
 }

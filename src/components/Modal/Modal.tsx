@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import React from "react";
 import Text from "./Text";
 import Title from "./Title";
@@ -14,6 +15,7 @@ export default function Modal({ title, text, children }: Props) {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
+        transformOrigin: "center",
         display: "flex",
         flexDirection: "column",
         minWidth: 240,
@@ -42,7 +44,17 @@ export default function Modal({ title, text, children }: Props) {
 
     return (
         <>
-            <div style={style}>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                exit={{ opacity: 0, scale: 0.95, x: "-50%", y: "-50%" }}
+                transition={{ duration: 0.2 }}
+                style={{
+                    ...style,
+                    top: "50%",
+                    left: "50%",
+                }}
+            >
                 <Title>{title}</Title>
                 <Text>
                     {
@@ -53,8 +65,14 @@ export default function Modal({ title, text, children }: Props) {
                 {React.Children.count(children) !== 0 && (
                     <div style={buttonContainerStyle}>{children}</div>
                 )}
-            </div>
-            <div style={blurStyle} />
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                style={blurStyle}
+            />
         </>
     );
 }

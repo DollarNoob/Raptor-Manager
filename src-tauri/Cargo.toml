@@ -1,5 +1,5 @@
 [package]
-name = "manager"
+name = "RaptorManager"
 version = "0.1.1"
 description = "An account manager for Roblox clients."
 authors = ["DollarNoob"]
