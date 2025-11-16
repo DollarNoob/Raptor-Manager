@@ -18,6 +18,8 @@
                 "minWidth": 640,
                 "height": 400,
                 "minHeight": 400,
+                "maxWidth": 640,
+                "maxHeight": 400,
                 "titleBarStyle": "Overlay",
                 "trafficLightPosition": {
                     "x": 32,
