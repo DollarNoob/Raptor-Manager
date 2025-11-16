@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useFilterStore, useStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import Account from "./Account";
@@ -40,27 +41,34 @@ export default function AccountList(_props: Props) {
         <div style={style}>
             <AccountManager />
             {store.profiles.sort(filters[filter.filter]).map((profile, i) => (
-                <Account
+                <motion.div
                     key={JSON.stringify(profile)}
-                    active={store.selectedIndex === i}
-                    profile={profile}
-                    state={
-                        store.states.find(
-                            (state) => state.profileId === profile.id,
-                        ) ?? {
-                            profileId: profile.id,
-                            connected: false,
-                            pid: null,
-                            client: null,
-                            port: null,
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    style={{ width: "100%" }}
+                >
+                    <Account
+                        active={store.selectedIndex === i}
+                        profile={profile}
+                        state={
+                            store.states.find(
+                                (state) => state.profileId === profile.id,
+                            ) ?? {
+                                profileId: profile.id,
+                                connected: false,
+                                pid: null,
+                                client: null,
+                                port: null,
+                            }
                         }
-                    }
-                    onClick={() =>
-                        store.setSelectedIndex(
-                            store.selectedIndex === i ? null : i,
-                        )
-                    }
-                />
+                        onClick={() =>
+                            store.setSelectedIndex(
+                                store.selectedIndex === i ? null : i,
+                            )
+                        }
+                    />
+                </motion.div>
             ))}
         </div>
     );

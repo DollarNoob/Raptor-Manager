@@ -6,8 +6,8 @@ import type { IProfile } from "../../types/profile";
 import type { IState } from "../../types/state";
 import { removeProfile } from "../../utils";
 import EditProfileModal from "../EditProfileModal";
-import Profile from "./Profile";
 import Status from "../Shared/Status";
+import Profile from "./Profile";
 import Thumbnail from "./Thumbnail";
 
 interface Props {
@@ -130,6 +130,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
 
     const style: React.CSSProperties = {
         display: "flex",
+        width: "100%",
         height: 64,
         gap: 10,
         backgroundColor: active ? "oklch(0.28 0 0)" : "inherit",
@@ -141,13 +142,16 @@ export default function Account({ active, profile, state, onClick }: Props) {
 
     const leftContainerStyle: React.CSSProperties = {
         display: "flex",
+        flex: 1,
         gap: 10,
+        minWidth: 0,
     };
 
     const rightContainerStyle: React.CSSProperties = {
         display: "flex",
         minWidth: "fit-content",
         alignItems: "center",
+        flexShrink: 0,
     };
 
     function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
