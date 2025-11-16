@@ -1,3 +1,6 @@
+> [!CAUTION]
+> Using [Roblox](https://www.roblox.com) executors may result in your account being banned. Use at your own risk. The developers are not responsible for any consequences.
+
 <div align="center">
     <img src=".github/icon.png" width="128" />
 </div>
