@@ -246,15 +246,29 @@ export default function AccountInfo({ profile, state }: Props) {
           ? "Launching"
           : "Launch";
 
+    let statusText = "Offline";
+    if (profile && state && state.connected && state.client) {
+        statusText = state.client;
+        if (state.port) { // modified clients
+            statusText = state.client;
+            if (state.client === "MacSploit") {
+                statusText += " " + state.port;
+            } else if (["Hydrogen", "Ronix"].includes(state.client)) {
+                if (state.profileId === context.id) {
+                    statusText += " Attached";
+                }
+            }
+        }
+        statusText += ` | PID ${state.pid}`;
+    }
+
     return (
         <>
             {profile && state ? (
                 <div style={style}>
                     <div style={topContainerStyle}>
                         <Status color={state.connected ? "green" : "red"}>
-                            {state.connected
-                                ? `${state.port ? `${state.client} ${state.port}` : state.client} | PID ${state.pid}`
-                                : "Offline"}
+                            {statusText}
                         </Status>
                         <BigUsername
                             displayName={profile.displayName}

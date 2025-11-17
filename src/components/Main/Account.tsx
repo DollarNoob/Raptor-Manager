@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
 import { useState } from "react";
-import { useModalStore } from "../../store";
+import { useContextStore, useModalStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import type { IState } from "../../types/state";
 import { removeProfile } from "../../utils";
@@ -20,6 +20,7 @@ interface Props {
 
 export default function Account({ active, profile, state, onClick }: Props) {
     const modal = useModalStore();
+    const context = useContextStore();
     const [profileModal, setProfileModal] = useState<React.ReactNode | null>(
         null,
     );
@@ -161,6 +162,21 @@ export default function Account({ active, profile, state, onClick }: Props) {
         }
     }
 
+    let statusText = "Offline";
+    if (state.connected && state.client) {
+        statusText = state.client;
+        if (state.port) { // modified clients
+            statusText = state.client;
+            if (state.client === "MacSploit") {
+                statusText += " " + state.port;
+            } else if (["Hydrogen", "Ronix"].includes(state.client)) {
+                if (state.profileId === context.id) {
+                    statusText += " Attached";
+                }
+            }
+        }
+    }
+
     return (
         <>
             {profileModal}
@@ -178,9 +194,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
                 </div>
                 <div style={rightContainerStyle}>
                     <Status color={state.connected ? "green" : "red"}>
-                        {state.connected
-                            ? `${state.port ? `${state.client} ${state.port}` : state.client}`
-                            : "Offline"}
+                        {statusText}
                     </Status>
                 </div>
             </button>
