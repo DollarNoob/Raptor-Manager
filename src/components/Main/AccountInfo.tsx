@@ -315,8 +315,8 @@ export default function AccountInfo({ profile, state }: Props) {
                                     >
                                         Last Played:{" "}
                                         {new Date(
-                                            profile.lastPlayedAt * 1000,
-                                        ).toLocaleDateString()}
+                                            profile.lastPlayedAt
+                                        ).toLocaleString("en-US")}
                                     </span>
                                 )}
                             </div>
