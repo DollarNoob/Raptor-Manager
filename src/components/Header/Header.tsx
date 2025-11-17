@@ -111,7 +111,6 @@ export default function Header(_props: Props) {
         fontWeight: 700,
     };
 
-    console.log(modal.modals);
     return (
         <>
             {modal.modals.length !== 0 && (

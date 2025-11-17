@@ -37,6 +37,7 @@ export default function AccountInfo({ profile, state }: Props) {
     useEffect(() => {
         const unlistenOpen = listen<IState>("client_open", (event) => {
             store.updateState(event.payload);
+            if (event.payload.client === "Hydrogen") setContext(event.payload.profileId);
         });
 
         const unlistenClose = listen<ICloseState>("client_close", (event) => {
@@ -100,7 +101,7 @@ export default function AccountInfo({ profile, state }: Props) {
     async function launch(client = config.config.client) {
         if (!profile || !state) return;
 
-        // laucnhing the instance
+        // launching the instance
         if (!state.connected && state.pid) return;
 
         if (state.connected) {
@@ -197,10 +198,6 @@ export default function AccountInfo({ profile, state }: Props) {
             }
             store.updateState(launched as IState);
         }
-    }
-
-    async function updateContext() {
-        setContext(profile?.id ?? "");
     }
 
     const style: React.CSSProperties = {
@@ -335,7 +332,7 @@ export default function AccountInfo({ profile, state }: Props) {
                                     }
                                     cursor={context.id !== profile.id}
                                     icon={<ContextIcon />}
-                                    onClick={() => updateContext()}
+                                    onClick={() => setContext(profile.id)}
                                 >
                                     Set Context
                                 </SharedButton>
