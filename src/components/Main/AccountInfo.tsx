@@ -162,10 +162,16 @@ export default function AccountInfo({ profile, state }: Props) {
                     id,
                     title: "Client Selection",
                     text: "Please select a client to run!",
-                    buttons: config.config.clients.map((client) => ({
-                        text: client.name,
-                        onClick: () => modal.remove(id) ?? launch(client.name),
-                    })),
+                    buttons: [
+                        {
+                            text: "Cancel",
+                            onClick: () => modal.remove(id),
+                        },
+                        ...config.config.clients.map((client) => ({
+                            text: client.name,
+                            onClick: () => modal.remove(id) ?? launch(client.name),
+                        }))
+                    ],
                 });
                 return;
             }
