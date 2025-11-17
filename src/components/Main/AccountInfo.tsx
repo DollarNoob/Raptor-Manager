@@ -349,7 +349,7 @@ export default function AccountInfo({ profile, state }: Props) {
                                     icon={<ContextIcon />}
                                     onClick={() => setContext(profile.id)}
                                 >
-                                    Set Context
+                                    {context.id === profile.id ? "Attached" : "Attach"}
                                 </SharedButton>
                             )}
                         <SharedButton
