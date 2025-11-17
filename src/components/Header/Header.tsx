@@ -12,6 +12,8 @@ import SettingsIcon from "../icons/SettingsIcon";
 import Modal, { ModalButton } from "../Modal";
 import Button from "../Shared/Button";
 import Status from "../Shared/Status";
+import TrafficLight from "./TrafficLight";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 interface Props {
     children?: React.ReactNode;
@@ -75,12 +77,14 @@ export default function Header(_props: Props) {
 
     const headerStyle: React.CSSProperties = {
         position: "relative",
+        display: "flex",
         minHeight: 46,
         paddingLeft: 8,
         paddingRight: 8,
         backgroundColor: "oklch(0.22 0 0)",
         border: "1px solid #FFFFFF20",
         borderRadius: 12,
+        justifyContent: "space-between",
         zIndex: 3,
     };
 
@@ -94,14 +98,11 @@ export default function Header(_props: Props) {
         gap: 8,
     };
 
-    const rightSectionStyle: React.CSSProperties = {
-        position: "absolute",
-        right: 8,
-        top: "50%",
-        transform: "translateY(-50%)",
+    const sectionStyle: React.CSSProperties = {
         display: "flex",
         alignItems: "center",
-        gap: 6,
+        gap: 8,
+        marginLeft: 12,
     };
 
     const titleTextStyle: React.CSSProperties = {
@@ -131,6 +132,16 @@ export default function Header(_props: Props) {
                 </Modal>
             )}
             <header style={headerStyle} data-tauri-drag-region>
+                <div style={sectionStyle} data-tauri-drag-region>
+                    <TrafficLight
+                        color="red"
+                        onClick={() => getCurrentWebviewWindow().close()}
+                    />
+                    <TrafficLight
+                        color="yellow"
+                        onClick={() => getCurrentWebviewWindow().minimize()}
+                    />
+                </div>
                 <div style={centerSectionStyle} data-tauri-drag-region>
                     <span style={titleTextStyle} data-tauri-drag-region>
                         Raptor Manager
@@ -141,7 +152,7 @@ export default function Header(_props: Props) {
                         </Status>
                     )}
                 </div>
-                <div style={rightSectionStyle}>
+                <div style={sectionStyle} data-tauri-drag-region>
                     <Button
                         variant="header"
                         icon={<ClientIcon />}
