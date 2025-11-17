@@ -37,7 +37,8 @@ export default function AccountInfo({ profile, state }: Props) {
     useEffect(() => {
         const unlistenOpen = listen<IState>("client_open", (event) => {
             store.updateState(event.payload);
-            if (event.payload.client === "Hydrogen") setContext(event.payload.profileId);
+            if (event.payload.client && ["Hydrogen", "Ronix"].includes(event.payload.client))
+                setContext(event.payload.profileId);
         });
 
         const unlistenClose = listen<ICloseState>("client_close", (event) => {
@@ -214,7 +215,7 @@ export default function AccountInfo({ profile, state }: Props) {
     const topContainerStyle: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
-        gap: 8,
+        gap: 4,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
@@ -312,15 +313,15 @@ export default function AccountInfo({ profile, state }: Props) {
                                     >
                                         Last Played:{" "}
                                         {new Date(
-                                            profile.lastPlayedAt * 1000,
-                                        ).toLocaleDateString()}
+                                            profile.lastPlayedAt,
+                                        ).toLocaleString("en-US")}
                                     </span>
                                 )}
                             </div>
                         </div>
                     </div>
                     <div style={bottomContainerStyle}>
-                        {state.client === "Hydrogen" &&
+                        {state.client && ["Hydrogen", "Ronix"].includes(state.client) &&
                             state.connected &&
                             state.pid && (
                                 <SharedButton

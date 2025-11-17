@@ -146,7 +146,7 @@ pub async fn launch_client(app_handle: AppHandle, client: String, profile_id: St
                     profile_id: profile_id_stdout.clone(),
                     connected: true,
                     pid: pid,
-                    client: Some("Hydrogen".into()),
+                    client: Some(client.clone()),
                     port: Some(port)
                 });
             }

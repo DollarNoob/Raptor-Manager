@@ -131,7 +131,7 @@ getgenv().decompile = function(script)
 end
 
 local executor = identifyexecutor()
-if executor == 'Hydrogen' then
+if executor == 'Hydrogen' or executor == 'Ronix' then
     task.defer(function()
         local HttpService = game:GetService('HttpService')
         while task.wait(1) do
@@ -183,6 +183,18 @@ end", &id);
 
     // Hydrogen - Init Script
     let mut file = File::create(&hydrogen_autoexe_dir.join("RaptorManager.lua")).map_err(|e| e.to_string())?;
+    file.write_all(&init_script.as_bytes()).map_err(|e| e.to_string())?;
+
+    // Ronix
+    let ronix_dir = profile_dir.join("Ronix");
+    fs::create_dir_all(&ronix_dir).map_err(|e| e.to_string())?;
+
+    // Ronix - Automatic Execution
+    let ronix_autoexe_dir = ronix_dir.join("autoexecute");
+    fs::create_dir_all(&ronix_autoexe_dir).map_err(|e| e.to_string())?;
+
+    // Ronix - Init Script
+    let mut file = File::create(&ronix_autoexe_dir.join("RaptorManager.lua")).map_err(|e| e.to_string())?;
     file.write_all(&init_script.as_bytes()).map_err(|e| e.to_string())?;
 
     // Roblox - Custom Assets

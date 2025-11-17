@@ -298,13 +298,22 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
 
             let mut file = File::create(&dylib_dir).map_err(|e| e.to_string())?;
             file.write_all(&bytes).map_err(|e| e.to_string())?;
-        } else if client == "Hydrogen" {
+        } else if client == "Hydrogen" || client == "Ronix" {
             // Because Hydrogen dylib is located inside its app, we have to download the app and take the dylib.
 
             // First, fetch the install script.
-            let client = Client::new();
-            let response = client
-                .get("https://www.hydrogen.lat/install")
+            let reqwest_client = Client::new();
+            let url: String;
+            if client == "Hydrogen" {
+                url = "https://www.hydrogen.lat/install".into();
+            } else if client == "Ronix" {
+                url = "https://www.ronixmac.lol/install".into();
+            } else {
+                // will not happen
+                url = "".into();
+            }
+            let response = reqwest_client
+                .get(url)
                 .header(
                     "User-Agent",
                     format!(
@@ -324,15 +333,15 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
             let body = response.text().await.map_err(|e| e.to_string())?;
 
             // Second, parse Hydrogen.zip download url.
-            let regex = Regex::new(r#"HYDROGEN_M_URL="(https:\/\/\w+\.ufs\.sh\/f\/\w+)""#).unwrap();
+            let regex = Regex::new(format!(r#"{}_M_URL="(https:\/\/\w+\.ufs\.sh\/f\/\w+)""#, client.to_uppercase()).as_str()).unwrap();
             if let Some(capture) = regex.captures(&body) {
-                let hydrogen_zip_dir = app_data_dir.join("Hydrogen.zip");
-                let hydrogen_dir = app_data_dir.join("Hydrogen.app");
+                let hydrogen_zip_dir = app_data_dir.join(client.to_owned() + ".zip");
+                let hydrogen_dir = app_data_dir.join(client.to_owned() + ".app");
 
                 // Third, download Hydrogen.zip.
                 let mut file = File::create(&hydrogen_zip_dir).map_err(|e| e.to_string())?;
 
-                let mut response = client
+                let mut response = reqwest_client
                     .get(&capture[1])
                     .header(
                         "User-Agent",
@@ -367,11 +376,11 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
                 let status = child.wait().map_err(|e| e.to_string())?;
                 if let Some(code) = status.code() {
                     if code != 0 {
-                        return Err(format!("Failed to unzip Hydrogen with code {}.", code));
+                        return Err(format!("Failed to unzip {} with code {}.", client, code));
                     }
 
                     if !hydrogen_dir.exists() {
-                        return Err("Failed to download Hydrogen.app, application does not exist.".into());
+                        return Err(format!("Failed to download {}.app, application does not exist.", client));
                     }
 
                     fs::remove_file(&hydrogen_zip_dir).map_err(|e| e.to_string())?;
@@ -380,9 +389,9 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
                     let executable_dir = hydrogen_dir.join("Contents").join("MacOS");
                     let hydrogen_dylib_dir;
                     if std::env::consts::ARCH == "aarch64" {
-                        hydrogen_dylib_dir = executable_dir.join("Hydrogen-arm.dylib");
+                        hydrogen_dylib_dir = executable_dir.join(client.to_owned() + "-arm.dylib");
                     } else {
-                        hydrogen_dylib_dir = executable_dir.join("Hydrogen-intel.dylib");
+                        hydrogen_dylib_dir = executable_dir.join(client.to_owned() + "-intel.dylib");
                     }
 
                     fs::rename(hydrogen_dylib_dir, dylib_dir).map_err(|e| e.to_string())?;
@@ -391,10 +400,10 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
 
                     return Ok(());
                 } else {
-                    return Err("Failed to unzip Hydrogen with code -1.".into());
+                    return Err(format!("Failed to unzip {} with code -1.", client));
                 }
             } else {
-                return Err("Failed to fetch Hydrogen.zip download URL.".into());
+                return Err(format!("Failed to fetch {}.zip download URL.", client));
             }
         }
     }

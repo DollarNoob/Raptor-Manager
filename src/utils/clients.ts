@@ -91,6 +91,15 @@ export async function installClient(client: string) {
 
         clientVersion = version.hydrogen.macos.roblox_version;
         dylibVersion = version.hydrogen.macos.exploit_version;
+    } else if (client === "Ronix") {
+        if (
+            !version.ronix.macos.roblox_version ||
+            !version.ronix.macos.exploit_version
+        )
+            throw new Error("Ronix version is not fetched yet.");
+
+        clientVersion = version.ronix.macos.roblox_version;
+        dylibVersion = version.ronix.macos.exploit_version;
     }
 
     const installed = await invoke("install_client", {

@@ -87,9 +87,11 @@ export interface VersionState {
     roblox: IRobloxVersion;
     macsploit: IMacsploitVersion;
     hydrogen: IHydrogenVersion;
+    ronix: IHydrogenVersion;
     setRoblox: (version: IRobloxVersion) => void;
     setMacsploit: (version: IMacsploitVersion) => void;
     setHydrogen: (version: IHydrogenVersion) => void;
+    setRonix: (version: IHydrogenVersion) => void;
 }
 
 export const useVersionStore = create<VersionState>()((set) => ({
@@ -115,9 +117,19 @@ export const useVersionStore = create<VersionState>()((set) => ({
         ios: {},
         android: {},
     },
+    ronix: {
+        global: {
+            globallogs: "",
+        },
+        windows: {},
+        macos: {},
+        ios: {},
+        android: {},
+    },
     setRoblox: (version) => set(() => ({ roblox: version })),
     setMacsploit: (version) => set(() => ({ macsploit: version })),
     setHydrogen: (version) => set(() => ({ hydrogen: version })),
+    setRonix: (version) => set(() => ({ ronix: version })),
 }));
 
 export interface TabState {
