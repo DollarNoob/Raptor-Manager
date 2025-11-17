@@ -141,9 +141,6 @@ export default function Header(_props: Props) {
                             v{version}
                         </Status>
                     )}
-                    <Status color="red" draggable={true}>
-                        BETA
-                    </Status>
                 </div>
                 <div style={rightSectionStyle}>
                     <Button
