@@ -236,7 +236,7 @@ export default function Settings(_props: Props) {
                 <Client
                     installation={ronixInstallation}
                     version={version.ronix}
-                    thumbnail="/hydrogen.png"
+                    thumbnail="/ronix.png"
                     onInstall={onInstall}
                     onRemove={onRemove}
                 >
