@@ -75,7 +75,7 @@ export default function Header(_props: Props) {
 
     const headerStyle: React.CSSProperties = {
         position: "relative",
-        height: 46,
+        minHeight: 46,
         paddingLeft: 8,
         paddingRight: 8,
         backgroundColor: "oklch(0.22 0 0)",
