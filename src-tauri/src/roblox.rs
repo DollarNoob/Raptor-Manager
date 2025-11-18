@@ -8,11 +8,14 @@ use tauri::AppHandle;
 pub struct RobloxProfile {
     pub id: i64,
     pub name: String,
-    pub displayName: String
+    pub displayName: String,
 }
 
 #[tauri::command]
-pub async fn get_roblox_profile(app_handle: AppHandle, cookie: String) -> Result<RobloxProfile, String> {
+pub async fn get_roblox_profile(
+    app_handle: AppHandle,
+    cookie: String,
+) -> Result<RobloxProfile, String> {
     let client = Client::new();
     let response = client
         .get("https://users.roblox.com/v1/users/authenticated")
@@ -22,7 +25,7 @@ pub async fn get_roblox_profile(app_handle: AppHandle, cookie: String) -> Result
             format!(
                 "RaptorManager/{}",
                 app_handle.package_info().version.to_string()
-            )
+            ),
         )
         .send()
         .await
@@ -33,13 +36,16 @@ pub async fn get_roblox_profile(app_handle: AppHandle, cookie: String) -> Result
         return Err(status.to_string());
     }
 
-    let profile = response.json::<RobloxProfile>().await.map_err(|e| e.to_string())?;
+    let profile = response
+        .json::<RobloxProfile>()
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(profile)
 }
 
 #[derive(Debug, Deserialize)]
 pub struct RobloxThumbnailData {
-    data: Vec<RobloxThumbnail>
+    data: Vec<RobloxThumbnail>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -48,7 +54,7 @@ pub struct RobloxThumbnail {
     targetId: i64,
     state: String,
     imageUrl: String,
-    version: String
+    version: String,
 }
 
 #[tauri::command]
@@ -62,7 +68,7 @@ pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result
             format!(
                 "RaptorManager/{}",
                 app_handle.package_info().version.to_string()
-            )
+            ),
         )
         .send()
         .await
@@ -73,7 +79,10 @@ pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result
         return Err(status.to_string());
     }
 
-    let body = response.json::<RobloxThumbnailData>().await.map_err(|e| e.to_string())?;
+    let body = response
+        .json::<RobloxThumbnailData>()
+        .await
+        .map_err(|e| e.to_string())?;
     if body.data.len() == 0 {
         return Err("404 Not Found".into());
     }

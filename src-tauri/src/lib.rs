@@ -1,27 +1,28 @@
-use std::sync::Arc;
 use serde::Serialize;
-use tokio::sync::Mutex;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tauri::{Emitter, Listener, Manager};
+use tokio::sync::Mutex;
 
 pub mod binarycookies;
 mod client;
-mod roblox;
-mod cookies;
 mod config;
-mod installer;
+mod cookies;
 mod decompiler;
 mod hydrobridge;
+mod installer;
+mod roblox;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Message {
     title: String,
-    description: String
+    description: String,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             config::read_config,
             config::write_config,

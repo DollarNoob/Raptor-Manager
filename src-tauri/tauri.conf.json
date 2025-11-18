@@ -40,6 +40,15 @@
         "icon": ["icons/icon.icns", "icons/icon.icns"],
         "macOS": {
             "entitlements": "./Entitlements.plist"
+        },
+        "createUpdaterArtifacts": true
+    },
+    "plugins": {
+        "updater": {
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkxRTVGNTBGODg5NUM3QjYKUldTMng1V0lEL1hsa1c0Z0ZpOThhRGlXNGtJck03RnhHSjhoUDRxSjZCZ1FlaERwS210cGJsRVkK",
+            "endpoints": [
+                "https://github.com/DollarNoob/Raptor-Manager/releases/latest/download/version.json"
+            ]
         }
     }
 }
