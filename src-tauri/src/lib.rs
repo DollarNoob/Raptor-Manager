@@ -1,10 +1,8 @@
-use axum::error_handling::future::HandleErrorFuture;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tauri::{Emitter, Listener, Manager};
 use tokio::sync::Mutex;
-use tauri_plugin_updater::UpdaterExt;
 
 pub mod binarycookies;
 mod client;
@@ -134,34 +132,4 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-async fn update(app: tauri::AppHandle) -> tauri_plugin_updater::Result<()> {
-  if let Some(update) = app.updater()?.check().await? {
-    let mut downloaded = 0;
-
-    println!("update current version: {:#?}", update.current_version);
-    println!("update download url: {:#?}", update.download_url);
-    println!("update raw json: {:#?}", update.raw_json);
-    println!("update signature: {:#?}", update.signature);
-    println!("update target: {:#?}", update.target);
-    println!("update version: {:#?}", update.version);
-    // alternatively we could also call update.download() and update.install() separately
-    update
-      .download_and_install(
-        |chunk_length, content_length| {
-          downloaded += chunk_length;
-          println!("downloaded {downloaded} from {content_length:?}");
-        },
-        || {
-          println!("download finished");
-        },
-      )
-      .await?;
-
-    println!("update installed");
-    app.restart();
-  }
-
-  Ok(())
 }
