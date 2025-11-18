@@ -554,8 +554,8 @@ pub async fn install_client(
             .map_err(|e| e.to_string())?;
     }
 
-    // remove codesign in arm64
-    if std::env::consts::ARCH == "aarch64" {
+    // remove codesign in arm64 or vanilla (fix crash for intel macs)
+    if std::env::consts::ARCH == "aarch64" || client == "Vanilla" {
         codesign(&app_handle, &client, false)
             .await
             .map_err(|e| e.to_string())?;
@@ -567,8 +567,8 @@ pub async fn install_client(
             .map_err(|e| e.to_string())?;
     }
 
-    // add codesign in arm64
-    if std::env::consts::ARCH == "aarch64" {
+    // add codesign in arm64 or vanilla (fix crash for intel macs)
+    if std::env::consts::ARCH == "aarch64" || client == "Vanilla" {
         codesign(&app_handle, &client, true)
             .await
             .map_err(|e| e.to_string())?;
