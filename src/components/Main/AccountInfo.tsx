@@ -6,7 +6,6 @@ import {
     useModalStore,
     useStore,
 } from "../../store";
-import type { IMessage } from "../../types/message";
 import type { IProfile } from "../../types/profile";
 import type { ICloseState, IState } from "../../types/state";
 import { launchClient, stopClient } from "../../utils";
@@ -77,27 +76,6 @@ export default function AccountInfo({ profile, state }: Props) {
             unlistenClose.then((unlisten) => unlisten());
         };
     }, [forceQuit, store.updateState, store.profiles, modal.add, modal.remove]);
-
-    useEffect(() => {
-        const unlisten = listen<IMessage>("message", (event) => {
-            const id = crypto.randomUUID();
-            modal.add({
-                id,
-                title: event.payload.title,
-                text: event.payload.description,
-                buttons: [
-                    {
-                        text: "Okay",
-                        onClick: () => modal.remove(id),
-                    },
-                ],
-            });
-        });
-
-        return () => {
-            unlisten.then((unlisten) => unlisten());
-        };
-    }, [modal.add, modal.remove]);
 
     async function launch(client = config.config.client) {
         if (!profile || !state) return;

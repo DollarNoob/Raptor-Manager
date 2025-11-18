@@ -46,3 +46,4 @@ jobs:
           releaseDraft: true
           prerelease: true
           args: ${{ matrix.args }}
+          includeUpdaterJson: true
