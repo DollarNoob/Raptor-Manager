@@ -4,6 +4,7 @@ import type {
     IMacsploitVersion,
     IHydrogenVersion,
 } from "../../types/version";
+import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
 import Status from "../Shared/Status";
 import Text from "./Text";
@@ -33,6 +34,9 @@ export default function Client({
     } else if (children === "MacSploit") {
         latestVersion = (version as IMacsploitVersion).relVersion;
     } else if (children === "Hydrogen") {
+        latestVersion =
+            (version as IHydrogenVersion).macos.exploit_version ?? null;
+    } else if (children === "Ronix") {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
     }
@@ -105,10 +109,10 @@ export default function Client({
                     <Button
                         variant="settings"
                         color="red"
+                        style={{maxWidth: 30}} // square
+                        icon={<TrashIcon />}
                         onClick={() => onRemove(client)}
-                    >
-                        Remove
-                    </Button>
+                    />
                 )}
             </div>
         </div>

@@ -199,6 +199,9 @@ export default function Settings(_props: Props) {
     const hydrogenInstallation = config.config.clients.find(
         (client) => client.name === "Hydrogen",
     );
+    const ronixInstallation = config.config.clients.find(
+        (client) => client.name === "Ronix",
+    );
 
     return (
         <main style={style}>
@@ -229,6 +232,15 @@ export default function Settings(_props: Props) {
                     onRemove={onRemove}
                 >
                     Hydrogen
+                </Client>
+                <Client
+                    installation={ronixInstallation}
+                    version={version.ronix}
+                    thumbnail="/ronix.png"
+                    onInstall={onInstall}
+                    onRemove={onRemove}
+                >
+                    Ronix
                 </Client>
             </div>
             <div style={containerStyle}>

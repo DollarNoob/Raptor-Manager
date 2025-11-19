@@ -78,6 +78,7 @@ export async function fetchClientVersions() {
         return false;
     }
     version.setHydrogen(hydrogen);
+    version.setRonix(hydrogen); // theyre both the same lol
 
     return true;
 }

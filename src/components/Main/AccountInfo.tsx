@@ -6,7 +6,6 @@ import {
     useModalStore,
     useStore,
 } from "../../store";
-import type { IMessage } from "../../types/message";
 import type { IProfile } from "../../types/profile";
 import type { ICloseState, IState } from "../../types/state";
 import { launchClient, stopClient } from "../../utils";
@@ -37,6 +36,8 @@ export default function AccountInfo({ profile, state }: Props) {
     useEffect(() => {
         const unlistenOpen = listen<IState>("client_open", (event) => {
             store.updateState(event.payload);
+            if (event.payload.client && ["Hydrogen", "Ronix"].includes(event.payload.client))
+                setContext(event.payload.profileId);
         });
 
         const unlistenClose = listen<ICloseState>("client_close", (event) => {
@@ -76,31 +77,10 @@ export default function AccountInfo({ profile, state }: Props) {
         };
     }, [forceQuit, store.updateState, store.profiles, modal.add, modal.remove]);
 
-    useEffect(() => {
-        const unlisten = listen<IMessage>("message", (event) => {
-            const id = crypto.randomUUID();
-            modal.add({
-                id,
-                title: event.payload.title,
-                text: event.payload.description,
-                buttons: [
-                    {
-                        text: "Okay",
-                        onClick: () => modal.remove(id),
-                    },
-                ],
-            });
-        });
-
-        return () => {
-            unlisten.then((unlisten) => unlisten());
-        };
-    }, [modal.add, modal.remove]);
-
     async function launch(client = config.config.client) {
         if (!profile || !state) return;
 
-        // laucnhing the instance
+        // launching the instance
         if (!state.connected && state.pid) return;
 
         if (state.connected) {
@@ -160,10 +140,16 @@ export default function AccountInfo({ profile, state }: Props) {
                     id,
                     title: "Client Selection",
                     text: "Please select a client to run!",
-                    buttons: config.config.clients.map((client) => ({
-                        text: client.name,
-                        onClick: () => modal.remove(id) ?? launch(client.name),
-                    })),
+                    buttons: [
+                        {
+                            text: "Cancel",
+                            onClick: () => modal.remove(id),
+                        },
+                        ...config.config.clients.map((client) => ({
+                            text: client.name,
+                            onClick: () => modal.remove(id) ?? launch(client.name),
+                        }))
+                    ],
                 });
                 return;
             }
@@ -199,10 +185,6 @@ export default function AccountInfo({ profile, state }: Props) {
         }
     }
 
-    async function updateContext() {
-        setContext(profile?.id ?? "");
-    }
-
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -217,7 +199,7 @@ export default function AccountInfo({ profile, state }: Props) {
     const topContainerStyle: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
-        gap: 8,
+        gap: 4,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
@@ -248,15 +230,29 @@ export default function AccountInfo({ profile, state }: Props) {
           ? "Launching"
           : "Launch";
 
+    let statusText = "Offline";
+    if (profile && state && state.connected && state.client) {
+        statusText = state.client;
+        if (state.port) { // modified clients
+            statusText = state.client;
+            if (state.client === "MacSploit") {
+                statusText += " " + state.port;
+            } else if (["Hydrogen", "Ronix"].includes(state.client)) {
+                if (state.profileId === context.id) {
+                    statusText += " Attached";
+                }
+            }
+        }
+        statusText += ` | PID ${state.pid}`;
+    }
+
     return (
         <>
             {profile && state ? (
                 <div style={style}>
                     <div style={topContainerStyle}>
                         <Status color={state.connected ? "green" : "red"}>
-                            {state.connected
-                                ? `${state.port ? `${state.client} ${state.port}` : state.client} | PID ${state.pid}`
-                                : "Offline"}
+                            {statusText}
                         </Status>
                         <BigUsername
                             displayName={profile.displayName}
@@ -315,7 +311,7 @@ export default function AccountInfo({ profile, state }: Props) {
                                     >
                                         Last Played:{" "}
                                         {new Date(
-                                            profile.lastPlayedAt
+                                            profile.lastPlayedAt,
                                         ).toLocaleString("en-US")}
                                     </span>
                                 )}
@@ -323,7 +319,7 @@ export default function AccountInfo({ profile, state }: Props) {
                         </div>
                     </div>
                     <div style={bottomContainerStyle}>
-                        {state.client === "Hydrogen" &&
+                        {state.client && ["Hydrogen", "Ronix"].includes(state.client) &&
                             state.connected &&
                             state.pid && (
                                 <SharedButton
@@ -335,9 +331,9 @@ export default function AccountInfo({ profile, state }: Props) {
                                     }
                                     cursor={context.id !== profile.id}
                                     icon={<ContextIcon />}
-                                    onClick={() => updateContext()}
+                                    onClick={() => setContext(profile.id)}
                                 >
-                                    Set Context
+                                    {context.id === profile.id ? "Attached" : "Attach"}
                                 </SharedButton>
                             )}
                         <SharedButton

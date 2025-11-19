@@ -1,6 +1,6 @@
 [package]
 name = "RaptorManager"
-version = "0.1.1"
+version = "0.1.2"
 description = "An account manager for Roblox clients."
 authors = ["DollarNoob"]
 edition = "2021"
@@ -26,3 +26,6 @@ reqwest = { version = "0.12.24", features = ["blocking", "json"] }
 regex = "1.12.2"
 axum = "0.8.6"
 tokio = "1.48.0"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2"

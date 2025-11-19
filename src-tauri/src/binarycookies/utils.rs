@@ -7,6 +7,6 @@ pub fn to_unix_timestamp(timestamp: f64) -> SystemTime {
 pub fn to_cocoa_timestamp(time: SystemTime) -> f64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {
         Ok(duration) => (duration.as_secs() - 978307200) as f64,
-        Err(_) => 0.0
+        Err(_) => 0.0,
     }
 }

@@ -1,11 +1,11 @@
 use crate::binarycookies::Cookie;
 
-pub const PAGE_HEADER: &[u8] = &[ 0x00, 0x00, 0x01, 0x00 ];
-pub const PAGE_FOOTER: &[u8] = &[ 0x00, 0x00, 0x00, 0x00 ];
+pub const PAGE_HEADER: &[u8] = &[0x00, 0x00, 0x01, 0x00];
+pub const PAGE_FOOTER: &[u8] = &[0x00, 0x00, 0x00, 0x00];
 
 #[derive(Debug, Clone)]
 pub struct Page {
-    pub cookies: Vec<Cookie>
+    pub cookies: Vec<Cookie>,
 }
 
 impl Page {
@@ -26,14 +26,16 @@ impl Page {
         }
 
         let mut bytes = vec![];
-        bytes.extend_from_slice(PAGE_HEADER);                                // header (0x00000100)
+        bytes.extend_from_slice(PAGE_HEADER); // header (0x00000100)
         bytes.extend_from_slice(&(self.cookies.len() as u32).to_le_bytes()); // number of cookies
-        for cookie_offset in cookies_offset_bytes {                     // repeat for n cookies
-            bytes.extend_from_slice(&cookie_offset.to_le_bytes());           // cookie n offset
+        for cookie_offset in cookies_offset_bytes {
+            // repeat for n cookies
+            bytes.extend_from_slice(&cookie_offset.to_le_bytes()); // cookie n offset
         }
-        bytes.extend_from_slice(PAGE_FOOTER);                                // footer (0x00000000)
-        for cookie_bytes in cookies_bytes {                         // repeat for n cookies
-            bytes.extend_from_slice(&cookie_bytes);                          // cookie n
+        bytes.extend_from_slice(PAGE_FOOTER); // footer (0x00000000)
+        for cookie_bytes in cookies_bytes {
+            // repeat for n cookies
+            bytes.extend_from_slice(&cookie_bytes); // cookie n
         }
 
         bytes

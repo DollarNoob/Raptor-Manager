@@ -1,5 +1,5 @@
-use std::time::{Duration, SystemTime};
 use crate::binarycookies::utils::to_cocoa_timestamp;
+use std::time::{Duration, SystemTime};
 
 #[derive(Debug, Clone)]
 pub struct Cookie {
@@ -10,7 +10,7 @@ pub struct Cookie {
     pub secure: Option<bool>,
     pub http_only: Option<bool>,
     pub expiration: Option<SystemTime>,
-    pub creation: Option<SystemTime>
+    pub creation: Option<SystemTime>,
 }
 
 impl Cookie {
@@ -22,7 +22,7 @@ impl Cookie {
         secure: Option<bool>,
         http_only: Option<bool>,
         expiration: Option<SystemTime>,
-        creation: Option<SystemTime>
+        creation: Option<SystemTime>,
     ) -> Self {
         Self {
             domain,
@@ -32,7 +32,7 @@ impl Cookie {
             secure,
             http_only,
             expiration,
-            creation
+            creation,
         }
     }
 
@@ -76,30 +76,31 @@ impl Cookie {
         }
 
         // default: 1 month
-        let expiration = self.expiration
-            .map(to_cocoa_timestamp)
-            .unwrap_or_else(|| to_cocoa_timestamp(SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 30)));
-        let creation = self.creation
+        let expiration = self.expiration.map(to_cocoa_timestamp).unwrap_or_else(|| {
+            to_cocoa_timestamp(SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 30))
+        });
+        let creation = self
+            .creation
             .map(to_cocoa_timestamp)
             .unwrap_or_else(|| to_cocoa_timestamp(SystemTime::now()));
 
         let mut bytes = Vec::with_capacity(size as usize);
-        bytes.extend_from_slice(&size.to_le_bytes());          // size
-        bytes.extend_from_slice(&(1 as u32).to_le_bytes());    // version
-        bytes.extend_from_slice(&flags.to_le_bytes());         // flags
-        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // has port
+        bytes.extend_from_slice(&size.to_le_bytes()); // size
+        bytes.extend_from_slice(&(1 as u32).to_le_bytes()); // version
+        bytes.extend_from_slice(&flags.to_le_bytes()); // flags
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes()); // has port
         bytes.extend_from_slice(&domain_offset.to_le_bytes()); // domain offset
-        bytes.extend_from_slice(&name_offset.to_le_bytes());   // name offset
-        bytes.extend_from_slice(&path_offset.to_le_bytes());   // path offset
-        bytes.extend_from_slice(&value_offset.to_le_bytes());  // value offset
-        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // comment offset
-        bytes.extend_from_slice(&(0 as u32).to_le_bytes());    // comment url offset
-        bytes.extend_from_slice(&expiration.to_le_bytes());    // expiration cocoa timestamp (in seconds)
-        bytes.extend_from_slice(&creation.to_le_bytes());      // creation cocoa timestamp (in seconds)
-        bytes.extend_from_slice(&domain_bytes);                // domain
-        bytes.extend_from_slice(&name_bytes);                  // name
-        bytes.extend_from_slice(&path_bytes);                  // path
-        bytes.extend_from_slice(&value_bytes);                 // value
+        bytes.extend_from_slice(&name_offset.to_le_bytes()); // name offset
+        bytes.extend_from_slice(&path_offset.to_le_bytes()); // path offset
+        bytes.extend_from_slice(&value_offset.to_le_bytes()); // value offset
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes()); // comment offset
+        bytes.extend_from_slice(&(0 as u32).to_le_bytes()); // comment url offset
+        bytes.extend_from_slice(&expiration.to_le_bytes()); // expiration cocoa timestamp (in seconds)
+        bytes.extend_from_slice(&creation.to_le_bytes()); // creation cocoa timestamp (in seconds)
+        bytes.extend_from_slice(&domain_bytes); // domain
+        bytes.extend_from_slice(&name_bytes); // name
+        bytes.extend_from_slice(&path_bytes); // path
+        bytes.extend_from_slice(&value_bytes); // value
 
         bytes
     }

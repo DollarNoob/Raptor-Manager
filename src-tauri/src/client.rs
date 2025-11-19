@@ -1,10 +1,10 @@
+use regex::Regex;
+use serde::Serialize;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{Read, Write};
-use std::thread;
 use std::process::{Command, Stdio};
-use regex::Regex;
-use serde::Serialize;
+use std::thread;
 use tauri::{AppHandle, Emitter, Manager};
 
 #[tauri::command]
@@ -52,7 +52,11 @@ pub async fn unlock_keychain(app_handle: AppHandle, profile_id: String) -> Resul
 }
 
 #[tauri::command]
-pub async fn modify_bundle_identifier(app_handle: AppHandle, client: String, profile_id: Option<String>) -> Result<(), String> {
+pub async fn modify_bundle_identifier(
+    app_handle: AppHandle,
+    client: String,
+    profile_id: Option<String>,
+) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let app_dir = app_data_dir.join("clients").join(client.clone() + ".app");
@@ -64,17 +68,27 @@ pub async fn modify_bundle_identifier(app_handle: AppHandle, client: String, pro
     let mut file = File::open(&plist_dir).map_err(|e| e.to_string())?;
 
     let mut contents = String::new();
-    file.read_to_string(&mut contents).map_err(|e| e.to_string())?;
+    file.read_to_string(&mut contents)
+        .map_err(|e| e.to_string())?;
 
-    let identifier_regex = Regex::new(r"<string>com\.roblox\.RobloxPlayer\.?\w*<\/string>").unwrap();
+    let identifier_regex =
+        Regex::new(r"<string>com\.roblox\.RobloxPlayer\.?\w*<\/string>").unwrap();
     if let Some(id) = profile_id {
-        contents = identifier_regex.replace(&contents, format!("<string>com.roblox.RobloxPlayer.{}</string>", id)).to_string();
+        contents = identifier_regex
+            .replace(
+                &contents,
+                format!("<string>com.roblox.RobloxPlayer.{}</string>", id),
+            )
+            .to_string();
     } else {
-        contents = identifier_regex.replace(&contents, "<string>com.roblox.RobloxPlayer</string>").to_string();
+        contents = identifier_regex
+            .replace(&contents, "<string>com.roblox.RobloxPlayer</string>")
+            .to_string();
     }
 
     let mut file = File::create(&plist_dir).map_err(|e| e.to_string())?;
-    file.write_all(contents.as_bytes()).map_err(|e| e.to_string())?;
+    file.write_all(contents.as_bytes())
+        .map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -86,7 +100,7 @@ pub struct State {
     pub connected: bool,
     pub pid: u32,
     pub client: Option<String>,
-    pub port: Option<u16>
+    pub port: Option<u16>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -94,11 +108,15 @@ pub struct State {
 pub struct CloseState {
     pub profile_id: String,
     pub pid: u32,
-    pub exit_code: i32
+    pub exit_code: i32,
 }
 
 #[tauri::command]
-pub async fn launch_client(app_handle: AppHandle, client: String, profile_id: String) -> Result<State, String> {
+pub async fn launch_client(
+    app_handle: AppHandle,
+    client: String,
+    profile_id: String,
+) -> Result<State, String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let app_dir = app_data_dir.join("clients").join(client.clone() + ".app");
@@ -117,7 +135,7 @@ pub async fn launch_client(app_handle: AppHandle, client: String, profile_id: St
         .map_err(|e| e.to_string())?;
 
     let pid = child.id();
-    
+
     let stdout = child.stdout.take().unwrap();
     let profile_id_stdout = profile_id.clone();
     let app_handle_stdout = app_handle.clone();
@@ -130,48 +148,62 @@ pub async fn launch_client(app_handle: AppHandle, client: String, profile_id: St
                     .replace(".", "")
                     .parse::<u16>()
                     .unwrap();
-                let _ = app_handle_stdout.emit_to("main", "client_open", State {
-                    profile_id: profile_id_stdout.clone(),
-                    connected: true,
-                    pid: pid,
-                    client: Some("MacSploit".into()),
-                    port: Some(port)
-                });
+                let _ = app_handle_stdout.emit_to(
+                    "main",
+                    "client_open",
+                    State {
+                        profile_id: profile_id_stdout.clone(),
+                        connected: true,
+                        pid: pid,
+                        client: Some("MacSploit".into()),
+                        port: Some(port),
+                    },
+                );
             } else if line.starts_with("Listening on localhost:") {
                 let port = line
                     .replace("Listening on localhost:", "")
                     .parse::<u16>()
                     .unwrap();
-                let _ = app_handle_stdout.emit_to("main", "client_open", State {
-                    profile_id: profile_id_stdout.clone(),
-                    connected: true,
-                    pid: pid,
-                    client: Some("Hydrogen".into()),
-                    port: Some(port)
-                });
+                let _ = app_handle_stdout.emit_to(
+                    "main",
+                    "client_open",
+                    State {
+                        profile_id: profile_id_stdout.clone(),
+                        connected: true,
+                        pid: pid,
+                        client: Some(client.clone()),
+                        port: Some(port),
+                    },
+                );
             }
         }
     });
 
     let profile_id_wait = profile_id.clone();
     let app_handle_wait = app_handle.clone();
-    thread::spawn(move || {
-        match child.wait() {
-            Ok(status) => {
-                let exit_code = status.code().unwrap_or(-1);
-                let _ = app_handle_wait.emit_to("main", "client_close", CloseState {
+    thread::spawn(move || match child.wait() {
+        Ok(status) => {
+            let exit_code = status.code().unwrap_or(-1);
+            let _ = app_handle_wait.emit_to(
+                "main",
+                "client_close",
+                CloseState {
                     profile_id: profile_id_wait.clone(),
                     pid: pid,
-                    exit_code: exit_code
-                });
-            },
-            Err(_) => {
-                let _ = app_handle_wait.emit_to("main", "client_close", CloseState {
+                    exit_code: exit_code,
+                },
+            );
+        }
+        Err(_) => {
+            let _ = app_handle_wait.emit_to(
+                "main",
+                "client_close",
+                CloseState {
                     profile_id: profile_id_wait.clone(),
                     pid: pid,
-                    exit_code: -2
-                });
-            }
+                    exit_code: -2,
+                },
+            );
         }
     });
 
@@ -180,7 +212,7 @@ pub async fn launch_client(app_handle: AppHandle, client: String, profile_id: St
         connected: false,
         pid: pid,
         client: None,
-        port: None
+        port: None,
     })
 }
 

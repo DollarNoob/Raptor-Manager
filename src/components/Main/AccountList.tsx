@@ -16,6 +16,13 @@ export default function AccountList(_props: Props) {
         display: "flex",
         flexDirection: "column",
         width: "100%",
+        gap: 8,
+    };
+
+    const containerStyle: React.CSSProperties = {
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "scroll",
     };
 
     const filters: ((a: IProfile, b: IProfile) => number)[] = [
@@ -40,36 +47,38 @@ export default function AccountList(_props: Props) {
     return (
         <div style={style}>
             <AccountManager />
-            {store.profiles.sort(filters[filter.filter]).map((profile, i) => (
-                <motion.div
-                    key={JSON.stringify(profile)}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    style={{ width: "100%" }}
-                >
-                    <Account
-                        active={store.selectedIndex === i}
-                        profile={profile}
-                        state={
-                            store.states.find(
-                                (state) => state.profileId === profile.id,
-                            ) ?? {
-                                profileId: profile.id,
-                                connected: false,
-                                pid: null,
-                                client: null,
-                                port: null,
+            <div style={containerStyle}>
+                {store.profiles.sort(filters[filter.filter]).map((profile, i) => (
+                    <motion.div
+                        key={JSON.stringify(profile)}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        style={{ width: "100%", minHeight: 64 }}
+                    >
+                        <Account
+                            active={store.selectedIndex === i}
+                            profile={profile}
+                            state={
+                                store.states.find(
+                                    (state) => state.profileId === profile.id,
+                                ) ?? {
+                                    profileId: profile.id,
+                                    connected: false,
+                                    pid: null,
+                                    client: null,
+                                    port: null,
+                                }
                             }
-                        }
-                        onClick={() =>
-                            store.setSelectedIndex(
-                                store.selectedIndex === i ? null : i,
-                            )
-                        }
-                    />
-                </motion.div>
-            ))}
+                            onClick={() =>
+                                store.setSelectedIndex(
+                                    store.selectedIndex === i ? null : i,
+                                )
+                            }
+                        />
+                    </motion.div>
+                ))}
+            </div>
         </div>
     );
 }
