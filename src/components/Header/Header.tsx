@@ -1,4 +1,5 @@
 import { getVersion } from "@tauri-apps/api/app";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { useEffect, useState } from "react";
 import { useConfigStore, useModalStore, useTabStore } from "../../store";
 import {
@@ -13,7 +14,6 @@ import Modal, { ModalButton } from "../Modal";
 import Button from "../Shared/Button";
 import Status from "../Shared/Status";
 import TrafficLight from "./TrafficLight";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 interface Props {
     children?: React.ReactNode;
