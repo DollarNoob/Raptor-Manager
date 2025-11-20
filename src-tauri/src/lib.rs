@@ -129,12 +129,12 @@ pub fn run() {
                 let update = updater::check_update(handle.clone()).await;
                 match update {
                     Ok(update) => {
-                        if let Some(version) = update {
-                            let _ = handle.emit_to("main", "update", version.clone());
+                        if let Some(update) = update {
+                            let _ = handle.emit_to("main", "update", &update);
 
                             let window = handle.get_webview_window("main").unwrap();
                             window.once("ready", move |_| {
-                                let _ = handle.emit_to("main", "update", version);
+                                let _ = handle.emit_to("main", "update", &update);
                             });
                         }
                     },
