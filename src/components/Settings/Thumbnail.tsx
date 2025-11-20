@@ -19,6 +19,14 @@ export default function Thumbnail({ thumbnail, size, href }: Props) {
     };
 
     return (
-        <img src={thumbnail} style={style} draggable={false} alt="Thumbnail" onClick={() => {href && openUrl(href)}} />
+        <img
+            src={thumbnail}
+            style={style}
+            draggable={false}
+            alt="Thumbnail"
+            onClick={() => {
+                href && openUrl(href);
+            }}
+        />
     );
 }

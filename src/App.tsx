@@ -99,10 +99,9 @@ function App() {
         });
 
         if (!ready) {
-            Promise.all([unlistenMessage, unlistenUpdate])
-                .then(() => emit("ready")
-                    .then(() => setReady(true))
-                );
+            Promise.all([unlistenMessage, unlistenUpdate]).then(() =>
+                emit("ready").then(() => setReady(true)),
+            );
         }
 
         return () => {
