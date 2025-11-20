@@ -19,9 +19,9 @@ export async function fetchClientVersions() {
     const hydrogenPromise = invoke<IHydrogenVersion>(
         "get_hydrogen_version",
     ).catch((err) => new Error(err));
-    const crypticPromise = invoke<ICrypticVersion>(
-        "get_cryptic_version",
-    ).catch((err) => new Error(err));
+    const crypticPromise = invoke<ICrypticVersion>("get_cryptic_version").catch(
+        (err) => new Error(err),
+    );
 
     const [roblox, macsploit, hydrogen, cryptic] = await Promise.all([
         robloxPromise,

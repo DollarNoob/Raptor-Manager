@@ -221,9 +221,15 @@ export default function EditProfileModal({
                     defaultValue={profile.note}
                 />
                 <div style={buttonContainerStyle}>
-                    <Button variant="modal" onClick={destruct}>Cancel</Button>
-                    <Button variant="modal" onClick={importCookies}>Import</Button>
-                    <Button variant="modal" onClick={update}>Save</Button>
+                    <Button variant="modal" onClick={destruct}>
+                        Cancel
+                    </Button>
+                    <Button variant="modal" onClick={importCookies}>
+                        Import
+                    </Button>
+                    <Button variant="modal" onClick={update}>
+                        Save
+                    </Button>
                 </div>
             </motion.div>
             <motion.div

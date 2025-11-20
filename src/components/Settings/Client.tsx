@@ -1,9 +1,9 @@
 import type { IClient } from "../../types/config";
 import type {
-    IRobloxVersion,
-    IMacsploitVersion,
-    IHydrogenVersion,
     ICrypticVersion,
+    IHydrogenVersion,
+    IMacsploitVersion,
+    IRobloxVersion,
 } from "../../types/version";
 import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
@@ -13,7 +13,11 @@ import Thumbnail from "./Thumbnail";
 
 interface Props {
     installation?: IClient;
-    version: IRobloxVersion | IMacsploitVersion | IHydrogenVersion | ICrypticVersion;
+    version:
+        | IRobloxVersion
+        | IMacsploitVersion
+        | IHydrogenVersion
+        | ICrypticVersion;
     thumbnail: string;
     onInstall: (client: string) => void;
     onRemove: (client: string) => void;
@@ -41,8 +45,7 @@ export default function Client({
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
     } else if (children === "Cryptic") {
-        latestVersion =
-            (version as ICrypticVersion).Versions.Software;
+        latestVersion = (version as ICrypticVersion).Versions.Software;
     }
 
     const style: React.CSSProperties = {
@@ -85,7 +88,9 @@ export default function Client({
                             : "red"
                     }
                 >
-                    {installation && currentVersion ? `v${currentVersion.replace("Version-", "")}` : "Not Installed"}
+                    {installation && currentVersion
+                        ? `v${currentVersion.replace("Version-", "")}`
+                        : "Not Installed"}
                 </Status>
             </div>
             <Thumbnail thumbnail={thumbnail} size={72} />
@@ -121,7 +126,7 @@ export default function Client({
                     <Button
                         variant="settings"
                         color="red"
-                        style={{maxWidth: 30}} // square
+                        style={{ maxWidth: 30 }} // square
                         icon={<TrashIcon />}
                         onClick={() => onRemove(client)}
                     />

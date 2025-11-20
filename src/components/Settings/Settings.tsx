@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { motion } from "motion/react";
 import { DECOMPILER_LIST } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../utils";
@@ -138,7 +139,9 @@ export default function Settings(_props: Props) {
     }
 
     async function cleanCache() {
-        const cleaned = await invoke<number>("clean_cache").catch((err: Error) => err);
+        const cleaned = await invoke<number>("clean_cache").catch(
+            (err: Error) => err,
+        );
         if (cleaned instanceof Error) {
             const id = crypto.randomUUID();
             modal.add({
@@ -219,70 +222,114 @@ export default function Settings(_props: Props) {
     return (
         <main style={style}>
             <div style={containerStyle}>
-                <Client
-                    installation={robloxInstallation}
-                    version={version.roblox}
-                    thumbnail="/roblox.svg"
-                    onInstall={onInstall}
-                    onRemove={onRemove}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    Vanilla
-                </Client>
-                <Client
-                    installation={macsploitInstallation}
-                    version={version.macsploit}
-                    thumbnail="/macsploit.png"
-                    onInstall={onInstall}
-                    onRemove={onRemove}
+                    <Client
+                        installation={robloxInstallation}
+                        version={version.roblox}
+                        thumbnail="/roblox.svg"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                    >
+                        Vanilla
+                    </Client>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    MacSploit
-                </Client>
-                <Client
-                    installation={crypticInstallation}
-                    version={version.cryptic}
-                    thumbnail="/cryptic.webp"
-                    onInstall={onInstall}
-                    onRemove={onRemove}
+                    <Client
+                        installation={macsploitInstallation}
+                        version={version.macsploit}
+                        thumbnail="/macsploit.png"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                    >
+                        MacSploit
+                    </Client>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 2 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    Cryptic
-                </Client>
+                    <Client
+                        installation={crypticInstallation}
+                        version={version.cryptic}
+                        thumbnail="/cryptic.webp"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                    >
+                        Cryptic
+                    </Client>
+                </motion.div>
             </div>
             <div style={containerStyle}>
-                <Client
-                    installation={hydrogenInstallation}
-                    version={version.hydrogen}
-                    thumbnail="/hydrogen.png"
-                    onInstall={onInstall}
-                    onRemove={onRemove}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 3 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    Hydrogen
-                </Client>
-                <Client
-                    installation={ronixInstallation}
-                    version={version.ronix}
-                    thumbnail="/ronix.png"
-                    onInstall={onInstall}
-                    onRemove={onRemove}
+                    <Client
+                        installation={hydrogenInstallation}
+                        version={version.hydrogen}
+                        thumbnail="/hydrogen.png"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                    >
+                        Hydrogen
+                    </Client>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 4 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    Ronix
-                </Client>
+                    <Client
+                        installation={ronixInstallation}
+                        version={version.ronix}
+                        thumbnail="/ronix.png"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                    >
+                        Ronix
+                    </Client>
+                </motion.div>
             </div>
             <div style={containerStyle}>
-                <Option
-                    title="Clean Installation Cache"
-                    onClick={cleanCache}
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 5 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    Clean Up
-                </Option>
-                <Option
-                    title="Decompiler"
-                    onClick={switchDecompiler}
+                    <Option
+                        title="Clean Installation Cache"
+                        onClick={cleanCache}
+                    >
+                        Clean Up
+                    </Option>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 6 * 0.05 }}
+                    style={{ flex: 1 }}
                 >
-                    {
-                        config.config.decompiler.charAt(0).toUpperCase() +
-                        config.config.decompiler.slice(1)
-                    }
-                </Option>
+                    <Option title="Decompiler" onClick={switchDecompiler}>
+                        {config.config.decompiler.charAt(0).toUpperCase() +
+                            config.config.decompiler.slice(1)}
+                    </Option>
+                </motion.div>
             </div>
         </main>
     );

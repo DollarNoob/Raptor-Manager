@@ -36,7 +36,10 @@ export default function AccountInfo({ profile, state }: Props) {
     useEffect(() => {
         const unlistenOpen = listen<IState>("client_open", (event) => {
             store.updateState(event.payload);
-            if (event.payload.client && ["Hydrogen", "Ronix", "Cryptic"].includes(event.payload.client))
+            if (
+                event.payload.client &&
+                ["Hydrogen", "Ronix", "Cryptic"].includes(event.payload.client)
+            )
                 setContext(event.payload.profileId);
         });
 
@@ -147,8 +150,9 @@ export default function AccountInfo({ profile, state }: Props) {
                         },
                         ...config.config.clients.map((client) => ({
                             text: client.name,
-                            onClick: () => modal.remove(id) ?? launch(client.name),
-                        }))
+                            onClick: () =>
+                                modal.remove(id) ?? launch(client.name),
+                        })),
                     ],
                 });
                 return;
@@ -233,11 +237,14 @@ export default function AccountInfo({ profile, state }: Props) {
     let statusText = "Offline";
     if (profile && state && state.connected && state.client) {
         statusText = state.client;
-        if (state.port) { // modified clients
+        if (state.port) {
+            // modified clients
             statusText = state.client;
             if (state.client === "MacSploit") {
-                statusText += " " + state.port;
-            } else if (["Hydrogen", "Ronix", "Cryptic"].includes(state.client)) {
+                statusText += ` ${state.port}`;
+            } else if (
+                ["Hydrogen", "Ronix", "Cryptic"].includes(state.client)
+            ) {
                 if (state.profileId === context.id) {
                     statusText += " Attached";
                 }
@@ -319,7 +326,10 @@ export default function AccountInfo({ profile, state }: Props) {
                         </div>
                     </div>
                     <div style={bottomContainerStyle}>
-                        {state.client && ["Hydrogen", "Ronix", "Cryptic"].includes(state.client) &&
+                        {state.client &&
+                            ["Hydrogen", "Ronix", "Cryptic"].includes(
+                                state.client,
+                            ) &&
                             state.connected &&
                             state.pid && (
                                 <SharedButton
@@ -333,7 +343,9 @@ export default function AccountInfo({ profile, state }: Props) {
                                     icon={<ContextIcon />}
                                     onClick={() => setContext(profile.id)}
                                 >
-                                    {context.id === profile.id ? "Attached" : "Attach"}
+                                    {context.id === profile.id
+                                        ? "Attached"
+                                        : "Attach"}
                                 </SharedButton>
                             )}
                         <SharedButton

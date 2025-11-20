@@ -7,11 +7,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-export default function Option({
-    title,
-    onClick,
-    children,
-}: Props) {
+export default function Option({ title, onClick, children }: Props) {
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -35,11 +31,7 @@ export default function Option({
         <div style={style}>
             <Text>{title}</Text>
             <div style={buttonContainerStyle}>
-                <Button
-                    variant="settings"
-                    color="blue"
-                    onClick={onClick}
-                >
+                <Button variant="settings" color="blue" onClick={onClick}>
                     {children}
                 </Button>
             </div>
