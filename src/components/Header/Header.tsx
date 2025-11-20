@@ -1,5 +1,6 @@
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useConfigStore, useModalStore, useTabStore } from "../../store";
 import {
@@ -153,19 +154,42 @@ export default function Header(_props: Props) {
                     )}
                 </div>
                 <div style={sectionStyle} data-tauri-drag-region>
-                    <Button
-                        variant="header"
-                        icon={<ClientIcon />}
-                        onClick={switchClient}
+                    <motion.div
+                        layout
+                        initial={false}
+                        animate={{
+                            width: config.config.client ? "auto" : 30,
+                        }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                        }}
                     >
-                        {config.config.client}
-                    </Button>
-                    <Button
-                        variant="header"
-                        active={tab.tab === 1}
-                        icon={<SettingsIcon />}
-                        onClick={settings}
-                    ></Button>
+                        <Button
+                            variant="header"
+                            icon={<ClientIcon />}
+                            onClick={switchClient}
+                        >
+                            {config.config.client}
+                        </Button>
+                    </motion.div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={tab.tab === 1 ? "active" : "inactive"}
+                            initial={{ scale: 0.9, opacity: 0.8 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0.8 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <Button
+                                variant="header"
+                                active={tab.tab === 1}
+                                icon={<SettingsIcon />}
+                                onClick={settings}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </header>
         </>

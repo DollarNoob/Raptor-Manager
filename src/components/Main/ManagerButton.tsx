@@ -1,3 +1,5 @@
+import { motion } from "motion/react";
+
 interface Props {
     active?: boolean;
     icon?: React.ReactNode;
@@ -36,9 +38,14 @@ export default function ManagerButton({
     };
 
     return (
-        <div style={style} onClick={onClick}>
+        <motion.div
+            style={style}
+            onClick={onClick}
+            whileTap={{ scale: active === false ? 1 : 0.95 }}
+            transition={{ duration: 0.1 }}
+        >
             {icon}
             {children && <span style={textStyle}>{children}</span>}
-        </div>
+        </motion.div>
     );
 }

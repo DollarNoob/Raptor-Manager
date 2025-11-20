@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 import { UI_STYLES } from "../../constants/ui";
 import type { IModalButtonProps } from "../../types/editProfileModal";
@@ -40,24 +41,28 @@ export default function ModalButton({
 
     if (as === "button") {
         return (
-            <button
+            <motion.button
                 type="button"
                 style={style}
                 onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
             >
                 {icon}
                 {children && <span style={textStyle}>{children}</span>}
-            </button>
+            </motion.button>
         );
     } else {
         return (
-            <div
+            <motion.div
                 style={style}
                 onClick={onClick as React.MouseEventHandler<HTMLDivElement>}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
             >
                 {icon}
                 {children && <span style={textStyle}>{children}</span>}
-            </div>
+            </motion.div>
         );
     }
 }
