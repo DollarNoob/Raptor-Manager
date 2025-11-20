@@ -175,6 +175,19 @@ pub async fn launch_client(
                         port: Some(port),
                     },
                 );
+            } else if line == "[ Cryptic Mac 1.0 Launched running in Release Mode ]" {
+                let port = 5200;
+                let _ = app_handle_stdout.emit_to(
+                    "main",
+                    "client_open",
+                    State {
+                        profile_id: profile_id_stdout.clone(),
+                        connected: true,
+                        pid: pid,
+                        client: Some("Cryptic".into()),
+                        port: Some(port),
+                    },
+                );
             }
         }
     });

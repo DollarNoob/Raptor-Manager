@@ -61,6 +61,14 @@ export default function Settings(_props: Props) {
             return;
         }
 
+        // try to clean unused version zips, it is okay to fail
+        const versions: string[] = [];
+        versions.push(version.roblox.clientVersionUpload);
+        versions.push(version.macsploit.clientVersionUpload);
+        versions.push(version.hydrogen.macos.roblox_version ?? "");
+        versions.push(version.cryptic.Versions.Roblox);
+        await invoke("clean_leftover_cache", { versions }).catch(() => null);
+
         const _id = crypto.randomUUID();
         modal.add({
             id: _id,
@@ -183,11 +191,13 @@ export default function Settings(_props: Props) {
         flexGrow: 1,
         gap: 12,
         width: "100%",
+        overflowY: "scroll",
     };
 
     const containerStyle: React.CSSProperties = {
         display: "flex",
         gap: 12,
+        minHeight: "fit-content",
     };
 
     const robloxInstallation = config.config.clients.find(
@@ -201,6 +211,9 @@ export default function Settings(_props: Props) {
     );
     const ronixInstallation = config.config.clients.find(
         (client) => client.name === "Ronix",
+    );
+    const crypticInstallation = config.config.clients.find(
+        (client) => client.name === "Cryptic",
     );
 
     return (
@@ -224,6 +237,17 @@ export default function Settings(_props: Props) {
                 >
                     MacSploit
                 </Client>
+                <Client
+                    installation={crypticInstallation}
+                    version={version.cryptic}
+                    thumbnail="/cryptic.webp"
+                    onInstall={onInstall}
+                    onRemove={onRemove}
+                >
+                    Cryptic
+                </Client>
+            </div>
+            <div style={containerStyle}>
                 <Client
                     installation={hydrogenInstallation}
                     version={version.hydrogen}

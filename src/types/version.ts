@@ -29,3 +29,14 @@ export interface IHydrogenPlatformVersion {
     roblox_version?: string;
     changelog?: string;
 }
+
+export interface ICrypticVersion {
+    Platform: string;
+    Versions: ICrypticVersions;
+    Changelog: string;
+}
+
+export interface ICrypticVersions {
+    Software: string;
+    Roblox: string;
+}

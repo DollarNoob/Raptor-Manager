@@ -1,141 +1,12 @@
 use regex::Regex;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::process::Command;
 use tauri::{AppHandle, Manager};
 
-#[derive(Debug, Serialize, Deserialize)]
-#[allow(non_snake_case)]
-pub struct RobloxVersion {
-    pub version: String,
-    pub clientVersionUpload: String,
-    pub bootstrapperVersion: String,
-}
-
-#[tauri::command]
-pub async fn get_roblox_version(app_handle: AppHandle) -> Result<RobloxVersion, String> {
-    let client = Client::new();
-    let url = format!("https://clientsettingscdn.roblox.com/v2/client-version/MacPlayer");
-    let response = client
-        .get(url)
-        .header(
-            "User-Agent",
-            format!(
-                "RaptorManager/{}",
-                app_handle.package_info().version.to_string()
-            ),
-        )
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let status = response.status();
-    if !status.is_success() {
-        return Err(status.to_string());
-    }
-
-    let body = response
-        .json::<RobloxVersion>()
-        .await
-        .map_err(|e| e.to_string())?;
-    Ok(body)
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[allow(non_snake_case)]
-pub struct MacsploitVersion {
-    pub clientVersionUpload: String,
-    pub appVersion: String,
-    pub clientVersion: String,
-    pub relVersion: String,
-    pub channel: String,
-    pub changelog: String,
-}
-
-#[tauri::command]
-pub async fn get_macsploit_version(app_handle: AppHandle) -> Result<MacsploitVersion, String> {
-    let client = Client::new();
-    let url = format!("https://www.abyssdigital.xyz/main/version.json");
-    let response = client
-        .get(url)
-        .header(
-            "User-Agent",
-            format!(
-                "RaptorManager/{}",
-                app_handle.package_info().version.to_string()
-            ),
-        )
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let status = response.status();
-    if !status.is_success() {
-        return Err(status.to_string());
-    }
-
-    let body = response
-        .json::<MacsploitVersion>()
-        .await
-        .map_err(|e| e.to_string())?;
-    Ok(body)
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct HydrogenVersion {
-    pub global: GlobalVersion,
-    pub windows: PlatformVersion,
-    pub macos: PlatformVersion,
-    pub ios: PlatformVersion,
-    pub android: PlatformVersion,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GlobalVersion {
-    pub globallogs: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct PlatformVersion {
-    pub product: Option<String>,
-    pub exploit_version: Option<String>,
-    pub roblox_version: Option<String>,
-    pub changelog: Option<String>,
-}
-
-#[tauri::command]
-pub async fn get_hydrogen_version(app_handle: AppHandle) -> Result<HydrogenVersion, String> {
-    let client = Client::new();
-    let url = format!("https://hydrogen.lat/updates.json");
-    let response = client
-        .get(url)
-        .header(
-            "User-Agent",
-            format!(
-                "RaptorManager/{}",
-                app_handle.package_info().version.to_string()
-            ),
-        )
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    let status = response.status();
-    if !status.is_success() {
-        return Err(status.to_string());
-    }
-
-    let body = response
-        .json::<HydrogenVersion>()
-        .await
-        .map_err(|e| e.to_string())?;
-    Ok(body)
-}
-
-pub async fn download_roblox(app_handle: &AppHandle, version: &str) -> Result<(), String> {
+pub async fn download_roblox(app_handle: &AppHandle, arch: &str, version: &str) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let clients_dir = app_data_dir.join("clients");
@@ -143,13 +14,13 @@ pub async fn download_roblox(app_handle: &AppHandle, version: &str) -> Result<()
         fs::create_dir_all(&clients_dir).map_err(|e| e.to_string())?;
     }
 
-    let client_dir = clients_dir.join(version.to_owned() + ".zip");
+    let client_dir = clients_dir.join(arch.to_owned() + "-" + version + ".zip");
     if !client_dir.exists() {
         let mut file = File::create(&client_dir).map_err(|e| e.to_string())?;
 
         let client = Client::new();
         let url;
-        if std::env::consts::ARCH == "aarch64" {
+        if arch == "aarch64" {
             url = format!(
                 "https://setup.rbxcdn.com/mac/arm64/{}-RobloxPlayer.zip",
                 version
@@ -238,13 +109,14 @@ pub async fn install_insert_dylib(app_handle: &AppHandle) -> Result<(), String> 
 pub async fn install_roblox(
     app_handle: &AppHandle,
     client: &str,
+    arch: &str,
     version: &str,
 ) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let roblox_dir = app_data_dir
         .join("clients")
-        .join(version.to_owned() + ".zip");
+        .join(arch.to_owned() + "-" + version + ".zip");
     if !roblox_dir.exists() {
         return Err(format!("Roblox {} is not installed. An anti-virus software might be interrupting the installation process.", version));
     }
@@ -447,6 +319,30 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
             } else {
                 return Err(format!("Failed to fetch {}.zip download URL.", client));
             }
+        } else if client == "Cryptic" {
+            let client = Client::new();
+            let response = client
+                .get("https://raw.githubusercontent.com/RSDTestAccount/Cryptic-Mac-Internal-Assets/main/libCryptic.dylib")
+                .header(
+                    "User-Agent",
+                    format!(
+                        "RaptorManager/{}",
+                        app_handle.package_info().version.to_string()
+                    ),
+                )
+                .send()
+                .await
+                .map_err(|e| e.to_string())?;
+
+            let status = response.status();
+            if !status.is_success() {
+                return Err(status.to_string());
+            }
+
+            let bytes = response.bytes().await.map_err(|e| e.to_string())?;
+
+            let mut file = File::create(&dylib_dir).map_err(|e| e.to_string())?;
+            file.write_all(&bytes).map_err(|e| e.to_string())?;
         }
     }
 
@@ -534,7 +430,12 @@ pub async fn install_client(
     client: String,
     version: String,
 ) -> Result<(), String> {
-    download_roblox(&app_handle, &version)
+    let mut arch = std::env::consts::ARCH;
+    if client == "Cryptic" { // Cryptic only supports Intel builds
+        arch = "x86_64";
+    }
+
+    download_roblox(&app_handle, arch, &version)
         .await
         .map_err(|e| e.to_string())?;
 
@@ -544,7 +445,7 @@ pub async fn install_client(
             .map_err(|e| e.to_string())?;
     }
 
-    install_roblox(&app_handle, &client, &version)
+    install_roblox(&app_handle, &client, arch, &version)
         .await
         .map_err(|e| e.to_string())?;
 
@@ -555,7 +456,7 @@ pub async fn install_client(
     }
 
     // remove codesign in arm64 or vanilla (fix crash for intel macs)
-    if std::env::consts::ARCH == "aarch64" || client == "Vanilla" {
+    if arch == "aarch64" || client == "Vanilla" {
         codesign(&app_handle, &client, false)
             .await
             .map_err(|e| e.to_string())?;
@@ -568,7 +469,7 @@ pub async fn install_client(
     }
 
     // add codesign in arm64 or vanilla (fix crash for intel macs)
-    if std::env::consts::ARCH == "aarch64" || client == "Vanilla" {
+    if arch == "aarch64" || client == "Vanilla" {
         codesign(&app_handle, &client, true)
             .await
             .map_err(|e| e.to_string())?;
@@ -614,4 +515,34 @@ pub async fn clean_cache(app_handle: AppHandle) -> Result<u64, String> {
     }
 
     Ok(cleaned_bytes)
+}
+
+#[tauri::command]
+pub async fn clean_leftover_cache(app_handle: AppHandle, versions: Vec<String>) -> Result<(), String> {
+    let app_data_dir = app_handle.path().app_data_dir().unwrap();
+
+    let clients_dir = app_data_dir.join("clients");
+    if !clients_dir.exists() {
+        return Ok(());
+    }
+
+    for entry in fs::read_dir(&clients_dir).map_err(|e| e.to_string())? {
+        let e = entry.map_err(|e| e.to_string())?;
+        if
+            e.file_name().to_str().unwrap().ends_with(".zip") && // only check .zip files
+            !versions.contains(
+                &e.file_name().to_str().unwrap()
+                    .replace("x86_64-", "")
+                    .replace("aarch64-", "")
+                    .replace(".zip", "")
+            ) // check if version is not used anymore by all clients
+        {
+            let metadata = e.metadata().unwrap();
+            if metadata.is_file() {
+                fs::remove_file(e.path()).map_err(|e| e.to_string())?;
+            }
+        }
+    }
+
+    Ok(())
 }

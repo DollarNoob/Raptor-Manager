@@ -24,7 +24,7 @@ serde_json = "1"
 luau-lifter = { path = "./src/medal/luau-lifter" }
 reqwest = { version = "0.12.24", features = ["blocking", "json"] }
 regex = "1.12.2"
-axum = "0.8.6"
+axum = { version = "0.8.6", features = ["ws"] }
 tokio = "1.48.0"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]

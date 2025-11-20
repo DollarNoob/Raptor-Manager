@@ -82,6 +82,16 @@ pub async fn update_hydrobridge(
     Ok(())
 }
 
+#[tauri::command]
+pub async fn update_crypticbridge(
+    state: tauri::State<'_, crate::crypticbridge::AppState>,
+    id: String,
+) -> Result<(), ()> {
+    let mut profile_id = state.id.lock().await;
+    *profile_id = id;
+    Ok(())
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(non_snake_case)]
 pub struct Profile {
@@ -147,14 +157,20 @@ getgenv().decompile = function(script)
 end
 
 local executor = identifyexecutor()
-if executor == 'Hydrogen' or executor == 'Ronix' then
+if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' then
+    local port = 6969 -- Hydrogen
+    if executor == 'Cryptic Mac' then
+        port = 5200
+    end
+
     task.defer(function()
         local HttpService = game:GetService('HttpService')
         while task.wait(1) do
-            local queue = request({{
-                Url = 'http://localhost:6969/queue/{}'
-            }}).Body
-            queue = HttpService:JSONDecode(queue)
+            local response = game:HttpGet('http://localhost:' .. port .. '/queue/{}')
+            local ok, queue = pcall(function()
+                return HttpService:JSONDecode(queue)
+            end)
+            if not ok then continue end
 
             for i, v in pairs(queue) do
                 local func, err = loadstring(v)
@@ -221,6 +237,24 @@ end",
     file.write_all(&init_script.as_bytes())
         .map_err(|e| e.to_string())?;
 
+    // Cryptic - Library
+    let library_dir = profile_dir.join("Library");
+    fs::create_dir_all(&library_dir).map_err(|e| e.to_string())?;
+
+    // Cryptic - Caches
+    let caches_dir = library_dir.join("Caches");
+    fs::create_dir_all(&caches_dir).map_err(|e| e.to_string())?;
+
+    // Cryptic - Automatic Execution
+    let cryptic_autoexe_dir = caches_dir.join("CrypticMacAutoExec");
+    fs::create_dir_all(&cryptic_autoexe_dir).map_err(|e| e.to_string())?;
+
+    // Cryptic - Init Script
+    let mut file =
+        File::create(&cryptic_autoexe_dir.join("RaptorManager.lua")).map_err(|e| e.to_string())?;
+    file.write_all(&init_script.as_bytes())
+        .map_err(|e| e.to_string())?;
+
     // Roblox - Custom Assets
     let content_dir = profile_dir
         .join("Applications")
@@ -251,16 +285,37 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
     let data_dir = app_handle.path().data_dir().unwrap();
     let library_dir = data_dir.parent().unwrap(); // $HOME/Library
     let http_storages_dir = library_dir.join("HTTPStorages");
+    let caches_dir = library_dir.join("Caches");
+    let preferences_dir = library_dir.join("Preferences");
+    let webkit_dir = library_dir.join("WebKit");
 
+    // Clear HTTPStorages
     let storage_dir = http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
     if storage_dir.exists() {
         fs::remove_dir_all(&storage_dir).map_err(|e| e.to_string())?;
     }
 
-    let binary_cookie_dir =
-        http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
+    let binary_cookie_dir = http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
     if binary_cookie_dir.exists() {
         fs::remove_file(&binary_cookie_dir).map_err(|e| e.to_string())?;
+    }
+
+    // Clean Caches
+    let cache_dir = caches_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
+    if cache_dir.exists() {
+        fs::remove_dir_all(&cache_dir).map_err(|e| e.to_string())?;
+    }
+
+    // Clean Preferences
+    let preference_dir = preferences_dir.join(format!("com.roblox.RobloxPlayer.{}.plist", &id));
+    if preference_dir.exists() {
+        fs::remove_file(&preference_dir).map_err(|e| e.to_string())?;
+    }
+
+    // Clean WebKit
+    let webdata_dir = webkit_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
+    if webdata_dir.exists() {
+        fs::remove_dir_all(&webdata_dir).map_err(|e| e.to_string())?;
     }
 
     Ok(())

@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useModalStore, useVersionStore } from "../store";
 import type {
+    ICrypticVersion,
     IHydrogenVersion,
     IMacsploitVersion,
     IRobloxVersion,
@@ -18,11 +19,15 @@ export async function fetchClientVersions() {
     const hydrogenPromise = invoke<IHydrogenVersion>(
         "get_hydrogen_version",
     ).catch((err) => new Error(err));
+    const crypticPromise = invoke<ICrypticVersion>(
+        "get_cryptic_version",
+    ).catch((err) => new Error(err));
 
-    const [roblox, macsploit, hydrogen] = await Promise.all([
+    const [roblox, macsploit, hydrogen, cryptic] = await Promise.all([
         robloxPromise,
         macsploitPromise,
         hydrogenPromise,
+        crypticPromise,
     ]);
 
     if (roblox instanceof Error) {
@@ -79,6 +84,24 @@ export async function fetchClientVersions() {
     }
     version.setHydrogen(hydrogen);
     version.setRonix(hydrogen); // theyre both the same lol
+
+    if (cryptic instanceof Error) {
+        const modal = useModalStore.getState();
+        const id = crypto.randomUUID();
+        modal.add({
+            id,
+            title: "Failed to fetch Cryptic version",
+            text: cryptic.message,
+            buttons: [
+                {
+                    text: "Okay",
+                    onClick: () => modal.remove(id),
+                },
+            ],
+        });
+        return false;
+    }
+    version.setCryptic(cryptic);
 
     return true;
 }

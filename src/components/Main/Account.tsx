@@ -169,7 +169,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
             statusText = state.client;
             if (state.client === "MacSploit") {
                 statusText += " " + state.port;
-            } else if (["Hydrogen", "Ronix"].includes(state.client)) {
+            } else if (["Hydrogen", "Ronix", "Cryptic"].includes(state.client)) {
                 if (state.profileId === context.id) {
                     statusText += " Attached";
                 }

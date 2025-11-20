@@ -3,6 +3,7 @@ import type {
     IRobloxVersion,
     IMacsploitVersion,
     IHydrogenVersion,
+    ICrypticVersion,
 } from "../../types/version";
 import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
@@ -12,7 +13,7 @@ import Thumbnail from "./Thumbnail";
 
 interface Props {
     installation?: IClient;
-    version: IRobloxVersion | IMacsploitVersion | IHydrogenVersion;
+    version: IRobloxVersion | IMacsploitVersion | IHydrogenVersion | ICrypticVersion;
     thumbnail: string;
     onInstall: (client: string) => void;
     onRemove: (client: string) => void;
@@ -39,6 +40,9 @@ export default function Client({
     } else if (children === "Ronix") {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
+    } else if (children === "Cryptic") {
+        latestVersion =
+            (version as ICrypticVersion).Versions.Software;
     }
 
     const style: React.CSSProperties = {
@@ -53,6 +57,12 @@ export default function Client({
         alignItems: "center",
     };
 
+    const containerStyle: React.CSSProperties = {
+        display: "flex",
+        gap: 0,
+        alignItems: "center",
+    };
+
     const buttonContainerStyle: React.CSSProperties = {
         display: "flex",
         width: "100%",
@@ -64,18 +74,20 @@ export default function Client({
 
     return (
         <div style={style}>
-            <Status
-                color={
-                    installation
-                        ? currentVersion === latestVersion
-                            ? "green"
-                            : "orange"
-                        : "red"
-                }
-            >
-                {installation ? `v${currentVersion}` : "Not Installed"}
-            </Status>
-            <Text>{children}</Text>
+            <div style={containerStyle}>
+                <Text>{children}</Text>
+                <Status
+                    color={
+                        installation
+                            ? currentVersion === latestVersion
+                                ? "green"
+                                : "orange"
+                            : "red"
+                    }
+                >
+                    {installation && currentVersion ? `v${currentVersion.replace("Version-", "")}` : "Not Installed"}
+                </Status>
+            </div>
             <Thumbnail thumbnail={thumbnail} size={72} />
             <div style={buttonContainerStyle}>
                 {installation ? (
