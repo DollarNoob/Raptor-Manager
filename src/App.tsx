@@ -62,6 +62,14 @@ function App() {
     }, [modal.add, modal.remove]);
 
     function update() {
+        const updatingId = crypto.randomUUID();
+        modal.add({
+            id: updatingId,
+            title: "Updating App",
+            text: "Please do not close the application until the installation finishes.",
+            buttons: [],
+        });
+
         const updated = invoke<null>("update").catch((err: string) => new Error(err));
         if (updated instanceof Error) {
             const id = crypto.randomUUID();
@@ -72,7 +80,7 @@ function App() {
                 buttons: [
                     {
                         text: "Okay",
-                        onClick: () => modal.remove(id),
+                        onClick: () => modal.remove(id) ?? modal.remove(updatingId),
                     },
                 ],
             });
@@ -85,11 +93,13 @@ function App() {
                 buttons: [
                     {
                         text: "Okay",
-                        onClick: () => modal.remove(id),
+                        onClick: () => modal.remove(id) ?? modal.remove(updatingId),
                     },
                 ],
             });
         }
+
+        modal.remove(updatingId);
     }
 
     return (

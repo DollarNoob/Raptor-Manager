@@ -100,6 +100,15 @@ export async function installClient(client: string) {
 
         clientVersion = version.ronix.macos.roblox_version;
         dylibVersion = version.ronix.macos.exploit_version;
+    } else if (client === "Cryptic") {
+        if (
+            !version.cryptic.Versions.Roblox ||
+            !version.cryptic.Versions.Software
+        )
+            throw new Error("Cryptic version is not fetched yet.");
+
+        clientVersion = version.cryptic.Versions.Roblox;
+        dylibVersion = version.cryptic.Versions.Software;
     }
 
     const installed = await invoke("install_client", {

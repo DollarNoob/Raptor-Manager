@@ -36,7 +36,7 @@ export default function AccountInfo({ profile, state }: Props) {
     useEffect(() => {
         const unlistenOpen = listen<IState>("client_open", (event) => {
             store.updateState(event.payload);
-            if (event.payload.client && ["Hydrogen", "Ronix"].includes(event.payload.client))
+            if (event.payload.client && ["Hydrogen", "Ronix", "Cryptic"].includes(event.payload.client))
                 setContext(event.payload.profileId);
         });
 
@@ -237,7 +237,7 @@ export default function AccountInfo({ profile, state }: Props) {
             statusText = state.client;
             if (state.client === "MacSploit") {
                 statusText += " " + state.port;
-            } else if (["Hydrogen", "Ronix"].includes(state.client)) {
+            } else if (["Hydrogen", "Ronix", "Cryptic"].includes(state.client)) {
                 if (state.profileId === context.id) {
                     statusText += " Attached";
                 }
@@ -319,7 +319,7 @@ export default function AccountInfo({ profile, state }: Props) {
                         </div>
                     </div>
                     <div style={bottomContainerStyle}>
-                        {state.client && ["Hydrogen", "Ronix"].includes(state.client) &&
+                        {state.client && ["Hydrogen", "Ronix", "Cryptic"].includes(state.client) &&
                             state.connected &&
                             state.pid && (
                                 <SharedButton

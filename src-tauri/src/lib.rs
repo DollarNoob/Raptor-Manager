@@ -10,9 +10,11 @@ mod config;
 mod cookies;
 mod decompiler;
 mod hydrobridge;
+mod crypticbridge;
 mod installer;
 mod roblox;
 mod updater;
+mod versions;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Message {
@@ -29,6 +31,7 @@ pub fn run() {
             config::write_config,
             config::update_decompiler,
             config::update_hydrobridge,
+            config::update_crypticbridge,
             config::read_profiles,
             config::write_profiles,
             config::create_environment,
@@ -43,12 +46,14 @@ pub fn run() {
             client::stop_client,
             cookies::write_cookies,
             cookies::import_cookies,
-            installer::get_roblox_version,
-            installer::get_macsploit_version,
-            installer::get_hydrogen_version,
+            versions::get_roblox_version,
+            versions::get_macsploit_version,
+            versions::get_hydrogen_version,
+            versions::get_cryptic_version,
             installer::install_client,
             installer::remove_client,
             installer::clean_cache,
+            installer::clean_leftover_cache,
             updater::update
         ])
         .setup(|app| {
@@ -75,22 +80,43 @@ pub fn run() {
                 }
             });
 
-            let bridge_state = hydrobridge::AppState {
+            // Hydrobridge Init
+            let hydrobridge_state = hydrobridge::AppState {
                 queue: Arc::new(Mutex::new(HashMap::new())),
                 id: Arc::new(Mutex::new("".to_string()))
             };
 
-            // Hydrobridge Init
-            app.manage(bridge_state.clone());
+            app.manage(hydrobridge_state.clone());
 
             let hydrobridge_app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                if let Err(err) = hydrobridge::serve(bridge_state).await {
+                if let Err(err) = hydrobridge::serve(hydrobridge_state).await {
                     let window = hydrobridge_app_handle.get_webview_window("main").unwrap();
                     window.once("ready", move |_| {
                         let _ = hydrobridge_app_handle.emit_to("main", "message", Message {
                             title: "Failed to run Hydrobridge".into(),
                             description: format!("{}\nPlease close open instances and restart Manager to use Hydrobridge.", err)
+                        });
+                    });
+                }
+            });
+
+            // Crypticbridge Init
+            let crypticbridge_state = crypticbridge::AppState {
+                queue: Arc::new(Mutex::new(HashMap::new())),
+                id: Arc::new(Mutex::new("".to_string()))
+            };
+
+            app.manage(crypticbridge_state.clone());
+
+            let crypticbridge_app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                if let Err(err) = crypticbridge::serve(crypticbridge_state).await {
+                    let window = crypticbridge_app_handle.get_webview_window("main").unwrap();
+                    window.once("ready", move |_| {
+                        let _ = crypticbridge_app_handle.emit_to("main", "message", Message {
+                            title: "Failed to run Crypticbridge".into(),
+                            description: format!("{}\nPlease close open instances and restart Manager to use Crypticbridge.", err)
                         });
                     });
                 }

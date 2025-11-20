@@ -4,6 +4,7 @@ import type { IModal } from "./types/modal";
 import type { IProfile } from "./types/profile";
 import type { IState } from "./types/state";
 import type {
+    ICrypticVersion,
     IHydrogenVersion,
     IMacsploitVersion,
     IRobloxVersion,
@@ -88,10 +89,12 @@ export interface VersionState {
     macsploit: IMacsploitVersion;
     hydrogen: IHydrogenVersion;
     ronix: IHydrogenVersion;
+    cryptic: ICrypticVersion;
     setRoblox: (version: IRobloxVersion) => void;
     setMacsploit: (version: IMacsploitVersion) => void;
     setHydrogen: (version: IHydrogenVersion) => void;
     setRonix: (version: IHydrogenVersion) => void;
+    setCryptic: (version: ICrypticVersion) => void;
 }
 
 export const useVersionStore = create<VersionState>()((set) => ({
@@ -126,10 +129,19 @@ export const useVersionStore = create<VersionState>()((set) => ({
         ios: {},
         android: {},
     },
+    cryptic: {
+        Platform: "Mac-Internal",
+        Versions: {
+            Software: "",
+            Roblox: "",
+        },
+        Changelog: "",
+    },
     setRoblox: (version) => set(() => ({ roblox: version })),
     setMacsploit: (version) => set(() => ({ macsploit: version })),
     setHydrogen: (version) => set(() => ({ hydrogen: version })),
     setRonix: (version) => set(() => ({ ronix: version })),
+    setCryptic: (version) => set(() => ({ cryptic: version })),
 }));
 
 export interface TabState {
