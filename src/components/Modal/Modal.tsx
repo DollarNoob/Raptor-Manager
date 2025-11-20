@@ -10,6 +10,15 @@ interface Props {
 }
 
 export default function Modal({ title, text, children }: Props) {
+    const lines = React.useMemo(
+        () =>
+            text.split("\n").map((line) => ({
+                id: crypto.randomUUID(),
+                content: line,
+            })),
+        [text],
+    );
+
     const style: React.CSSProperties = {
         position: "fixed",
         top: "50%",
@@ -57,10 +66,12 @@ export default function Modal({ title, text, children }: Props) {
             >
                 <Title>{title}</Title>
                 <Text>
-                    {
-                        text.split("\n")
-                            .map((line, i) => <React.Fragment key={i}>{line}<br/></React.Fragment>)
-                    }
+                    {lines.map((line) => (
+                        <React.Fragment key={line.id}>
+                            {line.content}
+                            <br />
+                        </React.Fragment>
+                    ))}
                 </Text>
                 {React.Children.count(children) !== 0 && (
                     <div style={buttonContainerStyle}>{children}</div>

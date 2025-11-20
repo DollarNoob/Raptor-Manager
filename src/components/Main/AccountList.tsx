@@ -48,36 +48,39 @@ export default function AccountList(_props: Props) {
         <div style={style}>
             <AccountManager />
             <div style={containerStyle}>
-                {store.profiles.sort(filters[filter.filter]).map((profile, i) => (
-                    <motion.div
-                        key={JSON.stringify(profile)}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        style={{ width: "100%", minHeight: 64 }}
-                    >
-                        <Account
-                            active={store.selectedIndex === i}
-                            profile={profile}
-                            state={
-                                store.states.find(
-                                    (state) => state.profileId === profile.id,
-                                ) ?? {
-                                    profileId: profile.id,
-                                    connected: false,
-                                    pid: null,
-                                    client: null,
-                                    port: null,
+                {store.profiles
+                    .sort(filters[filter.filter])
+                    .map((profile, i) => (
+                        <motion.div
+                            key={JSON.stringify(profile)}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            style={{ width: "100%", minHeight: 64 }}
+                        >
+                            <Account
+                                active={store.selectedIndex === i}
+                                profile={profile}
+                                state={
+                                    store.states.find(
+                                        (state) =>
+                                            state.profileId === profile.id,
+                                    ) ?? {
+                                        profileId: profile.id,
+                                        connected: false,
+                                        pid: null,
+                                        client: null,
+                                        port: null,
+                                    }
                                 }
-                            }
-                            onClick={() =>
-                                store.setSelectedIndex(
-                                    store.selectedIndex === i ? null : i,
-                                )
-                            }
-                        />
-                    </motion.div>
-                ))}
+                                onClick={() =>
+                                    store.setSelectedIndex(
+                                        store.selectedIndex === i ? null : i,
+                                    )
+                                }
+                            />
+                        </motion.div>
+                    ))}
             </div>
         </div>
     );

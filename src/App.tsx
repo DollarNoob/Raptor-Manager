@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import "./App.css";
+import { invoke } from "@tauri-apps/api/core";
+import { emit, listen } from "@tauri-apps/api/event";
 import Header from "./components/Header";
 import Main from "./components/Main";
 import Settings from "./components/Settings";
 import { useModalStore, useTabStore } from "./store";
-import { emit, listen } from "@tauri-apps/api/event";
-import { IMessage } from "./types/message";
-import { invoke } from "@tauri-apps/api/core";
+import type { IMessage } from "./types/message";
 
 function App() {
     const modal = useModalStore();
@@ -19,6 +19,51 @@ function App() {
     }, []);
 
     useEffect(() => {
+        function update() {
+            const updatingId = crypto.randomUUID();
+            modal.add({
+                id: updatingId,
+                title: "Updating App",
+                text: "Please do not close the application until the installation finishes.",
+                buttons: [],
+            });
+
+            const updated = invoke<null>("update").catch(
+                (err: string) => new Error(err),
+            );
+            if (updated instanceof Error) {
+                const id = crypto.randomUUID();
+                modal.add({
+                    id,
+                    title: "Failed to update app",
+                    text: updated.message,
+                    buttons: [
+                        {
+                            text: "Okay",
+                            onClick: () =>
+                                modal.remove(id) ?? modal.remove(updatingId),
+                        },
+                    ],
+                });
+            } else if (!updated) {
+                const id = crypto.randomUUID();
+                modal.add({
+                    id,
+                    title: "Failed to update app",
+                    text: "Update was not found, you are currently on the latest version.",
+                    buttons: [
+                        {
+                            text: "Okay",
+                            onClick: () =>
+                                modal.remove(id) ?? modal.remove(updatingId),
+                        },
+                    ],
+                });
+            }
+
+            modal.remove(updatingId);
+        }
+
         const unlistenMessage = listen<IMessage>("message", (event) => {
             const id = crypto.randomUUID();
             modal.add({
@@ -60,47 +105,6 @@ function App() {
             unlistenUpdate.then((unlisten) => unlisten());
         };
     }, [modal.add, modal.remove]);
-
-    function update() {
-        const updatingId = crypto.randomUUID();
-        modal.add({
-            id: updatingId,
-            title: "Updating App",
-            text: "Please do not close the application until the installation finishes.",
-            buttons: [],
-        });
-
-        const updated = invoke<null>("update").catch((err: string) => new Error(err));
-        if (updated instanceof Error) {
-            const id = crypto.randomUUID();
-            modal.add({
-                id,
-                title: "Failed to update app",
-                text: updated.message,
-                buttons: [
-                    {
-                        text: "Okay",
-                        onClick: () => modal.remove(id) ?? modal.remove(updatingId),
-                    },
-                ],
-            });
-        } else if (!updated) {
-            const id = crypto.randomUUID();
-            modal.add({
-                id,
-                title: "Failed to update app",
-                text: "Update was not found, you are currently on the latest version.",
-                buttons: [
-                    {
-                        text: "Okay",
-                        onClick: () => modal.remove(id) ?? modal.remove(updatingId),
-                    },
-                ],
-            });
-        }
-
-        modal.remove(updatingId);
-    }
 
     return (
         <>

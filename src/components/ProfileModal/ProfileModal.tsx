@@ -1,6 +1,6 @@
-import { motion } from "motion/react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { motion } from "motion/react";
 import type React from "react";
 import { useEffect, useRef } from "react";
 import {

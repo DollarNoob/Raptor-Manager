@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 import { BUTTON_COLOR_THEMES, UI_STYLES } from "../../constants/ui";
 import type { ButtonProps } from "../../types/button";
@@ -131,34 +132,36 @@ export default function Button(props: ButtonProps) {
     const finalStyle = style ? { ...computedStyle, ...style } : computedStyle;
 
     if (variant === "main") {
-        // Use div for main variant
         return (
-            <div
+            <motion.div
                 style={finalStyle}
                 onClick={onClick as React.MouseEventHandler<HTMLDivElement>}
                 className={className}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
             >
                 {icon}
                 {children && textStyle && (
                     <span style={textStyle}>{children}</span>
                 )}
-            </div>
+            </motion.div>
         );
     } else {
-        // Use button for other variants
         return (
-            <button
+            <motion.button
                 type="button"
                 style={finalStyle}
                 onClick={onClick}
                 className={className}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
             >
                 {icon}
                 {children && textStyle && (
                     <span style={textStyle}>{children}</span>
                 )}
-                {children && !textStyle && children} {/* For status buttons */}
-            </button>
+                {children && !textStyle && children}
+            </motion.button>
         );
     }
 }

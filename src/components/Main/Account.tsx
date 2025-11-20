@@ -165,11 +165,14 @@ export default function Account({ active, profile, state, onClick }: Props) {
     let statusText = "Offline";
     if (state.connected && state.client) {
         statusText = state.client;
-        if (state.port) { // modified clients
+        if (state.port) {
+            // modified clients
             statusText = state.client;
             if (state.client === "MacSploit") {
-                statusText += " " + state.port;
-            } else if (["Hydrogen", "Ronix", "Cryptic"].includes(state.client)) {
+                statusText += ` ${state.port}`;
+            } else if (
+                ["Hydrogen", "Ronix", "Cryptic"].includes(state.client)
+            ) {
                 if (state.profileId === context.id) {
                     statusText += " Attached";
                 }

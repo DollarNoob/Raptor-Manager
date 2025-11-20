@@ -9,11 +9,8 @@ export async function launchClient(
 ) {
     const store = useStore.getState();
 
-    const profile = store.profiles.find(p => p.id === profileId);
-    if (!profile)
-        throw new Error(
-            "Profile not found. Please try again."
-        );
+    const profile = store.profiles.find((p) => p.id === profileId);
+    if (!profile) throw new Error("Profile not found. Please try again.");
 
     const unlocked = await invoke<number>("unlock_keychain", {
         profileId,

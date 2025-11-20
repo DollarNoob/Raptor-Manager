@@ -25,5 +25,9 @@ export default function Status({ color, draggable, children }: Props) {
         fontWeight: UI_STYLES.TYPOGRAPHY.FONT_WEIGHT_NORMAL,
     };
 
-    return <div style={style} data-tauri-drag-region={draggable}>{children}</div>;
+    return (
+        <div style={style} data-tauri-drag-region={draggable}>
+            {children}
+        </div>
+    );
 }
