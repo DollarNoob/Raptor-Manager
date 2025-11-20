@@ -234,6 +234,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/roblox.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
+                        href="https://www.roblox.com/home"
                     >
                         Vanilla
                     </Client>
@@ -250,6 +251,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/macsploit.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
+                        href="https://raptor.fun/"
                     >
                         MacSploit
                     </Client>
@@ -266,6 +268,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/cryptic.webp"
                         onInstall={onInstall}
                         onRemove={onRemove}
+                        href="https://getcryptic.net/"
                     >
                         Cryptic
                     </Client>
@@ -284,6 +287,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/hydrogen.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
+                        href="https://hydrogen.lat/"
                     >
                         Hydrogen
                     </Client>
@@ -300,6 +304,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/ronix.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
+                        href="https://ronixstudios.io/"
                     >
                         Ronix
                     </Client>

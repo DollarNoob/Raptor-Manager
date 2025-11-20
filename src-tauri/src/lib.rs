@@ -8,9 +8,9 @@ pub mod binarycookies;
 mod client;
 mod config;
 mod cookies;
+mod crypticbridge;
 mod decompiler;
 mod hydrobridge;
-mod crypticbridge;
 mod installer;
 mod roblox;
 mod updater;
@@ -25,6 +25,7 @@ pub struct Message {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             config::read_config,

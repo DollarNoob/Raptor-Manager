@@ -295,7 +295,8 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
         fs::remove_dir_all(&storage_dir).map_err(|e| e.to_string())?;
     }
 
-    let binary_cookie_dir = http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
+    let binary_cookie_dir =
+        http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
     if binary_cookie_dir.exists() {
         fs::remove_file(&binary_cookie_dir).map_err(|e| e.to_string())?;
     }

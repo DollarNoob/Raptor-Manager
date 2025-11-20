@@ -148,7 +148,9 @@ pub struct CrypticVersions {
 #[tauri::command]
 pub async fn get_cryptic_version(app_handle: AppHandle) -> Result<CrypticVersion, String> {
     let client = Client::new();
-    let url = format!("https://raw.githubusercontent.com/RSDTestAccount/Endpoints/main/Cryptic-Mac-Internal");
+    let url = format!(
+        "https://raw.githubusercontent.com/RSDTestAccount/Endpoints/main/Cryptic-Mac-Internal"
+    );
     let response = client
         .get(url)
         .header(

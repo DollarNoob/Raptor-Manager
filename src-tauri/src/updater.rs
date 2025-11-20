@@ -27,7 +27,9 @@ pub async fn update(app: tauri::AppHandle) -> Result<(), String> {
         println!("update target: {:#?}", update.target);
         println!("update version: {:#?}", update.version);
 
-        update.download_and_install(|_, _| {}, || {}).await
+        update
+            .download_and_install(|_, _| {}, || {})
+            .await
             .map_err(|e| e.to_string())?;
 
         println!("update installed");

@@ -1,6 +1,6 @@
 use axum::{
-    extract::{Path, State},
     extract::ws::{Message, WebSocket, WebSocketUpgrade},
+    extract::{Path, State},
     routing::get,
     Json, Router,
 };
@@ -30,7 +30,10 @@ pub async fn serve(state: AppState) -> Result<(), String> {
     Ok(())
 }
 
-async fn ws(State(state): State<AppState>, ws: WebSocketUpgrade) -> impl axum::response::IntoResponse {
+async fn ws(
+    State(state): State<AppState>,
+    ws: WebSocketUpgrade,
+) -> impl axum::response::IntoResponse {
     return ws.on_upgrade(|socket| handle_socket(socket, state));
 }
 
