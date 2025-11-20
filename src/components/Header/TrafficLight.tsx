@@ -1,4 +1,7 @@
+import { motion } from "motion/react";
 import { useState } from "react";
+import CloseIcon from "../icons/CloseIcon";
+import MinimizeIcon from "../icons/MinimizeIcon";
 
 interface Props {
     color: "red" | "yellow";
@@ -8,6 +11,7 @@ interface Props {
 
 export default function TrafficLight({ color, onClick, children }: Props) {
     const [active, setActive] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     const colors = {
         red: {
@@ -35,14 +39,28 @@ export default function TrafficLight({ color, onClick, children }: Props) {
     };
 
     return (
-        <div
-            style={style}
+        <motion.div
+            style={{
+                ...style,
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
             onClick={onClick}
             onMouseDown={() => setActive(true)}
             onMouseUp={() => setActive(false)}
-            onMouseLeave={() => setActive(false)}
+            onMouseLeave={() => {
+                setActive(false);
+                setIsHovered(false);
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.1 }}
         >
+            {isHovered && color === "red" && <CloseIcon />}
+            {isHovered && color === "yellow" && <MinimizeIcon />}
             {children}
-        </div>
+        </motion.div>
     );
 }

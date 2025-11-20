@@ -1,8 +1,12 @@
 export { default as ClientIcon } from "./ClientIcon";
+export { default as CloseIcon } from "./CloseIcon";
+export { default as ContextIcon } from "./ContextIcon";
 export { default as FunnelIcon } from "./FunnelIcon";
 export { default as LaunchIcon } from "./LaunchIcon";
 export { default as LoadingIcon } from "./LoadingIcon";
+export { default as MinimizeIcon } from "./MinimizeIcon";
 export { default as MinusIcon } from "./MinusIcon";
 export { default as PlusIcon } from "./PlusIcon";
 export { default as SettingsIcon } from "./SettingsIcon";
 export { default as StopIcon } from "./StopIcon";
+export { default as TrashIcon } from "./TrashIcon";
