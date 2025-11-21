@@ -15,6 +15,7 @@ mod installer;
 mod roblox;
 mod updater;
 mod versions;
+mod macsploit;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Message {
@@ -55,7 +56,9 @@ pub fn run() {
             installer::remove_client,
             installer::clean_cache,
             installer::clean_leftover_cache,
-            updater::update
+            updater::update,
+            macsploit::macsploit_read_settings,
+            macsploit::macsploit_write_settings,
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();

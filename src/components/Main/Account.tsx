@@ -9,6 +9,9 @@ import EditProfileModal from "../EditProfileModal";
 import Status from "../Shared/Status";
 import Profile from "./Profile";
 import Thumbnail from "./Thumbnail";
+import MacsploitModal from "../MacsploitModal";
+import { useMenuIcon } from "../../utils/menuIcon";
+import { AnimatePresence } from "motion/react";
 
 interface Props {
     active: boolean;
@@ -24,6 +27,8 @@ export default function Account({ active, profile, state, onClick }: Props) {
     const [profileModal, setProfileModal] = useState<React.ReactNode | null>(
         null,
     );
+    const [macsploitModal, setMacsploitModal] =
+        useState<React.ReactNode | null>(null);
 
     // Create a function to handle activation that can be called from both mouse and keyboard events
     const handleActivate = () => {
@@ -40,6 +45,12 @@ export default function Account({ active, profile, state, onClick }: Props) {
                     id: "edit_profile",
                     text: "Edit Profile",
                     icon: "Remove",
+                    action: handleEvents,
+                },
+                {
+                    id: "edit_macsploit",
+                    text: "Edit MacSploit Settings",
+                    icon: await useMenuIcon("macsploit.png"),
                     action: handleEvents,
                 },
                 {
@@ -65,6 +76,13 @@ export default function Account({ active, profile, state, onClick }: Props) {
                 const destruct = () => setProfileModal(null);
                 setProfileModal(
                     <EditProfileModal profile={profile} destruct={destruct} />,
+                );
+                break;
+            }
+            case "edit_macsploit": {
+                const destruct = () => setMacsploitModal(null);
+                setMacsploitModal(
+                    <MacsploitModal profile={profile} destruct={destruct} />,
                 );
                 break;
             }
@@ -182,7 +200,10 @@ export default function Account({ active, profile, state, onClick }: Props) {
 
     return (
         <>
-            {profileModal}
+            <AnimatePresence>
+                {profileModal}
+                {macsploitModal}
+            </AnimatePresence>
             <button
                 type="button"
                 style={style}

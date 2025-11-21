@@ -7,6 +7,7 @@ import MinusIcon from "../icons/MinusIcon";
 import PlusIcon from "../icons/PlusIcon";
 import ProfileModal from "../ProfileModal";
 import ManagerButton from "./ManagerButton";
+import { AnimatePresence } from "motion/react";
 
 interface Props {
     children?: React.ReactNode;
@@ -65,7 +66,7 @@ export default function AccountManager(_props: Props) {
 
     return (
         <>
-            {profileModal}
+            <AnimatePresence>{profileModal}</AnimatePresence>
             <div style={style}>
                 <div style={leftContainerStyle}>
                     <ManagerButton icon={<PlusIcon />} onClick={onCreate} />

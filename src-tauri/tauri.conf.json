@@ -40,7 +40,8 @@
         "macOS": {
             "entitlements": "./Entitlements.plist"
         },
-        "createUpdaterArtifacts": true
+        "createUpdaterArtifacts": true,
+        "resources": ["icons/macsploit.png"]
     },
     "plugins": {
         "updater": {
