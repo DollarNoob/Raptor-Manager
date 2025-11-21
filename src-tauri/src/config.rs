@@ -264,6 +264,14 @@ end",
         .join("content");
     fs::create_dir_all(&content_dir).map_err(|e| e.to_string())?;
 
+    // Hydrogen - License Folder
+    let hydrogen_license_dir = library_dir.join("Application Support").join("Hydrogen");
+    fs::create_dir_all(&hydrogen_license_dir).map_err(|e| e.to_string())?;
+
+    // Ronix - License Folder
+    let hydrogen_license_dir = library_dir.join("Application Support").join("Ronix");
+    fs::create_dir_all(&hydrogen_license_dir).map_err(|e| e.to_string())?;
+
     Ok(())
 }
 
@@ -295,7 +303,8 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
         fs::remove_dir_all(&storage_dir).map_err(|e| e.to_string())?;
     }
 
-    let binary_cookie_dir = http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
+    let binary_cookie_dir =
+        http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}.binarycookies", &id));
     if binary_cookie_dir.exists() {
         fs::remove_file(&binary_cookie_dir).map_err(|e| e.to_string())?;
     }
@@ -344,4 +353,30 @@ pub fn open_profile_folder(app_handle: AppHandle, id: String) -> Result<i32, Str
     } else {
         Ok(-1)
     }
+}
+
+#[tauri::command]
+pub fn copy_hydrogen_key(app_handle: AppHandle, client: String, from_id: String, to_id: Vec<String>) -> Result<(), String> {
+    let app_data_dir = app_handle.path().app_data_dir().unwrap();
+
+    let hydrogen_dir = app_data_dir.join("environments").join(from_id)
+        .join("Library").join("Application Support").join(&client);
+    fs::create_dir_all(&hydrogen_dir).map_err(|e| e.to_string())?;
+
+    let hydrogen_license_dir = hydrogen_dir.join("key.txt");
+    if !hydrogen_license_dir.exists() {
+        return Err(format!("{} license does not exist.", &client));
+    }
+
+    let license = fs::read_to_string(hydrogen_license_dir).map_err(|e| e.to_string())?;
+    for id in to_id {
+        let hydrogen_dir = app_data_dir.join("environments").join(id)
+            .join("Library").join("Application Support").join(&client);
+        fs::create_dir_all(&hydrogen_dir).map_err(|e| e.to_string())?;
+
+        let hydrogen_license_dir = hydrogen_dir.join("key.txt");
+        fs::write(hydrogen_license_dir, &license).map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
 }

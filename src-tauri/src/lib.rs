@@ -8,13 +8,14 @@ pub mod binarycookies;
 mod client;
 mod config;
 mod cookies;
+mod crypticbridge;
 mod decompiler;
 mod hydrobridge;
-mod crypticbridge;
 mod installer;
 mod roblox;
 mod updater;
 mod versions;
+mod macsploit;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Message {
@@ -25,6 +26,7 @@ pub struct Message {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             config::read_config,
@@ -37,6 +39,7 @@ pub fn run() {
             config::create_environment,
             config::remove_environment,
             config::open_profile_folder,
+            config::copy_hydrogen_key,
             roblox::get_roblox_profile,
             roblox::get_roblox_thumbnail,
             client::create_keychain,
@@ -54,7 +57,9 @@ pub fn run() {
             installer::remove_client,
             installer::clean_cache,
             installer::clean_leftover_cache,
-            updater::update
+            updater::update,
+            macsploit::macsploit_read_settings,
+            macsploit::macsploit_write_settings,
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();
@@ -128,12 +133,12 @@ pub fn run() {
                 let update = updater::check_update(handle.clone()).await;
                 match update {
                     Ok(update) => {
-                        if let Some(version) = update {
-                            let _ = handle.emit_to("main", "update", version.clone());
+                        if let Some(update) = update {
+                            let _ = handle.emit_to("main", "update", &update);
 
                             let window = handle.get_webview_window("main").unwrap();
                             window.once("ready", move |_| {
-                                let _ = handle.emit_to("main", "update", version);
+                                let _ = handle.emit_to("main", "update", &update);
                             });
                         }
                     },

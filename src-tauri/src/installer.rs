@@ -6,7 +6,11 @@ use std::io::Write;
 use std::process::Command;
 use tauri::{AppHandle, Manager};
 
-pub async fn download_roblox(app_handle: &AppHandle, arch: &str, version: &str) -> Result<(), String> {
+pub async fn download_roblox(
+    app_handle: &AppHandle,
+    arch: &str,
+    version: &str,
+) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let clients_dir = app_data_dir.join("clients");
@@ -431,7 +435,8 @@ pub async fn install_client(
     version: String,
 ) -> Result<(), String> {
     let mut arch = std::env::consts::ARCH;
-    if client == "Cryptic" { // Cryptic only supports Intel builds
+    if client == "Cryptic" {
+        // Cryptic only supports Intel builds
         arch = "x86_64";
     }
 
@@ -518,7 +523,10 @@ pub async fn clean_cache(app_handle: AppHandle) -> Result<u64, String> {
 }
 
 #[tauri::command]
-pub async fn clean_leftover_cache(app_handle: AppHandle, versions: Vec<String>) -> Result<(), String> {
+pub async fn clean_leftover_cache(
+    app_handle: AppHandle,
+    versions: Vec<String>,
+) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
     let clients_dir = app_data_dir.join("clients");
@@ -528,14 +536,14 @@ pub async fn clean_leftover_cache(app_handle: AppHandle, versions: Vec<String>) 
 
     for entry in fs::read_dir(&clients_dir).map_err(|e| e.to_string())? {
         let e = entry.map_err(|e| e.to_string())?;
-        if
-            e.file_name().to_str().unwrap().ends_with(".zip") && // only check .zip files
+        if e.file_name().to_str().unwrap().ends_with(".zip") && // only check .zip files
             !versions.contains(
                 &e.file_name().to_str().unwrap()
                     .replace("x86_64-", "")
                     .replace("aarch64-", "")
                     .replace(".zip", "")
-            ) // check if version is not used anymore by all clients
+            )
+        // check if version is not used anymore by all clients
         {
             let metadata = e.metadata().unwrap();
             if metadata.is_file() {

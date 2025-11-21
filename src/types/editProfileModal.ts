@@ -1,5 +1,6 @@
 import type React from "react";
 import type { IProfile } from "../types/profile";
+import { IMacsploitSettings } from "./macsploit";
 
 export interface IEditProfileModalProps {
     profile: IProfile;
@@ -8,6 +9,12 @@ export interface IEditProfileModalProps {
 }
 
 export interface IProfileModalProps {
+    destruct: () => void;
+    children?: React.ReactNode;
+}
+
+export interface IClientModalProps {
+    profile: IProfile;
     destruct: () => void;
     children?: React.ReactNode;
 }
@@ -24,6 +31,15 @@ export interface IModalInputProps {
     ref?: React.Ref<[string, React.Dispatch<React.SetStateAction<string>>]>;
     placeholder?: string;
     defaultValue?: string;
+    children?: React.ReactNode;
+}
+
+export interface IModalOptionProps {
+    settings: [
+        IMacsploitSettings | undefined,
+        React.Dispatch<React.SetStateAction<IMacsploitSettings | undefined>>,
+    ];
+    name: keyof IMacsploitSettings;
     children?: React.ReactNode;
 }
 

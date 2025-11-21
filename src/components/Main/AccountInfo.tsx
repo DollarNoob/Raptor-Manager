@@ -18,6 +18,7 @@ import SharedButton from "../Shared/Button";
 import Status from "../Shared/Status";
 import BigUsername from "./BigUsername";
 import Thumbnail from "./Thumbnail";
+import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
     profile: IProfile | null;
@@ -41,6 +42,17 @@ export default function AccountInfo({ profile, state }: Props) {
                 ["Hydrogen", "Ronix", "Cryptic"].includes(event.payload.client)
             )
                 setContext(event.payload.profileId);
+            if (
+                event.payload.client &&
+                ["Hydrogen", "Ronix"].includes(event.payload.client)
+            )
+                invoke("copy_hydrogen_key", {
+                    client: event.payload.client,
+                    fromId: event.payload.profileId,
+                    toId: store.profiles
+                        .map((p) => p.id)
+                        .filter((id) => id !== event.payload.profileId),
+                });
         });
 
         const unlistenClose = listen<ICloseState>("client_close", (event) => {

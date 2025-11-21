@@ -19,6 +19,7 @@ interface Props {
         | IHydrogenVersion
         | ICrypticVersion;
     thumbnail: string;
+    href?: string;
     onInstall: (client: string) => void;
     onRemove: (client: string) => void;
     children?: React.ReactNode;
@@ -28,6 +29,7 @@ export default function Client({
     installation,
     version,
     thumbnail,
+    href,
     onInstall,
     onRemove,
     children,
@@ -93,7 +95,7 @@ export default function Client({
                         : "Not Installed"}
                 </Status>
             </div>
-            <Thumbnail thumbnail={thumbnail} size={72} />
+            <Thumbnail thumbnail={thumbnail} size={72} href={href} />
             <div style={buttonContainerStyle}>
                 {installation ? (
                     currentVersion === latestVersion ? (
