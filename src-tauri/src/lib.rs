@@ -39,6 +39,7 @@ pub fn run() {
             config::create_environment,
             config::remove_environment,
             config::open_profile_folder,
+            config::copy_hydrogen_key,
             roblox::get_roblox_profile,
             roblox::get_roblox_thumbnail,
             client::create_keychain,
