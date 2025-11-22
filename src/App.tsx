@@ -7,7 +7,7 @@ import Main from "./components/Main";
 import Settings from "./components/Settings";
 import { useModalStore, useTabStore } from "./store";
 import type { IMessage } from "./types/message";
-import { IUpdate } from "./types/update";
+import type { IUpdate } from "./types/update";
 
 function App() {
     const modal = useModalStore();
@@ -98,6 +98,19 @@ function App() {
             }
         });
 
+        const unlistenProgress = listen<[number, number]>(
+            "update-progress",
+            (event) => {
+                console.log(
+                    `[UPDATE] Downloaded ${event.payload[0]} bytes out of ${event.payload[1]} bytes.`,
+                );
+            },
+        );
+
+        const unlistenFinish = listen<void>("update-finish", () => {
+            console.log("[UPDATE] Download finished. Installing update.");
+        });
+
         if (!ready) {
             Promise.all([unlistenMessage, unlistenUpdate]).then(() =>
                 emit("ready").then(() => setReady(true)),
@@ -107,6 +120,8 @@ function App() {
         return () => {
             unlistenMessage.then((unlisten) => unlisten());
             unlistenUpdate.then((unlisten) => unlisten());
+            unlistenProgress.then((unlisten) => unlisten());
+            unlistenFinish.then((unlisten) => unlisten());
         };
     }, [ready, modal.add, modal.remove]);
 

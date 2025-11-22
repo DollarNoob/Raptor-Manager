@@ -1,6 +1,6 @@
 import type React from "react";
 import type { IProfile } from "../types/profile";
-import { IMacsploitSettings } from "./macsploit";
+import type { IMacsploitSettings } from "./macsploit";
 
 export interface IEditProfileModalProps {
     profile: IProfile;

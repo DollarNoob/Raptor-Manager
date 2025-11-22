@@ -5,6 +5,9 @@ import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import { installClient, removeClient, writeConfig } from "../../utils";
 import Client from "./Client";
 import Option from "./Option";
+import { useEffect } from "react";
+import { listen } from "@tauri-apps/api/event";
+import type { IInstallProgress } from "../../types/install";
 
 interface Props {
     children?: React.ReactNode;
@@ -15,7 +18,70 @@ export default function Settings(_props: Props) {
     const config = useConfigStore();
     const version = useVersionStore();
 
+    useEffect(() => {
+        let idk = 0;
+        const unlisten = listen<IInstallProgress>(
+            "install-progress",
+            (event) => {
+                switch (event.payload.state) {
+                    case "download-roblox": {
+                        // stage 1 (does not happen if client installation cache exists)
+                        if (!event.payload.progress) return;
+                        // progress is only present in this state: [(downloaded bytes), (content size)]
+                        // log every 100 events because this lags the console so hard
+                        if (idk++ % 100 === 0)
+                            console.log(
+                                `[INSTALL] 1: Downloaded ${event.payload.progress[0]} bytes out of ${event.payload.progress[1]} bytes of Roblox client.`,
+                            );
+                        break;
+                    }
+                    case "download-insert-dylib": {
+                        // stage 2 (does not happen if (already downloaded || vanilla))
+                        console.log("[INSTALL] 2: Downloading insert_dylib.");
+                        break;
+                    }
+                    case "install-insert-dylib": {
+                        // stage 3 (does not happen on vanilla)
+                        console.log("[INSTALL] 3: Installing insert_dylib.");
+                        break;
+                    }
+                    case "install-roblox": {
+                        // stage 4
+                        console.log("[INSTALL] 4: Installing Roblox client.");
+                        break;
+                    }
+                    case "download-dylib": {
+                        // stage 5
+                        console.log("[INSTALL] 5: Downloading dylib.");
+                        break;
+                    }
+                    case "remove-codesign": {
+                        // stage 6 (does not happen on (intel && !vanilla))
+                        console.log("[INSTALL] 6: Removing codesign.");
+                        break;
+                    }
+                    case "insert-dylib": {
+                        // stage 7 (does not happen on vanilla)
+                        console.log("[INSTALL] 7: Inserting dylib.");
+                        break;
+                    }
+                    case "apply-codesign": {
+                        // stage 8 (does not happen on (intel && !vanilla))
+                        console.log("[INSTALL] 8: Applying codesign.");
+                        break;
+                    }
+                }
+            },
+        );
+
+        return () => {
+            unlisten.then((unlisten) => unlisten());
+        };
+    }, []);
+
     async function onInstall(client: string) {
+        console.log("[INSTALL] 0: Removing current client installation.");
+
         const removed = await removeClient(client).catch(
             (err) => new Error(err),
         );
@@ -62,7 +128,8 @@ export default function Settings(_props: Props) {
             return;
         }
 
-        // try to clean unused version zips, it is okay to fail
+        // stage 9 (try to clean unused version zips, it is okay to fail)
+        console.log("[INSTALL] 9: Cleaning unused installation cache.");
         const versions: string[] = [];
         versions.push(version.roblox.clientVersionUpload);
         versions.push(version.macsploit.clientVersionUpload);
