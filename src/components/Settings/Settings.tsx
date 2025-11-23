@@ -1,7 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { DECOMPILER_LIST } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
+import type { IInstallProgress } from "../../types/install";
 import { installClient, removeClient, writeConfig } from "../../utils";
 import Client from "./Client";
 import Option from "./Option";
@@ -14,6 +17,89 @@ export default function Settings(_props: Props) {
     const modal = useModalStore();
     const config = useConfigStore();
     const version = useVersionStore();
+    const installModalId = useRef<string | null>(null);
+
+    /*
+    Monitor installation progress events
+    Listens for install-progress events and updates the modal with progress text
+    And percentage based on the current installation state (downloading, installing, etc.).
+    */
+    useEffect(() => {
+        const unlisten = listen<IInstallProgress>(
+            "install-progress",
+            (event) => {
+                if (!installModalId.current) return;
+
+                switch (event.payload.state) {
+                    case "download-roblox": {
+                        if (!event.payload.progress) return;
+                        const downloaded = event.payload.progress[0];
+                        const total = event.payload.progress[1];
+                        const percent = Math.round((downloaded / total) * 100);
+
+                        modal.update(installModalId.current, {
+                            progressText: `Downloading Roblox: ${Math.round(downloaded / 1024 / 1024)} MB / ${Math.round(total / 1024 / 1024)} MB`,
+                            progress: percent,
+                        });
+                        break;
+                    }
+                    case "download-insert-dylib": {
+                        modal.update(installModalId.current, {
+                            progressText: "Downloading insert_dylib...",
+                            progress: 10,
+                        });
+                        break;
+                    }
+                    case "install-insert-dylib": {
+                        modal.update(installModalId.current, {
+                            progressText: "Installing insert_dylib...",
+                            progress: 20,
+                        });
+                        break;
+                    }
+                    case "install-roblox": {
+                        modal.update(installModalId.current, {
+                            progressText: "Installing Roblox client...",
+                            progress: 35,
+                        });
+                        break;
+                    }
+                    case "download-dylib": {
+                        modal.update(installModalId.current, {
+                            progressText: "Downloading dylib...",
+                            progress: 50,
+                        });
+                        break;
+                    }
+                    case "remove-codesign": {
+                        modal.update(installModalId.current, {
+                            progressText: "Removing codesign...",
+                            progress: 65,
+                        });
+                        break;
+                    }
+                    case "insert-dylib": {
+                        modal.update(installModalId.current, {
+                            progressText: "Inserting dylib...",
+                            progress: 80,
+                        });
+                        break;
+                    }
+                    case "apply-codesign": {
+                        modal.update(installModalId.current, {
+                            progressText: "Applying codesign...",
+                            progress: 90,
+                        });
+                        break;
+                    }
+                }
+            },
+        );
+
+        return () => {
+            unlisten.then((unlisten) => unlisten());
+        };
+    }, [modal.update]);
 
     async function onInstall(client: string) {
         const removed = await removeClient(client).catch(
@@ -36,10 +122,13 @@ export default function Settings(_props: Props) {
         }
 
         const id = crypto.randomUUID();
+        installModalId.current = id; // install modal id
         modal.add({
             id,
             title: `Installing ${client}`,
             text: "Please do not close the application until the installation finishes.",
+            progressText: "Preparing installation...",
+            progress: 0,
             buttons: [],
         });
 
@@ -49,26 +138,35 @@ export default function Settings(_props: Props) {
         if (installed instanceof Error) {
             const _id = crypto.randomUUID();
             modal.add({
-                id,
+                id: _id,
                 title: `Failed to install ${client}`,
                 text: installed.message,
                 buttons: [
                     {
                         text: "Okay",
-                        onClick: () => modal.remove(id) ?? modal.remove(_id),
+                        onClick: () => {
+                            modal.remove(id);
+                            modal.remove(_id);
+                            installModalId.current = null;
+                        },
                     },
                 ],
             });
+            installModalId.current = null;
             return;
         }
 
-        // try to clean unused version zips, it is okay to fail
         const versions: string[] = [];
         versions.push(version.roblox.clientVersionUpload);
         versions.push(version.macsploit.clientVersionUpload);
         versions.push(version.hydrogen.macos.roblox_version ?? "");
         versions.push(version.cryptic.Versions.Roblox);
         await invoke("clean_leftover_cache", { versions }).catch(() => null);
+
+        modal.update(id, {
+            progressText: "Installation complete!",
+            progress: 100,
+        });
 
         const _id = crypto.randomUUID();
         modal.add({
@@ -78,10 +176,15 @@ export default function Settings(_props: Props) {
             buttons: [
                 {
                     text: "Okay",
-                    onClick: () => modal.remove(id) ?? modal.remove(_id),
+                    onClick: () => {
+                        modal.remove(id);
+                        modal.remove(_id);
+                        installModalId.current = null;
+                    },
                 },
             ],
         });
+        installModalId.current = null;
     }
 
     async function onRemove(client: string) {

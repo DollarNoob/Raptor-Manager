@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tauri::Url;
+use tauri::{AppHandle, Emitter, Url};
 use tauri_plugin_updater::UpdaterExt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13,8 +13,8 @@ pub struct Update {
     pub notes: Option<String>,
 }
 
-pub async fn check_update(app: tauri::AppHandle) -> Result<Option<Update>, String> {
-    let updater = app.updater().map_err(|e| e.to_string())?;
+pub async fn check_update(app_handle: AppHandle) -> Result<Option<Update>, String> {
+    let updater = app_handle.updater().map_err(|e| e.to_string())?;
     if let Some(update) = updater.check().await.map_err(|e| e.to_string())? {
         let mut update_date = None;
         if let Some(date) = update.date {
@@ -38,8 +38,8 @@ pub async fn check_update(app: tauri::AppHandle) -> Result<Option<Update>, Strin
 }
 
 #[tauri::command]
-pub async fn update(app: tauri::AppHandle) -> Result<(), String> {
-    let updater = app.updater().map_err(|e| e.to_string())?;
+pub async fn update(app_handle: AppHandle) -> Result<(), String> {
+    let updater = app_handle.updater().map_err(|e| e.to_string())?;
     if let Some(update) = updater.check().await.map_err(|e| e.to_string())? {
         println!("update current version: {:#?}", update.current_version);
         println!("update download url: {:#?}", update.download_url);
@@ -48,12 +48,23 @@ pub async fn update(app: tauri::AppHandle) -> Result<(), String> {
         println!("update target: {:#?}", update.target);
         println!("update version: {:#?}", update.version);
 
+        let mut downloaded = 0;
         update
-            .download_and_install(|_, _| {}, || {})
+            .download_and_install(
+                |chunk_length, content_length| {
+                    downloaded += chunk_length as u64;
+                    if let Some(length) = content_length {
+                        let _ = app_handle.emit_to("main", "update-progress", [downloaded, length]);
+                    }
+                },
+                || {
+                    let _ = app_handle.emit_to("main", "update-finish", ());
+                },
+            )
             .await
             .map_err(|e| e.to_string())?;
 
-        app.restart();
+        app_handle.restart();
     }
 
     Ok(())
