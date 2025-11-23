@@ -7,9 +7,19 @@ interface Props {
     title: string;
     text: string;
     children?: React.ReactNode;
+    progress?: number;
+    progressText?: string;
+    isIndeterminate?: boolean;
 }
 
-export default function Modal({ title, text, children }: Props) {
+export default function Modal({
+    title,
+    text,
+    children,
+    progress,
+    progressText,
+    isIndeterminate,
+}: Props) {
     const lines = React.useMemo(
         () =>
             text.split("\n").map((line) => ({
@@ -73,6 +83,42 @@ export default function Modal({ title, text, children }: Props) {
                         </React.Fragment>
                     ))}
                 </Text>
+                {/* progress bar and info text */}
+                {(progress !== undefined ||
+                    progressText ||
+                    isIndeterminate) && (
+                    <div
+                        style={{
+                            marginTop: 12,
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: "80%",
+                                height: 6,
+                                backgroundColor: "oklch(0.15 0 0)",
+                                borderRadius: 3,
+                                overflow: "hidden",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: `${Math.min(100, Math.max(0, progress ?? 0))}%`,
+                                    height: "100%",
+                                    backgroundColor: "oklch(0.74 0.14 254)",
+                                    transition: "width 0.3s ease",
+                                }}
+                            />
+                        </div>
+                        {progressText && (
+                            <Text style={{ marginTop: 5 }}>{progressText}</Text>
+                        )}
+                    </div>
+                )}
                 {React.Children.count(children) !== 0 && (
                     <div style={buttonContainerStyle}>{children}</div>
                 )}

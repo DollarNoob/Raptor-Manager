@@ -1,9 +1,10 @@
 interface Props {
     children?: React.ReactNode;
+    style?: React.CSSProperties;
 }
 
-export default function Text({ children }: Props) {
-    const style: React.CSSProperties = {
+export default function Text({ children, style: customStyle }: Props) {
+    const defaultStyle: React.CSSProperties = {
         paddingLeft: 12,
         paddingRight: 12,
         color: "oklch(0.9 0 0)",
@@ -13,5 +14,9 @@ export default function Text({ children }: Props) {
         textAlign: "center",
     };
 
-    return <span style={style}>{children}</span>;
+    const combinedStyle = customStyle
+        ? { ...defaultStyle, ...customStyle }
+        : defaultStyle;
+
+    return <span style={combinedStyle}>{children}</span>;
 }

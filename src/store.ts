@@ -63,6 +63,7 @@ export interface ModalState {
     modals: IModal[];
     add: (modal: IModal) => void;
     remove: (id: string) => void;
+    update: (id: string, updates: Partial<IModal>) => void;
 }
 
 export const useModalStore = create<ModalState>()((set) => ({
@@ -71,6 +72,12 @@ export const useModalStore = create<ModalState>()((set) => ({
     remove: (id) =>
         set((state) => ({
             modals: state.modals.filter((modal) => modal.id !== id),
+        })),
+    update: (id, updates) =>
+        set((state) => ({
+            modals: state.modals.map((modal) =>
+                modal.id === id ? { ...modal, ...updates } : modal,
+            ),
         })),
 }));
 

@@ -5,6 +5,9 @@ export interface IModal {
     title: string;
     text: string;
     buttons: IModalButton[];
+    progress?: number;
+    progressText?: string;
+    isIndeterminate?: boolean;
 }
 
 export interface IModalButton {
