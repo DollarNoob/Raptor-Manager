@@ -19,8 +19,12 @@ export default function Settings(_props: Props) {
     const version = useVersionStore();
     const installModalId = useRef<string | null>(null);
 
+    /*
+    Monitor installation progress events
+    Listens for install-progress events and updates the modal with progress text
+    And percentage based on the current installation state (downloading, installing, etc.).
+    */
     useEffect(() => {
-        let idk = 0;
         const unlisten = listen<IInstallProgress>(
             "install-progress",
             (event) => {
@@ -37,15 +41,9 @@ export default function Settings(_props: Props) {
                             progressText: `Downloading Roblox: ${Math.round(downloaded / 1024 / 1024)} MB / ${Math.round(total / 1024 / 1024)} MB`,
                             progress: percent,
                         });
-
-                        if (idk++ % 100 === 0)
-                            console.log(
-                                `[INSTALL] 1: Downloaded ${downloaded} bytes out of ${total} bytes of Roblox client.`,
-                            );
                         break;
                     }
                     case "download-insert-dylib": {
-                        console.log("[INSTALL] 2: Downloading insert_dylib.");
                         modal.update(installModalId.current, {
                             progressText: "Downloading insert_dylib...",
                             progress: 10,
@@ -53,7 +51,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "install-insert-dylib": {
-                        console.log("[INSTALL] 3: Installing insert_dylib.");
                         modal.update(installModalId.current, {
                             progressText: "Installing insert_dylib...",
                             progress: 20,
@@ -61,7 +58,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "install-roblox": {
-                        console.log("[INSTALL] 4: Installing Roblox client.");
                         modal.update(installModalId.current, {
                             progressText: "Installing Roblox client...",
                             progress: 35,
@@ -69,7 +65,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "download-dylib": {
-                        console.log("[INSTALL] 5: Downloading dylib.");
                         modal.update(installModalId.current, {
                             progressText: "Downloading dylib...",
                             progress: 50,
@@ -77,7 +72,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "remove-codesign": {
-                        console.log("[INSTALL] 6: Removing codesign.");
                         modal.update(installModalId.current, {
                             progressText: "Removing codesign...",
                             progress: 65,
@@ -85,7 +79,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "insert-dylib": {
-                        console.log("[INSTALL] 7: Inserting dylib.");
                         modal.update(installModalId.current, {
                             progressText: "Inserting dylib...",
                             progress: 80,
@@ -93,7 +86,6 @@ export default function Settings(_props: Props) {
                         break;
                     }
                     case "apply-codesign": {
-                        console.log("[INSTALL] 8: Applying codesign.");
                         modal.update(installModalId.current, {
                             progressText: "Applying codesign...",
                             progress: 90,
@@ -110,8 +102,6 @@ export default function Settings(_props: Props) {
     }, []);
 
     async function onInstall(client: string) {
-        console.log("[INSTALL] 0: Removing current client installation.");
-
         const removed = await removeClient(client).catch(
             (err) => new Error(err),
         );
@@ -166,8 +156,6 @@ export default function Settings(_props: Props) {
             return;
         }
 
-        // stage 9 (try to clean unused version zips, it is okay to fail)
-        console.log("[INSTALL] 9: Cleaning unused installation cache.");
         const versions: string[] = [];
         versions.push(version.roblox.clientVersionUpload);
         versions.push(version.macsploit.clientVersionUpload);
