@@ -120,7 +120,6 @@ export default function Header(_props: Props) {
                     key={modal.modals[0].id}
                     title={modal.modals[0].title}
                     text={modal.modals[0].text}
-                    
                     // progress = {modal.modals[0].progress}
                     progress={modal.modals[0].progress}
                     progressText={modal.modals[0].progressText}

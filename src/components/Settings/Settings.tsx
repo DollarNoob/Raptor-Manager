@@ -1,13 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { DECOMPILER_LIST } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
+import type { IInstallProgress } from "../../types/install";
 import { installClient, removeClient, writeConfig } from "../../utils";
 import Client from "./Client";
 import Option from "./Option";
-import { useEffect, useRef } from "react";
-import { listen } from "@tauri-apps/api/event";
-import type { IInstallProgress } from "../../types/install";
 
 interface Props {
     children?: React.ReactNode;
@@ -99,7 +99,7 @@ export default function Settings(_props: Props) {
         return () => {
             unlisten.then((unlisten) => unlisten());
         };
-    }, []);
+    }, [modal.update]);
 
     async function onInstall(client: string) {
         const removed = await removeClient(client).catch(
