@@ -1,24 +1,24 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
+import { AnimatePresence } from "motion/react";
 import { useState } from "react";
 import {
-    CLIENT_NAME_MACSPLOIT,
-    CLIENT_NAME_HYDROGEN,
-    CLIENT_NAME_RONIX,
     CLIENT_NAME_CRYPTIC,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_RONIX,
     CONTEXT_MENU_ITEMS,
 } from "../../constants";
 import { useContextStore, useModalStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import type { IState } from "../../types/state";
 import { removeProfile } from "../../utils";
+import { useMenuIcon } from "../../utils/menuIcon";
 import EditProfileModal from "../EditProfileModal";
+import MacsploitModal from "../MacsploitModal";
 import Status from "../Shared/Status";
 import Profile from "./Profile";
 import Thumbnail from "./Thumbnail";
-import MacsploitModal from "../MacsploitModal";
-import { useMenuIcon } from "../../utils/menuIcon";
-import { AnimatePresence } from "motion/react";
 
 interface Props {
     active: boolean;
@@ -57,7 +57,7 @@ export default function Account({ active, profile, state, onClick }: Props) {
                 {
                     id: "edit_macsploit",
                     text: CONTEXT_MENU_ITEMS.EDIT_MACSPOILT,
-                    icon: await useMenuIcon("macsploit.png"),
+                    icon: await useMenuIcon("macsploit.svg"),
                     action: handleEvents,
                 },
                 {

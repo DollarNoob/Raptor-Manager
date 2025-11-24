@@ -8,6 +8,7 @@
         "preview": "vite preview",
         "tauri": "tauri",
         "tauri:build": "tauri build --target universal-apple-darwin",
+        "tauri:dev": "tauri dev",
         "format": "biome format --write"
     },
     "dependencies": {

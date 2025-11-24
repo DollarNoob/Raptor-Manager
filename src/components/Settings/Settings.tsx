@@ -363,7 +363,7 @@ export default function Settings(_props: Props) {
                     <Client
                         installation={macsploitInstallation}
                         version={version.macsploit}
-                        thumbnail="/macsploit.png"
+                        thumbnail="/raptor.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
                         href={URL_RAPTOR_FUN}
@@ -380,7 +380,7 @@ export default function Settings(_props: Props) {
                     <Client
                         installation={crypticInstallation}
                         version={version.cryptic}
-                        thumbnail="/cryptic.webp"
+                        thumbnail="/cryptic.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
                         href={URL_CRYPTIC}
@@ -399,7 +399,7 @@ export default function Settings(_props: Props) {
                     <Client
                         installation={hydrogenInstallation}
                         version={version.hydrogen}
-                        thumbnail="/hydrogen.png"
+                        thumbnail="/hydrogen.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
                         href={URL_HYDROGEN}
@@ -416,7 +416,7 @@ export default function Settings(_props: Props) {
                     <Client
                         installation={ronixInstallation}
                         version={version.ronix}
-                        thumbnail="/ronix.png"
+                        thumbnail="/ronix.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
                         href={URL_RONIX_STUDIOS}
