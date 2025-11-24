@@ -9,6 +9,14 @@ import {
 import { useConfigStore, useStore, useVersionStore } from "../store";
 import { updateProfile } from "./profiles";
 
+/**
+ * Launches a client for a profile with the given cookie.
+ * Unlocks keychain, writes cookies, modifies bundle identifier, and starts the client.
+ * @param client - The client name to launch
+ * @param profileId - The ID of the profile to launch
+ * @param cookie - The cookie for the profile
+ * @returns The launch result with state information
+ */
 export async function launchClient(
     client: string,
     profileId: string,
@@ -59,6 +67,10 @@ export async function launchClient(
     return launched;
 }
 
+/**
+ * Stops a running client process.
+ * @param pid - The process ID of the client to stop
+ */
 export async function stopClient(pid: number) {
     const stopped = await invoke("stop_client", { pid }).catch(
         (err) => new Error(err),
@@ -68,6 +80,10 @@ export async function stopClient(pid: number) {
         throw new Error("Client could not be stopped due to an unknown error.");
 }
 
+/**
+ * Installs a client and adds it to the configuration.
+ * @param client - The client name to install
+ */
 export async function installClient(client: string) {
     const version = useVersionStore.getState();
 
@@ -141,6 +157,10 @@ export async function installClient(client: string) {
     return;
 }
 
+/**
+ * Removes a client from the system and updates the configuration.
+ * @param client - The client name to remove
+ */
 export async function removeClient(client: string) {
     const installed = await invoke("remove_client", { client }).catch(
         (err: string) => new Error(err),

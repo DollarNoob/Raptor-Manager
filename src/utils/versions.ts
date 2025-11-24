@@ -8,6 +8,11 @@ import type {
 } from "../types/version";
 import { showErrorModal } from "./modal";
 
+/**
+ * Fetches version information for all supported clients.
+ * Updates the version store with the latest versions.
+ * @returns True if all versions were fetched successfully, false otherwise
+ */
 export async function fetchClientVersions() {
     const version = useVersionStore.getState();
 

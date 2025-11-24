@@ -3,6 +3,10 @@ import { useStore } from "../store";
 import type { IProfile } from "../types/profile";
 import { showConfirmationModal, showErrorModal } from "./modal";
 
+/**
+ * Adds a new profile to the store and creates its environment and keychain.
+ * @param profile - The profile object to add
+ */
 export async function addProfile(profile: IProfile) {
     const store = useStore.getState();
 
@@ -40,6 +44,10 @@ export async function addProfile(profile: IProfile) {
     store.addProfile(profile);
 }
 
+/**
+ * Updates an existing profile in the store.
+ * @param profile - The updated profile object
+ */
 export async function updateProfile(profile: IProfile) {
     const store = useStore.getState();
 
@@ -57,6 +65,10 @@ export async function updateProfile(profile: IProfile) {
     store.updateProfile(profile);
 }
 
+/**
+ * Removes a profile from the store and deletes its environment.
+ * @param id - The ID of the profile to remove
+ */
 export async function removeProfile(id: string) {
     const store = useStore.getState();
     const removed = await invoke<void>("write_profiles", {
@@ -72,6 +84,10 @@ export async function removeProfile(id: string) {
     store.removeProfile(id);
 }
 
+/**
+ * Reads all profiles from storage and adds them to the store.
+ * @returns True if successful, false otherwise
+ */
 export async function readProfiles() {
     const profiles = await invoke<IProfile[]>("read_profiles").catch(
         (err) => new Error(err),

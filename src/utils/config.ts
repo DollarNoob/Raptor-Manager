@@ -3,6 +3,10 @@ import { useConfigStore } from "../store";
 import type { IConfig } from "../types/config";
 import { showConfirmationModal, showErrorModal } from "./modal";
 
+/**
+ * Reads the configuration from storage and updates the config store.
+ * @returns True if successful, false otherwise
+ */
 export async function readConfig() {
     const cfg = await invoke<IConfig>("read_config").catch(
         (err) => new Error(err),
@@ -26,6 +30,11 @@ export async function readConfig() {
     return true;
 }
 
+/**
+ * Writes the configuration to storage and updates the config store.
+ * @param config - The configuration object to write
+ * @returns True if successful, false otherwise
+ */
 export async function writeConfig(config: IConfig) {
     useConfigStore.getState().setConfig(config);
 
