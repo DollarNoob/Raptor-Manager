@@ -1,5 +1,20 @@
+import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
+import {
+    CLIENT_NAME_CRYPTIC,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_VANILLA,
+    PROFILE_CRASHED_SUFFIX,
+    STATUS_ATTACH,
+    STATUS_ATTACHED,
+    STATUS_LAUNCH,
+    STATUS_LAUNCHING,
+    STATUS_OFFLINE,
+    STATUS_STOP,
+} from "../../constants";
 import {
     useConfigStore,
     useContextStore,
@@ -18,7 +33,6 @@ import SharedButton from "../Shared/Button";
 import Status from "../Shared/Status";
 import BigUsername from "./BigUsername";
 import Thumbnail from "./Thumbnail";
-import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
     profile: IProfile | null;
@@ -26,7 +40,6 @@ interface Props {
     children?: React.ReactNode;
 }
 
-// TODO: Rework AccountsList UX, not an optimal solution right now
 export default function AccountInfo({ profile, state }: Props) {
     const store = useStore();
     const modal = useModalStore();
@@ -39,12 +52,18 @@ export default function AccountInfo({ profile, state }: Props) {
             store.updateState(event.payload);
             if (
                 event.payload.client &&
-                ["Hydrogen", "Ronix", "Cryptic"].includes(event.payload.client)
+                [
+                    CLIENT_NAME_HYDROGEN,
+                    CLIENT_NAME_RONIX,
+                    CLIENT_NAME_CRYPTIC,
+                ].includes(event.payload.client)
             )
                 setContext(event.payload.profileId);
             if (
                 event.payload.client &&
-                ["Hydrogen", "Ronix"].includes(event.payload.client)
+                [CLIENT_NAME_HYDROGEN, CLIENT_NAME_RONIX].includes(
+                    event.payload.client,
+                )
             )
                 invoke("copy_hydrogen_key", {
                     client: event.payload.client,
@@ -73,7 +92,7 @@ export default function AccountInfo({ profile, state }: Props) {
                     id,
                     title:
                         profile?.name ??
-                        `Profile: ${event.payload.profileId} Crashed`,
+                        `Profile: ${event.payload.profileId} ${PROFILE_CRASHED_SUFFIX}`,
                     text: `Your client has crashed with code ${event.payload.exitCode}.`,
                     buttons: [
                         {
@@ -193,9 +212,9 @@ export default function AccountInfo({ profile, state }: Props) {
                 return;
             }
 
-            if (client === "Vanilla") {
+            if (client === CLIENT_NAME_VANILLA) {
                 (launched as IState).connected = true;
-                (launched as IState).client = "Vanilla";
+                (launched as IState).client = CLIENT_NAME_VANILLA;
             }
             store.updateState(launched as IState);
         }
@@ -241,24 +260,28 @@ export default function AccountInfo({ profile, state }: Props) {
         <LaunchIcon />
     );
     const launchText = state?.connected
-        ? "Stop"
+        ? STATUS_STOP
         : state?.pid
-          ? "Launching"
-          : "Launch";
+          ? STATUS_LAUNCHING
+          : STATUS_LAUNCH;
 
-    let statusText = "Offline";
+    let statusText: string = STATUS_OFFLINE;
     if (profile && state && state.connected && state.client) {
         statusText = state.client;
         if (state.port) {
             // modified clients
             statusText = state.client;
-            if (state.client === "MacSploit") {
+            if (state.client === CLIENT_NAME_MACSPLOIT) {
                 statusText += ` ${state.port}`;
             } else if (
-                ["Hydrogen", "Ronix", "Cryptic"].includes(state.client)
+                [
+                    CLIENT_NAME_HYDROGEN,
+                    CLIENT_NAME_RONIX,
+                    CLIENT_NAME_CRYPTIC,
+                ].includes(state.client)
             ) {
                 if (state.profileId === context.id) {
-                    statusText += " Attached";
+                    statusText += ` ${STATUS_ATTACHED}`;
                 }
             }
         }
@@ -339,9 +362,11 @@ export default function AccountInfo({ profile, state }: Props) {
                     </div>
                     <div style={bottomContainerStyle}>
                         {state.client &&
-                            ["Hydrogen", "Ronix", "Cryptic"].includes(
-                                state.client,
-                            ) &&
+                            [
+                                CLIENT_NAME_HYDROGEN,
+                                CLIENT_NAME_RONIX,
+                                CLIENT_NAME_CRYPTIC,
+                            ].includes(state.client) &&
                             state.connected &&
                             state.pid && (
                                 <SharedButton
@@ -356,8 +381,8 @@ export default function AccountInfo({ profile, state }: Props) {
                                     onClick={() => setContext(profile.id)}
                                 >
                                     {context.id === profile.id
-                                        ? "Attached"
-                                        : "Attach"}
+                                        ? STATUS_ATTACHED
+                                        : STATUS_ATTACH}
                                 </SharedButton>
                             )}
                         <SharedButton

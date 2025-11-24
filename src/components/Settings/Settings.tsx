@@ -2,7 +2,19 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
-import { DECOMPILER_LIST } from "../../constants";
+import {
+    CLIENT_NAME_CRYPTIC,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_VANILLA,
+    DECOMPILER_LIST,
+    URL_CRYPTIC,
+    URL_HYDROGEN,
+    URL_RAPTOR_FUN,
+    URL_ROBLOX_HOME,
+    URL_RONIX_STUDIOS,
+} from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import type { IInstallProgress } from "../../types/install";
 import { installClient, removeClient, writeConfig } from "../../utils";
@@ -307,19 +319,19 @@ export default function Settings(_props: Props) {
     };
 
     const robloxInstallation = config.config.clients.find(
-        (client) => client.name === "Vanilla",
+        (client) => client.name === CLIENT_NAME_VANILLA,
     );
     const macsploitInstallation = config.config.clients.find(
-        (client) => client.name === "MacSploit",
+        (client) => client.name === CLIENT_NAME_MACSPLOIT,
     );
     const hydrogenInstallation = config.config.clients.find(
-        (client) => client.name === "Hydrogen",
+        (client) => client.name === CLIENT_NAME_HYDROGEN,
     );
     const ronixInstallation = config.config.clients.find(
-        (client) => client.name === "Ronix",
+        (client) => client.name === CLIENT_NAME_RONIX,
     );
     const crypticInstallation = config.config.clients.find(
-        (client) => client.name === "Cryptic",
+        (client) => client.name === CLIENT_NAME_CRYPTIC,
     );
 
     return (
@@ -337,7 +349,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/roblox.svg"
                         onInstall={onInstall}
                         onRemove={onRemove}
-                        href="https://www.roblox.com/home"
+                        href={URL_ROBLOX_HOME}
                     >
                         Vanilla
                     </Client>
@@ -354,7 +366,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/macsploit.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
-                        href="https://raptor.fun/"
+                        href={URL_RAPTOR_FUN}
                     >
                         MacSploit
                     </Client>
@@ -371,7 +383,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/cryptic.webp"
                         onInstall={onInstall}
                         onRemove={onRemove}
-                        href="https://getcryptic.net/"
+                        href={URL_CRYPTIC}
                     >
                         Cryptic
                     </Client>
@@ -390,7 +402,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/hydrogen.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
-                        href="https://hydrogen.lat/"
+                        href={URL_HYDROGEN}
                     >
                         Hydrogen
                     </Client>
@@ -407,7 +419,7 @@ export default function Settings(_props: Props) {
                         thumbnail="/ronix.png"
                         onInstall={onInstall}
                         onRemove={onRemove}
-                        href="https://ronixstudios.io/"
+                        href={URL_RONIX_STUDIOS}
                     >
                         Ronix
                     </Client>

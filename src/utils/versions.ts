@@ -1,12 +1,18 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useModalStore, useVersionStore } from "../store";
+import { useVersionStore } from "../store";
 import type {
     ICrypticVersion,
     IHydrogenVersion,
     IMacsploitVersion,
     IRobloxVersion,
 } from "../types/version";
+import { showErrorModal } from "./modal";
 
+/**
+ * Fetches version information for all supported clients.
+ * Updates the version store with the latest versions.
+ * @returns True if all versions were fetched successfully, false otherwise
+ */
 export async function fetchClientVersions() {
     const version = useVersionStore.getState();
 
@@ -31,74 +37,26 @@ export async function fetchClientVersions() {
     ]);
 
     if (roblox instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to fetch Roblox version",
-            text: roblox.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal("Failed to fetch Roblox version", roblox.message);
         return false;
     }
     version.setRoblox(roblox);
 
     if (macsploit instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to fetch MacSploit version",
-            text: macsploit.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal("Failed to fetch MacSploit version", macsploit.message);
         return false;
     }
     version.setMacsploit(macsploit);
 
     if (hydrogen instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to fetch Hydrogen version",
-            text: hydrogen.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal("Failed to fetch Hydrogen version", hydrogen.message);
         return false;
     }
     version.setHydrogen(hydrogen);
     version.setRonix(hydrogen); // theyre both the same lol
 
     if (cryptic instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to fetch Cryptic version",
-            text: cryptic.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal("Failed to fetch Cryptic version", cryptic.message);
         return false;
     }
     version.setCryptic(cryptic);

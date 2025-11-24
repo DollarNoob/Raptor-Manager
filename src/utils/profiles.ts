@@ -1,27 +1,20 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useModalStore, useStore } from "../store";
+import { useStore } from "../store";
 import type { IProfile } from "../types/profile";
+import { showConfirmationModal, showErrorModal } from "./modal";
 
+/**
+ * Adds a new profile to the store and creates its environment and keychain.
+ * @param profile - The profile object to add
+ */
 export async function addProfile(profile: IProfile) {
     const store = useStore.getState();
-    const modal = useModalStore.getState();
 
     const added = await invoke<void>("write_profiles", {
         profiles: [...store.profiles, profile],
     }).catch((err: string) => new Error(err));
     if (added instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to write profile",
-            text: added.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to write profile", added.message);
         return;
     }
 
@@ -29,18 +22,7 @@ export async function addProfile(profile: IProfile) {
         id: profile.id,
     }).catch((err) => new Error(err));
     if (envCreated instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create environment",
-            text: envCreated.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to create environment", envCreated.message);
         return;
     }
 
@@ -48,42 +30,26 @@ export async function addProfile(profile: IProfile) {
         profileId: profile.id,
     }).catch((err) => new Error(err));
     if (keychain instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create Keychain",
-            text: keychain.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to create Keychain", keychain.message);
         return;
     }
     if (keychain !== 0) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create keychain",
-            text: `Could not create keychain with code ${keychain}.`,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal(
+            "Failed to create keychain",
+            `Could not create keychain with code ${keychain}.`,
+        );
         return;
     }
 
     store.addProfile(profile);
 }
 
+/**
+ * Updates an existing profile in the store.
+ * @param profile - The updated profile object
+ */
 export async function updateProfile(profile: IProfile) {
     const store = useStore.getState();
-    const modal = useModalStore.getState();
 
     const newProfiles = store.profiles.map((p) =>
         p.id === profile.id ? profile : p,
@@ -92,24 +58,17 @@ export async function updateProfile(profile: IProfile) {
         profiles: newProfiles,
     }).catch((err: string) => new Error(err));
     if (updated instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to write profile",
-            text: updated.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to write profile", updated.message);
         return;
     }
 
     store.updateProfile(profile);
 }
 
+/**
+ * Removes a profile from the store and deletes its environment.
+ * @param id - The ID of the profile to remove
+ */
 export async function removeProfile(id: string) {
     const store = useStore.getState();
     const removed = await invoke<void>("write_profiles", {
@@ -125,29 +84,21 @@ export async function removeProfile(id: string) {
     store.removeProfile(id);
 }
 
+/**
+ * Reads all profiles from storage and adds them to the store.
+ * @returns True if successful, false otherwise
+ */
 export async function readProfiles() {
     const profiles = await invoke<IProfile[]>("read_profiles").catch(
         (err) => new Error(err),
     );
 
     if (profiles instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to read profiles",
-            text: `${profiles.message} Would you like to reset profiles?`,
-            buttons: [
-                {
-                    text: "No",
-                    onClick: () => modal.remove(id),
-                },
-                {
-                    text: "Yes",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showConfirmationModal(
+            "Failed to read profiles",
+            `${profiles.message} Would you like to reset profiles?`,
+            () => {},
+        );
         return false;
     }
 

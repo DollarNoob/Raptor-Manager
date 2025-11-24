@@ -1,36 +1,28 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useConfigStore, useModalStore } from "../store";
+import { useConfigStore } from "../store";
 import type { IConfig } from "../types/config";
+import { showConfirmationModal, showErrorModal } from "./modal";
 
+/**
+ * Reads the configuration from storage and updates the config store.
+ * @returns True if successful, false otherwise
+ */
 export async function readConfig() {
     const cfg = await invoke<IConfig>("read_config").catch(
         (err) => new Error(err),
     );
 
     if (cfg instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to read config",
-            text: `${cfg.message} Would you like to reset the config?`,
-            buttons: [
-                {
-                    text: "No",
-                    onClick: () => modal.remove(id),
-                },
-                {
-                    text: "Yes",
-                    onClick: () =>
-                        modal.remove(id) ??
-                        writeConfig({
-                            client: null,
-                            clients: [],
-                            decompiler: "medal",
-                        }),
-                },
-            ],
-        });
+        showConfirmationModal(
+            "Failed to read config",
+            `${cfg.message} Would you like to reset the config?`,
+            () =>
+                writeConfig({
+                    client: null,
+                    clients: [],
+                    decompiler: "medal",
+                }),
+        );
         return false;
     }
 
@@ -38,6 +30,11 @@ export async function readConfig() {
     return true;
 }
 
+/**
+ * Writes the configuration to storage and updates the config store.
+ * @param config - The configuration object to write
+ * @returns True if successful, false otherwise
+ */
 export async function writeConfig(config: IConfig) {
     useConfigStore.getState().setConfig(config);
 
@@ -46,19 +43,7 @@ export async function writeConfig(config: IConfig) {
     );
 
     if (cfg instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to write config",
-            text: cfg.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal("Failed to write config", cfg.message);
         return false;
     }
     return true;
