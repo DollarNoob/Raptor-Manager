@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useContextStore, useModalStore } from "../store";
+import { useContextStore } from "../store";
+import { showErrorModal } from "./modal";
 
 export async function setContext(id: string) {
     const contextHydro = await invoke<void>("update_hydrobridge", { id }).catch(
@@ -10,35 +11,17 @@ export async function setContext(id: string) {
     }).catch((err) => new Error(err));
 
     if (contextHydro instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to set hydrobridge context",
-            text: contextHydro.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal(
+            "Failed to set hydrobridge context",
+            contextHydro.message,
+        );
         return;
     }
     if (contextCryptic instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to set crypticbridge context",
-            text: contextCryptic.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showErrorModal(
+            "Failed to set crypticbridge context",
+            contextCryptic.message,
+        );
         return;
     }
 

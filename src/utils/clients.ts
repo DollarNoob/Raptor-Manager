@@ -1,13 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
+import {
+    CLIENT_NAME_CRYPTIC,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_VANILLA,
+} from "../constants";
 import { useConfigStore, useStore, useVersionStore } from "../store";
 import { updateProfile } from "./profiles";
-import {
-    CLIENT_NAME_VANILLA,
-    CLIENT_NAME_MACSPLOIT,
-    CLIENT_NAME_HYDROGEN,
-    CLIENT_NAME_RONIX,
-    CLIENT_NAME_CRYPTIC,
-} from "../constants";
 
 export async function launchClient(
     client: string,

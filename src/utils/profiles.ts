@@ -1,27 +1,16 @@
 import { invoke } from "@tauri-apps/api/core";
-import { useModalStore, useStore } from "../store";
+import { useStore } from "../store";
 import type { IProfile } from "../types/profile";
+import { showConfirmationModal, showErrorModal } from "./modal";
 
 export async function addProfile(profile: IProfile) {
     const store = useStore.getState();
-    const modal = useModalStore.getState();
 
     const added = await invoke<void>("write_profiles", {
         profiles: [...store.profiles, profile],
     }).catch((err: string) => new Error(err));
     if (added instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to write profile",
-            text: added.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to write profile", added.message);
         return;
     }
 
@@ -29,18 +18,7 @@ export async function addProfile(profile: IProfile) {
         id: profile.id,
     }).catch((err) => new Error(err));
     if (envCreated instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create environment",
-            text: envCreated.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to create environment", envCreated.message);
         return;
     }
 
@@ -48,33 +26,14 @@ export async function addProfile(profile: IProfile) {
         profileId: profile.id,
     }).catch((err) => new Error(err));
     if (keychain instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create Keychain",
-            text: keychain.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to create Keychain", keychain.message);
         return;
     }
     if (keychain !== 0) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to create keychain",
-            text: `Could not create keychain with code ${keychain}.`,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal(
+            "Failed to create keychain",
+            `Could not create keychain with code ${keychain}.`,
+        );
         return;
     }
 
@@ -83,7 +42,6 @@ export async function addProfile(profile: IProfile) {
 
 export async function updateProfile(profile: IProfile) {
     const store = useStore.getState();
-    const modal = useModalStore.getState();
 
     const newProfiles = store.profiles.map((p) =>
         p.id === profile.id ? profile : p,
@@ -92,18 +50,7 @@ export async function updateProfile(profile: IProfile) {
         profiles: newProfiles,
     }).catch((err: string) => new Error(err));
     if (updated instanceof Error) {
-        const _id = crypto.randomUUID();
-        modal.add({
-            id: _id,
-            title: "Failed to write profile",
-            text: updated.message,
-            buttons: [
-                {
-                    text: "Okay",
-                    onClick: () => modal.remove(_id),
-                },
-            ],
-        });
+        showErrorModal("Failed to write profile", updated.message);
         return;
     }
 
@@ -131,23 +78,11 @@ export async function readProfiles() {
     );
 
     if (profiles instanceof Error) {
-        const modal = useModalStore.getState();
-        const id = crypto.randomUUID();
-        modal.add({
-            id,
-            title: "Failed to read profiles",
-            text: `${profiles.message} Would you like to reset profiles?`,
-            buttons: [
-                {
-                    text: "No",
-                    onClick: () => modal.remove(id),
-                },
-                {
-                    text: "Yes",
-                    onClick: () => modal.remove(id),
-                },
-            ],
-        });
+        showConfirmationModal(
+            "Failed to read profiles",
+            `${profiles.message} Would you like to reset profiles?`,
+            () => {},
+        );
         return false;
     }
 
