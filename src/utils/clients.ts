@@ -1,6 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useConfigStore, useStore, useVersionStore } from "../store";
 import { updateProfile } from "./profiles";
+import {
+    CLIENT_NAME_VANILLA,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_CRYPTIC,
+} from "../constants";
 
 export async function launchClient(
     client: string,
@@ -66,11 +73,11 @@ export async function installClient(client: string) {
 
     let clientVersion = version.roblox.clientVersionUpload;
     let dylibVersion = version.roblox.version;
-    if (client === "Vanilla") {
+    if (client === CLIENT_NAME_VANILLA) {
         if (!clientVersion)
             throw new Error("Roblox version is not fetched yet.");
         if (!dylibVersion) throw new Error("Dylib version is not fetched yet.");
-    } else if (client === "MacSploit") {
+    } else if (client === CLIENT_NAME_MACSPLOIT) {
         if (
             !version.macsploit.clientVersionUpload ||
             !version.macsploit.relVersion
@@ -79,7 +86,7 @@ export async function installClient(client: string) {
 
         clientVersion = version.macsploit.clientVersionUpload;
         dylibVersion = version.macsploit.relVersion;
-    } else if (client === "Hydrogen") {
+    } else if (client === CLIENT_NAME_HYDROGEN) {
         if (
             !version.hydrogen.macos.roblox_version ||
             !version.hydrogen.macos.exploit_version
@@ -88,7 +95,7 @@ export async function installClient(client: string) {
 
         clientVersion = version.hydrogen.macos.roblox_version;
         dylibVersion = version.hydrogen.macos.exploit_version;
-    } else if (client === "Ronix") {
+    } else if (client === CLIENT_NAME_RONIX) {
         if (
             !version.ronix.macos.roblox_version ||
             !version.ronix.macos.exploit_version
@@ -97,7 +104,7 @@ export async function installClient(client: string) {
 
         clientVersion = version.ronix.macos.roblox_version;
         dylibVersion = version.ronix.macos.exploit_version;
-    } else if (client === "Cryptic") {
+    } else if (client === CLIENT_NAME_CRYPTIC) {
         if (
             !version.cryptic.Versions.Roblox ||
             !version.cryptic.Versions.Software

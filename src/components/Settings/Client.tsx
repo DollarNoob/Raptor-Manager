@@ -5,6 +5,14 @@ import type {
     IMacsploitVersion,
     IRobloxVersion,
 } from "../../types/version";
+import {
+    CLIENT_NAME_VANILLA,
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_CRYPTIC,
+    STATUS_NOT_INSTALLED,
+} from "../../constants";
 import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
 import Status from "../Shared/Status";
@@ -36,17 +44,17 @@ export default function Client({
 }: Props) {
     const currentVersion = installation?.version ?? null;
     let latestVersion = null;
-    if (children === "Vanilla") {
+    if (children === CLIENT_NAME_VANILLA) {
         latestVersion = (version as IRobloxVersion).version;
-    } else if (children === "MacSploit") {
+    } else if (children === CLIENT_NAME_MACSPLOIT) {
         latestVersion = (version as IMacsploitVersion).relVersion;
-    } else if (children === "Hydrogen") {
+    } else if (children === CLIENT_NAME_HYDROGEN) {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
-    } else if (children === "Ronix") {
+    } else if (children === CLIENT_NAME_RONIX) {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
-    } else if (children === "Cryptic") {
+    } else if (children === CLIENT_NAME_CRYPTIC) {
         latestVersion = (version as ICrypticVersion).Versions.Software;
     }
 
@@ -75,7 +83,7 @@ export default function Client({
         marginTop: 8,
     };
 
-    const client = children?.toString() ?? "Vanilla";
+    const client = children?.toString() ?? CLIENT_NAME_VANILLA;
 
     return (
         <div style={style}>
@@ -92,7 +100,7 @@ export default function Client({
                 >
                     {installation && currentVersion
                         ? `v${currentVersion.replace("Version-", "")}`
-                        : "Not Installed"}
+                        : STATUS_NOT_INSTALLED}
                 </Status>
             </div>
             <Thumbnail thumbnail={thumbnail} size={72} href={href} />

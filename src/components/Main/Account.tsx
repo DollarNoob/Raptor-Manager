@@ -1,6 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
 import { useState } from "react";
+import {
+    CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_HYDROGEN,
+    CLIENT_NAME_RONIX,
+    CLIENT_NAME_CRYPTIC,
+    CONTEXT_MENU_ITEMS,
+} from "../../constants";
 import { useContextStore, useModalStore } from "../../store";
 import type { IProfile } from "../../types/profile";
 import type { IState } from "../../types/state";
@@ -43,25 +50,25 @@ export default function Account({ active, profile, state, onClick }: Props) {
             items: [
                 {
                     id: "edit_profile",
-                    text: "Edit Profile",
+                    text: CONTEXT_MENU_ITEMS.EDIT_PROFILE,
                     icon: "Remove",
                     action: handleEvents,
                 },
                 {
                     id: "edit_macsploit",
-                    text: "Edit MacSploit Settings",
+                    text: CONTEXT_MENU_ITEMS.EDIT_MACSPOILT,
                     icon: await useMenuIcon("macsploit.png"),
                     action: handleEvents,
                 },
                 {
                     id: "delete_profile",
-                    text: "Delete Profile",
+                    text: CONTEXT_MENU_ITEMS.DELETE_PROFILE,
                     icon: "StopProgress",
                     action: handleEvents,
                 },
                 {
                     id: "open_profile_folder",
-                    text: "Open Profile Folder",
+                    text: CONTEXT_MENU_ITEMS.OPEN_PROFILE_FOLDER,
                     icon: "Folder",
                     action: handleEvents,
                 },
@@ -186,10 +193,14 @@ export default function Account({ active, profile, state, onClick }: Props) {
         if (state.port) {
             // modified clients
             statusText = state.client;
-            if (state.client === "MacSploit") {
+            if (state.client === CLIENT_NAME_MACSPLOIT) {
                 statusText += ` ${state.port}`;
             } else if (
-                ["Hydrogen", "Ronix", "Cryptic"].includes(state.client)
+                [
+                    CLIENT_NAME_HYDROGEN,
+                    CLIENT_NAME_RONIX,
+                    CLIENT_NAME_CRYPTIC,
+                ].includes(state.client)
             ) {
                 if (state.profileId === context.id) {
                     statusText += " Attached";
