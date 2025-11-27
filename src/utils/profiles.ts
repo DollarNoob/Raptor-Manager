@@ -86,6 +86,7 @@ export async function removeProfile(id: string) {
 
 /**
  * Reads all profiles from storage and adds them to the store.
+ * Tries to fetch thumbnails if they aren't ready
  * @returns True if successful, false otherwise
  */
 export async function readProfiles() {
@@ -106,6 +107,24 @@ export async function readProfiles() {
     for (const profile of profiles) {
         if (store.profiles.some((p) => p.id === profile.id)) continue;
         store.addProfile(profile);
+
+        // Retry thumbnail if it does not exist
+        if (!profile.thumbnail) {
+            (async () => {
+                const robloxThumbnail = await invoke<string | null>("get_roblox_thumbnail", {
+                    userId: profile.userId,
+                }).catch((err) => new Error(err));
+                if (robloxThumbnail instanceof Error) return;
+                if (!robloxThumbnail) return;
+
+                const newProfile: IProfile = {
+                    ...profile,
+                    thumbnail: robloxThumbnail.split("/")[3],
+                };
+
+                await updateProfile(newProfile);
+            })();
+        }
     }
 
     return true;

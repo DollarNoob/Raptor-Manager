@@ -115,27 +115,28 @@ export default function Header(_props: Props) {
 
     return (
         <>
-            {modal.modals.length !== 0 && (
-                <Modal
-                    key={modal.modals[0].id}
-                    title={modal.modals[0].title}
-                    text={modal.modals[0].text}
-                    // progress = {modal.modals[0].progress}
-                    progress={modal.modals[0].progress}
-                    progressText={modal.modals[0].progressText}
-                    isIndeterminate={modal.modals[0].isIndeterminate}
-                >
-                    {modal.modals[0].buttons.map((button) => (
-                        <ModalButton
-                            key={button.text}
-                            icon={button.icon}
-                            onClick={button.onClick}
-                        >
-                            {button.text}
-                        </ModalButton>
-                    ))}
-                </Modal>
-            )}
+            <AnimatePresence>
+                {modal.modals.length !== 0 && (
+                    <Modal
+                        key={modal.modals[0].id}
+                        title={modal.modals[0].title}
+                        text={modal.modals[0].text}
+                        progress={modal.modals[0].progress}
+                        progressText={modal.modals[0].progressText}
+                        isIndeterminate={modal.modals[0].isIndeterminate}
+                    >
+                        {modal.modals[0].buttons.map((button) => (
+                            <ModalButton
+                                key={button.text}
+                                icon={button.icon}
+                                onClick={button.onClick}
+                            >
+                                {button.text}
+                            </ModalButton>
+                        ))}
+                    </Modal>
+                )}
+            </AnimatePresence>
             <header style={headerStyle} data-tauri-drag-region>
                 <div style={sectionStyle} data-tauri-drag-region>
                     <TrafficLight

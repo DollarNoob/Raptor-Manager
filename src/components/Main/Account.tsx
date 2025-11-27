@@ -57,7 +57,8 @@ export default function Account({ active, profile, state, onClick }: Props) {
                 {
                     id: "edit_macsploit",
                     text: CONTEXT_MENU_ITEMS.EDIT_MACSPOILT,
-                    icon: await useMenuIcon("macsploit.svg"),
+                    // biome-ignore lint/correctness/useHookAtTopLevel: why would you load this at top level?
+                    icon: await useMenuIcon("macsploit.png"),
                     action: handleEvents,
                 },
                 {
@@ -224,7 +225,9 @@ export default function Account({ active, profile, state, onClick }: Props) {
                 tabIndex={0}
             >
                 <div style={leftContainerStyle}>
-                    <Thumbnail thumbnail={profile.thumbnail} size={44} />
+                    {profile.thumbnail && (
+                        <Thumbnail thumbnail={profile.thumbnail} size={44} />
+                    )}
                     <Profile profile={profile} />
                 </div>
                 <div style={rightContainerStyle}>

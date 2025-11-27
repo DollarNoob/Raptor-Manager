@@ -5,7 +5,7 @@ export interface IProfile {
     userId: number;
     displayName: string;
     username: string;
-    thumbnail: string;
+    thumbnail: string | null;
     note: string;
     lastPlayedAt: number;
 }

@@ -125,6 +125,15 @@ function App() {
         };
     }, [ready, modal.add, modal.remove]);
 
+    useEffect(() => {
+        const preventDefault = (event: PointerEvent) => event.preventDefault();
+        window.addEventListener("contextmenu", preventDefault);
+
+        return () => {
+            window.removeEventListener("contextmenu", preventDefault);
+        }
+    }, []);
+
     return (
         <>
             <Header />

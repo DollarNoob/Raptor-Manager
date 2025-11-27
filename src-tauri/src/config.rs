@@ -101,7 +101,7 @@ pub struct Profile {
     pub userId: i64,
     pub displayName: String,
     pub username: String,
-    pub thumbnail: String,
+    pub thumbnail: Option<String>,
     pub note: String,
     pub lastPlayedAt: u64,
 }

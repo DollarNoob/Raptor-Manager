@@ -119,9 +119,12 @@ export default function EditProfileModal({
             return;
         }
 
-        const robloxThumbnail = await invoke<string>("get_roblox_thumbnail", {
-            userId: robloxProfile.id,
-        }).catch((err) => new Error(err));
+        const robloxThumbnail = await invoke<string | null>(
+            "get_roblox_thumbnail",
+            {
+                userId: robloxProfile.id,
+            },
+        ).catch((err) => new Error(err));
         if (robloxThumbnail instanceof Error) {
             modal.remove(mId);
             const _id = crypto.randomUUID();
@@ -146,7 +149,7 @@ export default function EditProfileModal({
             userId: robloxProfile.id,
             displayName: robloxProfile.displayName,
             username: robloxProfile.name,
-            thumbnail: robloxThumbnail.split("/")[3],
+            thumbnail: robloxThumbnail ? robloxThumbnail.split("/")[3] : null,
             note: noteRef.current[0],
             lastPlayedAt: profile.lastPlayedAt,
         };
