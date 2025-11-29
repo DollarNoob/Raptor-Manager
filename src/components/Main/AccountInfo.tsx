@@ -300,7 +300,12 @@ export default function AccountInfo({ profile, state }: Props) {
                             displayName={profile.displayName}
                             username={profile.username}
                         />
-                        <Thumbnail thumbnail={profile.thumbnail} size={100} />
+                        {profile.thumbnail && (
+                            <Thumbnail
+                                thumbnail={profile.thumbnail}
+                                size={100}
+                            />
+                        )}
                         <div
                             style={{
                                 display: "flex",

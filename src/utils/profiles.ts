@@ -111,9 +111,12 @@ export async function readProfiles() {
         // Retry thumbnail if it does not exist
         if (!profile.thumbnail) {
             (async () => {
-                const robloxThumbnail = await invoke<string | null>("get_roblox_thumbnail", {
-                    userId: profile.userId,
-                }).catch((err) => new Error(err));
+                const robloxThumbnail = await invoke<string | null>(
+                    "get_roblox_thumbnail",
+                    {
+                        userId: profile.userId,
+                    },
+                ).catch((err) => new Error(err));
                 if (robloxThumbnail instanceof Error) return;
                 if (!robloxThumbnail) return;
 

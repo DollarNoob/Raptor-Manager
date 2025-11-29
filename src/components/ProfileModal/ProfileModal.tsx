@@ -118,9 +118,12 @@ export default function ProfileModal({ destruct }: Props) {
             return;
         }
 
-        const robloxThumbnail = await invoke<string | null>("get_roblox_thumbnail", {
-            userId: robloxProfile.id,
-        }).catch((err) => new Error(err));
+        const robloxThumbnail = await invoke<string | null>(
+            "get_roblox_thumbnail",
+            {
+                userId: robloxProfile.id,
+            },
+        ).catch((err) => new Error(err));
         if (robloxThumbnail instanceof Error) {
             modal.remove(mId);
             const _id = crypto.randomUUID();
