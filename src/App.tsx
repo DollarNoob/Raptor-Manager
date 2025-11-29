@@ -8,6 +8,7 @@ import Settings from "./components/Settings";
 import { useModalStore, useTabStore } from "./store";
 import type { IMessage } from "./types/message";
 import type { IUpdate } from "./types/update";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 function App() {
     const modal = useModalStore();
@@ -34,12 +35,17 @@ function App() {
                 modal.add({
                     id,
                     title: "Failed to update app",
-                    text: updated.message,
+                    text: `${updated.message}\nClick 'Open' to open the download page for manual updates.`,
                     buttons: [
                         {
                             text: "Okay",
                             onClick: () =>
                                 modal.remove(id) ?? modal.remove(updatingId),
+                        },
+                        {
+                            text: "Open",
+                            onClick: () =>
+                                modal.remove(id) ?? modal.remove(updatingId) ?? openUrl("https://github.com/DollarNoob/Raptor-Manager/releases/latest"),
                         },
                     ],
                 });
