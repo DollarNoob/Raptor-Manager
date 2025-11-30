@@ -15,7 +15,7 @@
 </div>
 <div align="center">
 
-[![macOS](https://img.shields.io/badge/macOS-10.15+-blue.svg)](https://www.apple.com/macos/)
+[![macOS](https://img.shields.io/badge/macOS-12.0+-blue.svg)](https://www.apple.com/macos/)
 [![Tauri](https://img.shields.io/badge/Tauri-2-ffc131?logo=tauri)](https://tauri.app/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://reactjs.org/)
 [![Rust](https://img.shields.io/badge/Rust-1.80+-dea584?logo=rust)](https://www.rust-lang.org/)

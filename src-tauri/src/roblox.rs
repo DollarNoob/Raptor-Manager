@@ -58,7 +58,7 @@ pub struct RobloxThumbnail {
 }
 
 #[tauri::command]
-pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result<String, String> {
+pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result<Option<String>, String> {
     let client = Client::new();
     let url = format!("https://thumbnails.roblox.com/v1/users/avatar-bust?userIds={}&size=420x420&format=Png&isCircular=false", user_id);
     let response = client
@@ -88,9 +88,12 @@ pub async fn get_roblox_thumbnail(app_handle: AppHandle, user_id: i64) -> Result
     }
 
     let profile = body.data.first().expect("profile does not exist");
-    if profile.state != "Completed" {
+    if profile.state == "Pending" {
+        // thumbnail is being rendered by Roblox, just load it later
+        return Ok(None);
+    } else if profile.state != "Completed" {
         return Err(profile.state.clone());
     }
 
-    Ok(profile.imageUrl.clone())
+    Ok(Some(profile.imageUrl.to_owned()))
 }

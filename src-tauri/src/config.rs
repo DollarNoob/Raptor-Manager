@@ -101,7 +101,7 @@ pub struct Profile {
     pub userId: i64,
     pub displayName: String,
     pub username: String,
-    pub thumbnail: String,
+    pub thumbnail: Option<String>,
     pub note: String,
     pub lastPlayedAt: u64,
 }
@@ -147,7 +147,9 @@ pub fn write_profiles(app_handle: AppHandle, profiles: Vec<Profile>) -> Result<(
 pub fn create_environment(app_handle: AppHandle, id: String) -> Result<(), String> {
     let init_script = format!(
         "-- Raptor Manager Init Script; DO NOT TOUCH!
+local profile = '{}'
 
+-- Custom Decompiler
 getgenv().decompile = function(script)
     return request({{
         Url = 'http://localhost:6767/decompile',
@@ -157,6 +159,23 @@ getgenv().decompile = function(script)
 end
 
 local executor = identifyexecutor()
+
+-- getcustomasset
+if executor == 'MacSploit' then
+    local old = getgenv().getcustomasset
+    getgenv().getcustomasset = function(path)
+        local customasset = old(path)
+        local response = request({{
+            Url = 'http://localhost:6767/getcustomasset/' .. profile,
+            Method = 'POST',
+            Body = customasset
+        }}).Body
+        assert(response:find('^rbxasset://custom/'), response)
+        return response
+    end
+end
+
+-- Custom Execution Bridge
 if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' then
     local port = 6969 -- Hydrogen
     if executor == 'Cryptic Mac' then
@@ -166,7 +185,7 @@ if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' th
     task.defer(function()
         local HttpService = game:GetService('HttpService')
         while task.wait(1) do
-            local response = game:HttpGet('http://localhost:' .. port .. '/queue/{}')
+            local response = game:HttpGet('http://localhost:' .. port .. '/queue/' .. profile)
             local ok, queue = pcall(function()
                 return HttpService:JSONDecode(queue)
             end)

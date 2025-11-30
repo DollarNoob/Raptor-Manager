@@ -1,8 +1,8 @@
-use axum::{body::Bytes, extract::State, routing::post, Router};
+use axum::{body::Bytes, extract::{Path, State}, routing::post, Router};
 use reqwest::Client;
-use std::sync::Arc;
-use tauri::AppHandle;
-use tokio::sync::Mutex;
+use std::{path::Component, sync::Arc};
+use tauri::{AppHandle, Manager};
+use tokio::{fs, sync::Mutex};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -13,6 +13,7 @@ pub struct AppState {
 pub async fn serve(state: AppState) -> Result<(), String> {
     let app = Router::new()
         .route("/decompile", post(decompile))
+        .route("/getcustomasset/{id}", post(getcustomasset))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:6767")
@@ -84,4 +85,55 @@ pub async fn decompile_konstant(app_handle: AppHandle, bytecode: Bytes) -> Strin
             err.to_string()
         ),
     }
+}
+
+async fn getcustomasset(State(state): State<AppState>, Path(id): Path<String>, body: String) -> String {
+    let asset_name = body.replace("rbxasset://custom/", "");
+
+    let app_data_dir = state.app_handle.path().app_data_dir().unwrap();
+
+    let asset_dir = app_data_dir.join("environments").join(&id)
+        .join("Applications")
+        .join("Roblox.app")
+        .join("Contents")
+        .join("Resources")
+        .join("content")
+        .join("custom")
+        .join(&asset_name);
+
+    if asset_dir.components().any(|c| c == Component::ParentDir) {
+        return format!("Asset '{}' attempted path traversal.", &asset_name);
+    }
+
+    if !asset_dir.is_file() {
+        return format!("Asset '{}' does not exist in the specified directory.", &asset_name);
+    }
+
+    // only macsploit for now (since all others are down, i cannot test)
+    let client_content_dir = app_data_dir.join("clients")
+        .join("MacSploit.app")
+        .join("Contents")
+        .join("Resources")
+        .join("content")
+        .join("custom")
+        .join(&id);
+
+    if client_content_dir.components().any(|c| c == Component::ParentDir) {
+        return format!("Profile '{}' attempted path traversal.", &id);
+    }
+
+    if let Err(err) = fs::create_dir_all(&client_content_dir).await {
+        return err.to_string();
+    }
+
+    let client_asset_dir = client_content_dir.join(&asset_name);
+    if client_asset_dir.components().any(|c| c == Component::ParentDir) {
+        return format!("Asset '{}' attempted path traversal.", &asset_name);
+    }
+
+    if let Err(err) = fs::rename(&asset_dir, &client_asset_dir).await {
+        return err.to_string();
+    }
+
+    format!("rbxasset://custom/{}/{}", &id, &asset_name)
 }

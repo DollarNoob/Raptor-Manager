@@ -168,7 +168,7 @@ pub async fn install_roblox(
     if let Some(code) = status.code() {
         if code != 0 {
             return Err(format!(
-                "Failed to unzip Roblox {} with code {}.",
+                "Failed to unzip Roblox {} with code {}. Please try again after cleaning installation cache.",
                 version, code
             ));
         }

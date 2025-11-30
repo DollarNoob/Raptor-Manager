@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
@@ -8,21 +8,26 @@ import Settings from "./components/Settings";
 import { useModalStore, useTabStore } from "./store";
 import type { IMessage } from "./types/message";
 import type { IUpdate } from "./types/update";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 function App() {
     const modal = useModalStore();
     const tab = useTabStore();
     const [ready, setReady] = useState(false);
+    const updateModalId = useRef<string | null>(null);
 
     const tabs = [<Main key="main" />, <Settings key="settings" />];
 
     useEffect(() => {
         async function update() {
             const updatingId = crypto.randomUUID();
+            updateModalId.current = updatingId; // update modal id
             modal.add({
                 id: updatingId,
                 title: "Updating App",
                 text: "Please do not close the application until the installation finishes.",
+                progressText: "Preparing update...",
+                progress: 0,
                 buttons: [],
             });
 
@@ -34,12 +39,26 @@ function App() {
                 modal.add({
                     id,
                     title: "Failed to update app",
-                    text: updated.message,
+                    text: `${updated.message}\nClick 'Open' to open the download page for manual updates.`,
                     buttons: [
                         {
                             text: "Okay",
-                            onClick: () =>
-                                modal.remove(id) ?? modal.remove(updatingId),
+                            onClick: () => {
+                                modal.remove(id);
+                                modal.remove(updatingId);
+                                updateModalId.current = null;
+                            },
+                        },
+                        {
+                            text: "Open",
+                            onClick: () => {
+                                modal.remove(id);
+                                modal.remove(updatingId);
+                                updateModalId.current = null;
+                                openUrl(
+                                    "https://github.com/DollarNoob/Raptor-Manager/releases/latest",
+                                );
+                            },
                         },
                     ],
                 });
@@ -52,14 +71,18 @@ function App() {
                     buttons: [
                         {
                             text: "Okay",
-                            onClick: () =>
-                                modal.remove(id) ?? modal.remove(updatingId),
+                            onClick: () => {
+                                modal.remove(id);
+                                modal.remove(updatingId);
+                                updateModalId.current = null;
+                            },
                         },
                     ],
                 });
             }
 
             modal.remove(updatingId);
+            updateModalId.current = null;
         }
 
         const unlistenMessage = listen<IMessage>("message", (event) => {
@@ -101,14 +124,26 @@ function App() {
         const unlistenProgress = listen<[number, number]>(
             "update-progress",
             (event) => {
-                console.log(
-                    `[UPDATE] Downloaded ${event.payload[0]} bytes out of ${event.payload[1]} bytes.`,
-                );
+                if (!updateModalId.current) return;
+
+                const downloaded = event.payload[0];
+                const total = event.payload[1];
+                const percent = Math.round((downloaded / total) * 100);
+
+                modal.update(updateModalId.current, {
+                    progressText: `Downloading: ${Math.round(downloaded / 1024 / 1024)} MB / ${Math.round(total / 1024 / 1024)} MB`,
+                    progress: percent,
+                });
             },
         );
 
         const unlistenFinish = listen<void>("update-finish", () => {
-            console.log("[UPDATE] Download finished. Installing update.");
+            if (!updateModalId.current) return;
+
+            modal.update(updateModalId.current, {
+                progressText: "Installing Update",
+                progress: 100,
+            });
         });
 
         if (!ready) {
@@ -123,7 +158,16 @@ function App() {
             unlistenProgress.then((unlisten) => unlisten());
             unlistenFinish.then((unlisten) => unlisten());
         };
-    }, [ready, modal.add, modal.remove]);
+    }, [ready, modal.add, modal.remove, modal.update]);
+
+    useEffect(() => {
+        const preventDefault = (event: MouseEvent) => event.preventDefault();
+        window.addEventListener("contextmenu", preventDefault);
+
+        return () => {
+            window.removeEventListener("contextmenu", preventDefault);
+        };
+    }, []);
 
     return (
         <>
