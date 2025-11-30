@@ -39,6 +39,11 @@ export async function launchClient(
     else if (unlocked !== 0)
         throw new Error(`Could not unlock keychain with code ${unlocked}.`);
 
+    const created = await invoke<null>("create_environment", {
+        id: profileId,
+    }).catch((err) => new Error(err));
+    if (created instanceof Error) throw created;
+
     const written = await invoke<null>("write_cookies", {
         profileId,
         cookie,
