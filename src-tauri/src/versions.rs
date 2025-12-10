@@ -53,7 +53,7 @@ pub struct MacsploitVersion {
 #[tauri::command]
 pub async fn get_macsploit_version(app_handle: AppHandle) -> Result<MacsploitVersion, String> {
     let client = Client::new();
-    let url = format!("https://www.abyssdigital.xyz/main/version.json");
+    let url = format!("https://git.raptor.fun/main/version.json");
     let response = client
         .get(url)
         .header(
