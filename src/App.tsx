@@ -42,7 +42,7 @@ function App() {
                     text: `${updated.message}\nClick 'Open' to open the download page for manual updates.`,
                     buttons: [
                         {
-                            text: "Okay",
+                            text: "No Thanks",
                             onClick: () => {
                                 modal.remove(id);
                                 modal.remove(updatingId);
