@@ -1,6 +1,6 @@
 [package]
 name = "RaptorManager"
-version = "0.1.6"
+version = "0.1.7"
 description = "An account manager for Roblox clients."
 authors = ["DollarNoob"]
 edition = "2021"

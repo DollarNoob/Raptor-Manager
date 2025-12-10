@@ -187,7 +187,7 @@ if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' th
         while task.wait(1) do
             local response = game:HttpGet('http://localhost:' .. port .. '/queue/' .. profile)
             local ok, queue = pcall(function()
-                return HttpService:JSONDecode(queue)
+                return HttpService:JSONDecode(response)
             end)
             if not ok then continue end
 
