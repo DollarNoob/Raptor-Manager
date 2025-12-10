@@ -109,7 +109,7 @@ async fn getcustomasset(State(state): State<AppState>, Path(id): Path<String>, b
         return format!("Asset '{}' does not exist in the specified directory.", &asset_name);
     }
 
-    // only macsploit for now (since all others are down, i cannot test)
+    // only macsploit needs this fix
     let client_content_dir = app_data_dir.join("clients")
         .join("MacSploit.app")
         .join("Contents")
