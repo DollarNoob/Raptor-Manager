@@ -54,7 +54,9 @@ export async function launchClient(
     if ([CLIENT_NAME_HYDROGEN, CLIENT_NAME_RONIX].includes(client))
         invoke("copy_hydrogen_key", {
             client: client,
-            profiles: store.profiles.filter((p) => p.id !== profileId).map((p) => p.id),
+            profiles: store.profiles
+                .filter((p) => p.id !== profileId)
+                .map((p) => p.id),
             toId: profileId,
         });
 
