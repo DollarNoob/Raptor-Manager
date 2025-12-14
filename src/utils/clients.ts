@@ -50,6 +50,14 @@ export async function launchClient(
     }).catch((err) => new Error(err));
     if (written instanceof Error) throw written;
 
+    console.log(client, CLIENT_NAME_HYDROGEN);
+    if ([CLIENT_NAME_HYDROGEN, CLIENT_NAME_RONIX].includes(client))
+        invoke("copy_hydrogen_key", {
+            client: client,
+            profiles: store.profiles.filter((p) => p.id !== profileId).map((p) => p.id),
+            toId: profileId,
+        });
+
     const modified = await invoke<null>("modify_bundle_identifier", {
         client,
         profileId,

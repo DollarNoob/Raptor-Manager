@@ -375,26 +375,54 @@ pub fn open_profile_folder(app_handle: AppHandle, id: String) -> Result<i32, Str
 }
 
 #[tauri::command]
-pub fn copy_hydrogen_key(app_handle: AppHandle, client: String, from_id: String, to_id: Vec<String>) -> Result<(), String> {
+pub fn copy_hydrogen_key(app_handle: AppHandle, client: String, profiles: Vec<String>, to_id: String) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
-    let hydrogen_dir = app_data_dir.join("environments").join(from_id)
-        .join("Library").join("Application Support").join(&client);
-    fs::create_dir_all(&hydrogen_dir).map_err(|e| e.to_string())?;
-
-    let hydrogen_license_dir = hydrogen_dir.join("key.txt");
-    if !hydrogen_license_dir.exists() {
-        return Err(format!("{} license does not exist.", &client));
-    }
-
-    let license = fs::read_to_string(hydrogen_license_dir).map_err(|e| e.to_string())?;
-    for id in to_id {
-        let hydrogen_dir = app_data_dir.join("environments").join(id)
+    // Scans through all profiles and checks if license exists, takes the latest one
+    let mut last_modified = 0;
+    let mut license = None;
+    for profile in profiles {
+        let hydrogen_dir = app_data_dir.join("environments").join(&profile)
             .join("Library").join("Application Support").join(&client);
         fs::create_dir_all(&hydrogen_dir).map_err(|e| e.to_string())?;
 
         let hydrogen_license_dir = hydrogen_dir.join("key.txt");
-        fs::write(hydrogen_license_dir, &license).map_err(|e| e.to_string())?;
+        if !hydrogen_license_dir.exists() {
+            continue;
+        }
+
+        let modified = hydrogen_license_dir
+            .metadata().unwrap()
+            .modified().unwrap()
+            .duration_since(std::time::UNIX_EPOCH).unwrap()
+            .as_secs();
+
+        if modified > last_modified {
+            license = Some(fs::read_to_string(hydrogen_license_dir).map_err(|e| e.to_string())?);
+            last_modified = modified;
+        }
+    }
+
+    if let Some(last_license) = license {
+        let hydrogen_dir = app_data_dir.join("environments").join(&to_id)
+            .join("Library").join("Application Support").join(&client);
+        fs::create_dir_all(&hydrogen_dir).map_err(|e| e.to_string())?;
+
+        let hydrogen_license_dir = hydrogen_dir.join("key.txt");
+        if hydrogen_license_dir.exists() {
+            let modified = hydrogen_license_dir
+                .metadata().unwrap()
+                .modified().unwrap()
+                .duration_since(std::time::UNIX_EPOCH).unwrap()
+                .as_secs();
+
+            // This profile has the latest license
+            if last_modified < modified {
+                return Ok(());
+            }
+        }
+
+        fs::write(hydrogen_license_dir, &last_license).map_err(|e| e.to_string())?;
     }
 
     Ok(())
