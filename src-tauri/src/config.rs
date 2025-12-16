@@ -295,6 +295,97 @@ end",
 }
 
 #[tauri::command]
+pub fn create_sandboxed_environment(app_handle: AppHandle, id: String) -> Result<(), String> {
+    let init_script = format!(
+        "-- Raptor Manager Init Script; DO NOT TOUCH!
+local profile = '{}'
+
+-- Custom Decompiler
+getgenv().decompile = function(script)
+    local success, result = pcall(function()
+        return type(game.HttpPost)
+    end)
+
+    -- if game.HttpPost exists
+    if success and result == 'function' then
+        return game:HttpPost('http://localhost:6767/decompile', getscriptbytecode(script))
+    end
+
+    -- Fallback to request
+    return request({{
+        Url = 'http://localhost:6767/decompile',
+        Method = 'POST',
+        Body = getscriptbytecode(script)
+    }}).Body
+end
+
+local executor = identifyexecutor()
+
+-- getcustomasset
+if executor == 'MacSploit' then
+    local old = getgenv().getcustomasset
+    getgenv().getcustomasset = function(path)
+        local customasset = old(path)
+        local response = request({{
+            Url = 'http://localhost:6767/getcustomasset/' .. profile,
+            Method = 'POST',
+            Body = customasset
+        }}).Body
+        assert(response:find('^rbxasset://custom/'), response)
+        return response
+    end
+end
+
+-- Custom Execution Bridge
+if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' then
+    local port = 6969 -- Hydrogen
+    if executor == 'Cryptic Mac' then
+        port = 5200
+    end
+
+    task.defer(function()
+        local HttpService = game:GetService('HttpService')
+        while task.wait(1) do
+            local response = game:HttpGet('http://localhost:' .. port .. '/queue/' .. profile)
+            local ok, queue = pcall(function()
+                return HttpService:JSONDecode(response)
+            end)
+            if not ok then continue end
+
+            for i, v in pairs(queue) do
+                local func, err = loadstring(v)
+                if func then
+                    task.defer(func)
+                else
+                    task.spawn(error, err)
+                end
+            end
+        end
+    end)
+end",
+        &id
+    );
+
+    let data_dir = app_handle.path().data_dir().unwrap();
+    let library_dir = data_dir.parent().unwrap(); // $HOME/Library
+
+    // $HOME/Library/Containers/com.roblox.RobloxPlayer.{identifier}/Data
+    let container_dir = library_dir.join("Containers").join(format!("com.roblox.RobloxPlayer.{}", id)).join("Data");
+
+    // Delta - Automatic Execution
+    let delta_autoexe_dir = container_dir.join("Documents").join("Delta").join("Autoexecute");
+    fs::create_dir_all(&delta_autoexe_dir).map_err(|e| e.to_string())?;
+
+    // Delta - Init Script
+    let mut file = File::create(&delta_autoexe_dir.join("RaptorManager.lua"))
+        .map_err(|e| e.to_string())?;
+    file.write_all(&init_script.as_bytes())
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
 pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
@@ -311,10 +402,12 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
 
     let data_dir = app_handle.path().data_dir().unwrap();
     let library_dir = data_dir.parent().unwrap(); // $HOME/Library
-    let http_storages_dir = library_dir.join("HTTPStorages");
-    let caches_dir = library_dir.join("Caches");
-    let preferences_dir = library_dir.join("Preferences");
-    let webkit_dir = library_dir.join("WebKit");
+    let http_storages_dir = library_dir.join("HTTPStorages"); // $HOME/Library/HTTPStorages
+    let caches_dir = library_dir.join("Caches"); // $HOME/Library/Caches
+    let preferences_dir = library_dir.join("Preferences"); // $HOME/Library/Preferences
+    let webkit_dir = library_dir.join("WebKit"); // $HOME/Library/WebKit
+    let scripts_dir = library_dir.join("Application Scripts"); // $HOME/Library/Application\ Scripts
+    let containers_dir = library_dir.join("Containers");
 
     // Clear HTTPStorages
     let storage_dir = http_storages_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
@@ -346,6 +439,18 @@ pub fn remove_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
         fs::remove_dir_all(&webdata_dir).map_err(|e| e.to_string())?;
     }
 
+    // Clean Application Scripts
+    let appscripts_dir = scripts_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
+    if appscripts_dir.exists() {
+        fs::remove_dir_all(&appscripts_dir).map_err(|e| e.to_string())?;
+    }
+
+    // Clean Container
+    let container_dir = containers_dir.join(format!("com.roblox.RobloxPlayer.{}", &id));
+    if container_dir.exists() {
+        fs::remove_dir_all(&container_dir).map_err(|e| e.to_string())?;
+    }
+
     Ok(())
 }
 
@@ -363,6 +468,33 @@ pub fn open_profile_folder(app_handle: AppHandle, id: String) -> Result<i32, Str
 
     let mut child = Command::new("open")
         .args(&profile_dir.to_str())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    let status = child.wait().map_err(|e| e.to_string())?;
+    if let Some(code) = status.code() {
+        Ok(code)
+    } else {
+        Ok(-1)
+    }
+}
+
+#[tauri::command]
+pub fn open_container_folder(app_handle: AppHandle, id: String) -> Result<i32, String> {
+    let data_dir = app_handle.path().data_dir().unwrap();
+    let library_dir = data_dir.parent().unwrap(); // $HOME/Library
+
+    // $HOME/Library/Containers/com.roblox.RobloxPlayer.{identifier}/Data
+    let container_dir = library_dir.join("Containers").join(format!("com.roblox.RobloxPlayer.{}", id)).join("Data");
+    let exists = fs::exists(&container_dir).map_err(|e| e.to_string())?;
+    if !exists {
+        return Err(
+            "Container folder does not exist. Please run Delta to create one.".into(),
+        );
+    }
+
+    let mut child = Command::new("open")
+        .args(&container_dir.to_str())
         .spawn()
         .map_err(|e| e.to_string())?;
 

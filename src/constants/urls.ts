@@ -3,6 +3,7 @@ export const URL_RAPTOR_FUN = "https://raptor.fun/" as const;
 export const URL_CRYPTIC = "https://getcryptic.net/" as const;
 export const URL_HYDROGEN = "https://hydrogen.lat/" as const;
 export const URL_RONIX_STUDIOS = "https://ronixstudios.io/" as const;
+export const URL_DELTA = "https://deltaexploits.gg/" as const;
 
 export const CLIENT_URLS = {
     [URL_ROBLOX_HOME]: "Vanilla",
@@ -10,4 +11,5 @@ export const CLIENT_URLS = {
     [URL_CRYPTIC]: "Cryptic",
     [URL_HYDROGEN]: "Hydrogen",
     [URL_RONIX_STUDIOS]: "Ronix",
+    [URL_DELTA]: "Delta",
 } as const;

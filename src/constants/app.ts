@@ -17,4 +17,5 @@ export const CONTEXT_MENU_ITEMS = {
     EDIT_MACSPOILT: "Edit MacSploit Settings",
     DELETE_PROFILE: "Delete Profile",
     OPEN_PROFILE_FOLDER: "Open Profile Folder",
+    OPEN_CONTAINER_FOLDER: "Open Delta Folder",
 } as const;

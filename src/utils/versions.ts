@@ -28,12 +28,16 @@ export async function fetchClientVersions() {
     const crypticPromise = invoke<ICrypticVersion>("get_cryptic_version").catch(
         (err) => new Error(err),
     );
+    const deltaPromise = invoke<string>("get_delta_version").catch(
+        (err) => new Error(err),
+    );
 
-    const [roblox, macsploit, hydrogen, cryptic] = await Promise.all([
+    const [roblox, macsploit, hydrogen, cryptic, delta] = await Promise.all([
         robloxPromise,
         macsploitPromise,
         hydrogenPromise,
         crypticPromise,
+        deltaPromise,
     ]);
 
     if (roblox instanceof Error) {
@@ -60,6 +64,12 @@ export async function fetchClientVersions() {
         return false;
     }
     version.setCryptic(cryptic);
+
+    if (delta instanceof Error) {
+        showErrorModal("Failed to fetch Delta version", delta.message);
+        return false;
+    }
+    version.setDelta(delta);
 
     return true;
 }

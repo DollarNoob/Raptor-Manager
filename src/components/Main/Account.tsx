@@ -73,6 +73,12 @@ export default function Account({ active, profile, state, onClick }: Props) {
                     icon: "Folder",
                     action: handleEvents,
                 },
+                {
+                    id: "open_container_folder",
+                    text: CONTEXT_MENU_ITEMS.OPEN_CONTAINER_FOLDER,
+                    icon: "Folder",
+                    action: handleEvents,
+                },
             ],
         });
         menu.popup();
@@ -141,6 +147,44 @@ export default function Account({ active, profile, state, onClick }: Props) {
                         id,
                         title: "Failed to open profile folder",
                         text: `Could not open profile folder with code ${open}.`,
+                        buttons: [
+                            {
+                                text: "Okay",
+                                onClick: () => modal.remove(id),
+                            },
+                        ],
+                    });
+                    return;
+                }
+                break;
+            }
+            case "open_container_folder": {
+                const open = await invoke<number>("open_container_folder", {
+                    id: profile.id,
+                }).catch((err) => new Error(err));
+
+                if (open instanceof Error) {
+                    const id = crypto.randomUUID();
+                    modal.add({
+                        id,
+                        title: "Failed to open container folder",
+                        text: open.message,
+                        buttons: [
+                            {
+                                text: "Okay",
+                                onClick: () => modal.remove(id),
+                            },
+                        ],
+                    });
+                    return;
+                }
+
+                if (open !== 0) {
+                    const id = crypto.randomUUID();
+                    modal.add({
+                        id,
+                        title: "Failed to open container folder",
+                        text: `Could not open container folder with code ${open}.`,
                         buttons: [
                             {
                                 text: "Okay",

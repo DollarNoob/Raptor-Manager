@@ -1,6 +1,7 @@
 use regex::Regex;
 use serde::Serialize;
 use std::fmt::Debug;
+use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::process::{Command, Stdio};
@@ -56,6 +57,7 @@ pub async fn modify_bundle_identifier(
     app_handle: AppHandle,
     client: String,
     profile_id: Option<String>,
+    entitlements: Option<String>,
 ) -> Result<(), String> {
     let app_data_dir = app_handle.path().app_data_dir().unwrap();
 
@@ -63,7 +65,10 @@ pub async fn modify_bundle_identifier(
     if !app_dir.exists() {
         return Err("Selected client is not installed.".into());
     }
-    let plist_dir = app_dir.join("Contents").join("Info.plist");
+    let mut plist_dir = app_dir.join("Info.plist");
+    if entitlements.is_none() {
+        plist_dir = app_dir.join("Contents").join("Info.plist");
+    }
 
     let mut file = File::open(&plist_dir).map_err(|e| e.to_string())?;
 
@@ -90,7 +95,36 @@ pub async fn modify_bundle_identifier(
     file.write_all(contents.as_bytes())
         .map_err(|e| e.to_string())?;
 
-    Ok(())
+    if let Some(info) = entitlements {
+        let entitlements_dir = app_data_dir.join("clients").join("Entitlements.plist");
+        fs::write(&entitlements_dir, info).map_err(|e| e.to_string())?;
+
+        let mut child = Command::new("/usr/bin/codesign")
+            .arg("--force")
+            .arg("--entitlements")
+            .arg(&entitlements_dir)
+            .arg("-s")
+            .arg("-")
+            .arg(&app_dir)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+
+        let status = child.wait().map_err(|e| e.to_string())?;
+
+        fs::remove_file(&entitlements_dir).map_err(|e| e.to_string())?;
+
+        if let Some(code) = status.code() {
+            if code != 0 {
+                return Err(format!("Failed to codesign with code {}.", code));
+            }
+
+            Ok(())
+        } else {
+            Err("Failed to codesign with code -1.".into())
+        }
+    } else {
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -225,6 +259,65 @@ pub async fn launch_client(
         connected: false,
         pid: pid,
         client: None,
+        port: None,
+    })
+}
+
+#[tauri::command]
+pub async fn launch_sandboxed_client(
+    app_handle: AppHandle,
+    client: String,
+    profile_id: String,
+) -> Result<State, String> {
+    let app_data_dir = app_handle.path().app_data_dir().unwrap();
+
+    let app_dir = app_data_dir.join("clients").join(client.clone() + ".app");
+    if !app_dir.exists() {
+        return Err("Selected client is not installed.".into());
+    }
+    let player_dir = app_dir.join("Roblox");
+
+    let mut child = Command::new(player_dir)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    let pid = child.id();
+
+    let profile_id_wait = profile_id.clone();
+    let app_handle_wait = app_handle.clone();
+    thread::spawn(move || match child.wait() {
+        Ok(status) => {
+            let exit_code = status.code().unwrap_or(-1);
+            let _ = app_handle_wait.emit_to(
+                "main",
+                "client_close",
+                CloseState {
+                    profile_id: profile_id_wait.clone(),
+                    pid: pid,
+                    exit_code: exit_code,
+                },
+            );
+        }
+        Err(_) => {
+            let _ = app_handle_wait.emit_to(
+                "main",
+                "client_close",
+                CloseState {
+                    profile_id: profile_id_wait.clone(),
+                    pid: pid,
+                    exit_code: -2,
+                },
+            );
+        }
+    });
+
+    Ok(State {
+        profile_id: profile_id,
+        connected: true,
+        pid: pid,
+        client: Some(client.clone()),
         port: None,
     })
 }

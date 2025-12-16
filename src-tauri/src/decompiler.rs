@@ -14,7 +14,8 @@ pub async fn serve(state: AppState) -> Result<(), String> {
     let app = Router::new()
         .route("/decompile", post(decompile))
         .route("/getcustomasset/{id}", post(getcustomasset))
-        .with_state(state);
+        .with_state(state)
+        .layer(tower_http::decompression::RequestDecompressionLayer::new());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:6767")
         .await

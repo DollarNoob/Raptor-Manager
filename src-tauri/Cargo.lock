@@ -17,6 +17,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-updater",
  "tokio",
+ "tower-http",
 ]
 
 [[package]]
@@ -207,6 +208,19 @@ dependencies = [
  "event-listener-strategy",
  "futures-core",
  "pin-project-lite",
+]
+
+[[package]]
+name = "async-compression"
+version = "0.4.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddb939d66e4ae03cee6091612804ba446b12878410cfa17f785f4dd67d4014e8"
+dependencies = [
+ "flate2",
+ "futures-core",
+ "memchr",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]
@@ -5242,17 +5256,22 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.6.6"
+version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adc82fd73de2a9722ac5da747f12383d2bfdb93591ee6c58486e0097890f05f2"
+checksum = "d4e6559d53cc268e5031cd8429d05415bc4cb4aefc4aa5d6cc35fbf5b924a1f8"
 dependencies = [
+ "async-compression",
  "bitflags 2.10.0",
  "bytes",
+ "futures-core",
  "futures-util",
  "http",
  "http-body",
+ "http-body-util",
  "iri-string",
  "pin-project-lite",
+ "tokio",
+ "tokio-util",
  "tower",
  "tower-layer",
  "tower-service",
