@@ -12,6 +12,7 @@ import {
     CLIENT_NAME_RONIX,
     CLIENT_NAME_CRYPTIC,
     STATUS_NOT_INSTALLED,
+    CLIENT_NAME_DELTA,
 } from "../../constants";
 import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
@@ -25,7 +26,8 @@ interface Props {
         | IRobloxVersion
         | IMacsploitVersion
         | IHydrogenVersion
-        | ICrypticVersion;
+        | ICrypticVersion
+        | string;
     thumbnail: string;
     href?: string;
     onInstall: (client: string) => void;
@@ -42,20 +44,24 @@ export default function Client({
     onRemove,
     children,
 }: Props) {
+    const client = children?.toString()?.replace(" iOS", "") ?? CLIENT_NAME_VANILLA;
+
     const currentVersion = installation?.version ?? null;
     let latestVersion = null;
-    if (children === CLIENT_NAME_VANILLA) {
+    if (client === CLIENT_NAME_VANILLA) {
         latestVersion = (version as IRobloxVersion).version;
-    } else if (children === CLIENT_NAME_MACSPLOIT) {
+    } else if (client === CLIENT_NAME_MACSPLOIT) {
         latestVersion = (version as IMacsploitVersion).relVersion;
-    } else if (children === CLIENT_NAME_HYDROGEN) {
+    } else if (client === CLIENT_NAME_HYDROGEN) {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
-    } else if (children === CLIENT_NAME_RONIX) {
+    } else if (client === CLIENT_NAME_RONIX) {
         latestVersion =
             (version as IHydrogenVersion).macos.exploit_version ?? null;
-    } else if (children === CLIENT_NAME_CRYPTIC) {
+    } else if (client === CLIENT_NAME_CRYPTIC) {
         latestVersion = (version as ICrypticVersion).Versions.Software;
+    } else if (client === CLIENT_NAME_DELTA) {
+        latestVersion = version;
     }
 
     const style: React.CSSProperties = {
@@ -82,8 +88,6 @@ export default function Client({
         gap: 6,
         marginTop: 8,
     };
-
-    const client = children?.toString() ?? CLIENT_NAME_VANILLA;
 
     return (
         <div style={style}>

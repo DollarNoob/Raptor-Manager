@@ -97,11 +97,13 @@ export interface VersionState {
     hydrogen: IHydrogenVersion;
     ronix: IHydrogenVersion;
     cryptic: ICrypticVersion;
+    delta: string;
     setRoblox: (version: IRobloxVersion) => void;
     setMacsploit: (version: IMacsploitVersion) => void;
     setHydrogen: (version: IHydrogenVersion) => void;
     setRonix: (version: IHydrogenVersion) => void;
     setCryptic: (version: ICrypticVersion) => void;
+    setDelta: (version: string) => void;
 }
 
 export const useVersionStore = create<VersionState>()((set) => ({
@@ -144,11 +146,13 @@ export const useVersionStore = create<VersionState>()((set) => ({
         },
         Changelog: "",
     },
+    delta: "",
     setRoblox: (version) => set(() => ({ roblox: version })),
     setMacsploit: (version) => set(() => ({ macsploit: version })),
     setHydrogen: (version) => set(() => ({ hydrogen: version })),
     setRonix: (version) => set(() => ({ ronix: version })),
     setCryptic: (version) => set(() => ({ cryptic: version })),
+    setDelta: (version) => set(() => ({ delta: version })),
 }));
 
 export interface TabState {

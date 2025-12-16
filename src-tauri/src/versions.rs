@@ -53,7 +53,7 @@ pub struct MacsploitVersion {
 #[tauri::command]
 pub async fn get_macsploit_version(app_handle: AppHandle) -> Result<MacsploitVersion, String> {
     let client = Client::new();
-    let url = format!("https://www.abyssdigital.xyz/main/version.json");
+    let url = format!("https://git.raptor.fun/main/version.json");
     let response = client
         .get(url)
         .header(
@@ -174,4 +174,50 @@ pub async fn get_cryptic_version(app_handle: AppHandle) -> Result<CrypticVersion
         .await
         .map_err(|e| e.to_string())?;
     Ok(body)
+}
+
+#[tauri::command]
+pub async fn get_delta_version(app_handle: AppHandle) -> Result<String, String> {
+    let client = Client::new();
+    let url = format!(
+        "https://gloopup.net/Delta/ios/"
+    );
+    let response = client
+        .get(url)
+        .header(
+            "User-Agent",
+            format!(
+                "RaptorManager/{}",
+                app_handle.package_info().version.to_string()
+            ),
+        )
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let status = response.status();
+    if !status.is_success() {
+        return Err(status.to_string());
+    }
+
+    let body = response
+        .text()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if !body.contains("https://cdn.gloopup.net/file/Delta-") {
+        return Err("Delta server has returned an invalid response.".into());
+    }
+
+    let parts = body.split("https://cdn.gloopup.net/file/Delta-");
+    if let Some(part) = parts.last() {
+        let mut version_parts = part.split(".ipa");
+        if let Some(version) = version_parts.next() {
+            Ok(version.to_string())
+        } else {
+            Err("Delta server has returned an invalid response.".into())
+        }
+    } else {
+        Err("Delta server has returned an invalid response.".into())
+    }
 }

@@ -1,5 +1,5 @@
 use crate::binarycookies::{BinaryCookies, Cookie, Page};
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::thread;
 use std::time::{Duration, SystemTime};
@@ -17,6 +17,46 @@ pub async fn write_cookies(
         "com.roblox.RobloxPlayer.{}.binarycookies",
         profile_id
     ));
+
+    let cookie = Cookie {
+        domain: ".roblox.com".into(),
+        name: ".ROBLOSECURITY".into(),
+        path: Some("/".into()),
+        value: cookie,
+        secure: Some(true),
+        http_only: Some(true),
+        expiration: Some(SystemTime::now() + Duration::from_secs(60 * 60 * 24 * 30)), // 30 days
+        creation: Some(SystemTime::now()),
+    };
+
+    let page = Page::new(vec![cookie]);
+
+    let binary_cookies = BinaryCookies::new(vec![page]);
+    let bytes = binary_cookies.build();
+
+    let mut file = File::create(&file_dir).map_err(|e| e.to_string())?;
+    file.write_all(&bytes).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn write_sandboxed_cookies(
+    app_handle: AppHandle,
+    profile_id: String,
+    cookie: String,
+) -> Result<(), String> {
+    let data_dir = app_handle.path().data_dir().unwrap();
+    let library_dir = data_dir.parent().unwrap(); // $HOME/Library
+
+    // $HOME/Library/Containers/com.roblox.RobloxPlayer.{identifier}/Data
+    let container_dir = library_dir.join("Containers").join(format!("com.roblox.RobloxPlayer.{}", profile_id)).join("Data");
+
+    // $HOME/Library/Containers/com.roblox.RobloxPlayer.{identifier}/Data/Library/Cookies
+    let cookies_dir = container_dir.join("Library").join("Cookies");
+    fs::create_dir_all(&cookies_dir).map_err(|e| e.to_string())?;
+
+    let file_dir = cookies_dir.join("Cookies.binarycookies");
 
     let cookie = Cookie {
         domain: ".roblox.com".into(),

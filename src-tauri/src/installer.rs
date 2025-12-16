@@ -212,9 +212,9 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
     if client == "MacSploit" {
         let url;
         if std::env::consts::ARCH == "aarch64" {
-            url = "https://abyssdigital.xyz/arm/macsploit.dylib";
+            url = "https://git.raptor.fun/arm/macsploit.dylib";
         } else {
-            url = "https://abyssdigital.xyz/main/macsploit.dylib";
+            url = "https://git.raptor.fun/main/macsploit.dylib";
         }
 
         let client = Client::new();
