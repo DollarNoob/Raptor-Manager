@@ -344,6 +344,11 @@ pub async fn install_ipa(
         .await
         .map_err(|e| e.to_string())?;
 
+    // Roblox.app/Frameworks/libgloop.dylib
+    codesign(&app_handle, &roblox_dir.join("Frameworks").join("libgloop.dylib"), true)
+        .await
+        .map_err(|e| e.to_string())?;
+
     // Roblox.app/Frameworks/Persona2.framework
     codesign(&app_handle, &persona_dir, true)
         .await
