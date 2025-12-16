@@ -12,6 +12,7 @@ mod crypticbridge;
 mod decompiler;
 mod hydrobridge;
 mod installer;
+mod ipa_installer;
 mod roblox;
 mod updater;
 mod versions;
@@ -37,8 +38,10 @@ pub fn run() {
             config::read_profiles,
             config::write_profiles,
             config::create_environment,
+            config::create_sandboxed_environment,
             config::remove_environment,
             config::open_profile_folder,
+            config::open_container_folder,
             config::copy_hydrogen_key,
             roblox::get_roblox_profile,
             roblox::get_roblox_thumbnail,
@@ -46,17 +49,21 @@ pub fn run() {
             client::unlock_keychain,
             client::modify_bundle_identifier,
             client::launch_client,
+            client::launch_sandboxed_client,
             client::stop_client,
             cookies::write_cookies,
+            cookies::write_sandboxed_cookies,
             cookies::import_cookies,
             versions::get_roblox_version,
             versions::get_macsploit_version,
             versions::get_hydrogen_version,
             versions::get_cryptic_version,
+            versions::get_delta_version,
             installer::install_client,
             installer::remove_client,
             installer::clean_cache,
             installer::clean_leftover_cache,
+            ipa_installer::install_ipa,
             updater::update,
             macsploit::macsploit_read_settings,
             macsploit::macsploit_write_settings,

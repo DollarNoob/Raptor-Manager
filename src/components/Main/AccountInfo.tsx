@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { useEffect, useState } from "react";
 import {
@@ -59,19 +58,6 @@ export default function AccountInfo({ profile, state }: Props) {
                 ].includes(event.payload.client)
             )
                 setContext(event.payload.profileId);
-            if (
-                event.payload.client &&
-                [CLIENT_NAME_HYDROGEN, CLIENT_NAME_RONIX].includes(
-                    event.payload.client,
-                )
-            )
-                invoke("copy_hydrogen_key", {
-                    client: event.payload.client,
-                    fromId: event.payload.profileId,
-                    toId: store.profiles
-                        .map((p) => p.id)
-                        .filter((id) => id !== event.payload.profileId),
-                });
         });
 
         const unlistenClose = listen<ICloseState>("client_close", (event) => {

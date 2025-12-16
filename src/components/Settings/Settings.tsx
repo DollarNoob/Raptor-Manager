@@ -4,12 +4,14 @@ import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import {
     CLIENT_NAME_CRYPTIC,
+    CLIENT_NAME_DELTA,
     CLIENT_NAME_HYDROGEN,
     CLIENT_NAME_MACSPLOIT,
     CLIENT_NAME_RONIX,
     CLIENT_NAME_VANILLA,
     DECOMPILER_LIST,
     URL_CRYPTIC,
+    URL_DELTA,
     URL_HYDROGEN,
     URL_RAPTOR_FUN,
     URL_ROBLOX_HOME,
@@ -20,6 +22,7 @@ import type { IInstallProgress } from "../../types/install";
 import { installClient, removeClient, writeConfig } from "../../utils";
 import Client from "./Client";
 import Option from "./Option";
+import { installIpa } from "../../utils/clients";
 
 interface Props {
     children?: React.ReactNode;
@@ -55,6 +58,18 @@ export default function Settings(_props: Props) {
                         });
                         break;
                     }
+                    case "download-ipa": {
+                        if (!event.payload.progress) return;
+                        const downloaded = event.payload.progress[0];
+                        const total = event.payload.progress[1];
+                        const percent = Math.round((downloaded / total) * 100);
+
+                        modal.update(installModalId.current, {
+                            progressText: `Downloading .ipa: ${Math.round(downloaded / 1024 / 1024)} MB / ${Math.round(total / 1024 / 1024)} MB`,
+                            progress: percent,
+                        });
+                        break;
+                    }
                     case "download-insert-dylib": {
                         modal.update(installModalId.current, {
                             progressText: "Downloading insert_dylib...",
@@ -72,6 +87,13 @@ export default function Settings(_props: Props) {
                     case "install-roblox": {
                         modal.update(installModalId.current, {
                             progressText: "Installing Roblox client...",
+                            progress: 35,
+                        });
+                        break;
+                    }
+                    case "install-ipa": {
+                        modal.update(installModalId.current, {
+                            progressText: "Installing .ipa...",
                             progress: 35,
                         });
                         break;
@@ -101,6 +123,13 @@ export default function Settings(_props: Props) {
                         modal.update(installModalId.current, {
                             progressText: "Applying codesign...",
                             progress: 90,
+                        });
+                        break;
+                    }
+                    case "convert-ipa": {
+                        modal.update(installModalId.current, {
+                            progressText: "Converting .ipa into .app...",
+                            progress: 80,
                         });
                         break;
                     }
@@ -144,36 +173,57 @@ export default function Settings(_props: Props) {
             buttons: [],
         });
 
-        const installed = await installClient(client).catch(
-            (err) => new Error(err),
-        );
-        if (installed instanceof Error) {
-            const _id = crypto.randomUUID();
-            modal.add({
-                id: _id,
-                title: `Failed to install ${client}`,
-                text: installed.message,
-                buttons: [
-                    {
-                        text: "Okay",
-                        onClick: () => {
-                            modal.remove(id);
-                            modal.remove(_id);
-                            installModalId.current = null;
+        if (client !== CLIENT_NAME_DELTA) {
+            // .app
+            const installed = await installClient(client).catch(
+                (err) => new Error(err),
+            );
+            if (installed instanceof Error) {
+                const _id = crypto.randomUUID();
+                modal.add({
+                    id: _id,
+                    title: `Failed to install ${client}`,
+                    text: installed.message,
+                    buttons: [
+                        {
+                            text: "Okay",
+                            onClick: () => {
+                                modal.remove(id);
+                                modal.remove(_id);
+                                installModalId.current = null;
+                            },
                         },
-                    },
-                ],
-            });
-            installModalId.current = null;
-            return;
+                    ],
+                });
+                installModalId.current = null;
+                return;
+            }
+        } else {
+            // .ipa (Mac Catalyst)
+            const installed = await installIpa(client).catch(
+                (err) => new Error(err),
+            );
+            if (installed instanceof Error) {
+                const _id = crypto.randomUUID();
+                modal.add({
+                    id: _id,
+                    title: `Failed to install ${client}`,
+                    text: installed.message,
+                    buttons: [
+                        {
+                            text: "Okay",
+                            onClick: () => {
+                                modal.remove(id);
+                                modal.remove(_id);
+                                installModalId.current = null;
+                            },
+                        },
+                    ],
+                });
+                installModalId.current = null;
+                return;
+            }
         }
-
-        const versions: string[] = [];
-        versions.push(version.roblox.clientVersionUpload);
-        versions.push(version.macsploit.clientVersionUpload);
-        versions.push(version.hydrogen.macos.roblox_version ?? "");
-        versions.push(version.cryptic.Versions.Roblox);
-        await invoke("clean_leftover_cache", { versions }).catch(() => null);
 
         modal.update(id, {
             progressText: "Installation complete!",
@@ -184,7 +234,7 @@ export default function Settings(_props: Props) {
         modal.add({
             id: _id,
             title: `Installed ${client}`,
-            text: `${client} is now installed on your device!`,
+            text: `${client} is now installed on your device!\nBecause this client is an iPad app, controls could be broken.`,
             buttons: [
                 {
                     text: "Okay",
@@ -333,6 +383,9 @@ export default function Settings(_props: Props) {
     const crypticInstallation = config.config.clients.find(
         (client) => client.name === CLIENT_NAME_CRYPTIC,
     );
+    const deltaInstallation = config.config.clients.find(
+        (client) => client.name === CLIENT_NAME_DELTA,
+    );
 
     return (
         <main style={style}>
@@ -422,6 +475,23 @@ export default function Settings(_props: Props) {
                         href={URL_RONIX_STUDIOS}
                     >
                         Ronix
+                    </Client>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 5 * 0.05 }}
+                    style={{ flex: 1 }}
+                >
+                    <Client
+                        installation={deltaInstallation}
+                        version={version.delta}
+                        thumbnail="/delta.png"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                        href={URL_DELTA}
+                    >
+                        Delta iOS
                     </Client>
                 </motion.div>
             </div>
