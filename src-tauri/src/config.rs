@@ -210,7 +210,7 @@ end",
     let profile_dir = app_data_dir.join("environments").join(id);
     fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
 
-    // MacSploit - Documents
+    // MacSploit & Cryptic - Documents
     let documents_dir = profile_dir.join("Documents");
     fs::create_dir_all(&documents_dir).map_err(|e| e.to_string())?;
 
@@ -256,16 +256,12 @@ end",
     file.write_all(&init_script.as_bytes())
         .map_err(|e| e.to_string())?;
 
-    // Cryptic - Library
-    let library_dir = profile_dir.join("Library");
-    fs::create_dir_all(&library_dir).map_err(|e| e.to_string())?;
-
-    // Cryptic - Caches
-    let caches_dir = library_dir.join("Caches");
-    fs::create_dir_all(&caches_dir).map_err(|e| e.to_string())?;
+    // Cryptic - CrypticMac
+    let crypticmac_dir = documents_dir.join("CrypticMac");
+    fs::create_dir_all(&crypticmac_dir).map_err(|e| e.to_string())?;
 
     // Cryptic - Automatic Execution
-    let cryptic_autoexe_dir = caches_dir.join("CrypticMacAutoExec");
+    let cryptic_autoexe_dir = crypticmac_dir.join("Autoexec");
     fs::create_dir_all(&cryptic_autoexe_dir).map_err(|e| e.to_string())?;
 
     // Cryptic - Init Script
@@ -282,6 +278,10 @@ end",
         .join("Resources")
         .join("content");
     fs::create_dir_all(&content_dir).map_err(|e| e.to_string())?;
+
+    // Hydrogen - Library
+    let library_dir = profile_dir.join("Library");
+    fs::create_dir_all(&library_dir).map_err(|e| e.to_string())?;
 
     // Hydrogen - License Folder
     let hydrogen_license_dir = library_dir.join("Application Support").join("Hydrogen");
