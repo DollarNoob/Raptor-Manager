@@ -234,7 +234,7 @@ export default function Settings(_props: Props) {
         modal.add({
             id: _id,
             title: `Installed ${client}`,
-            text: `${client} is now installed on your device!\nBecause this client is an iPad app, controls could be broken.`,
+            text: `${client} is now installed on your device!` + (client === CLIENT_NAME_DELTA ? "\nBecause this client is an iPad app, controls could be broken." : ""),
             buttons: [
                 {
                     text: "Okay",
