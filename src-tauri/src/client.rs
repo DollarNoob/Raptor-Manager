@@ -209,7 +209,7 @@ pub async fn launch_client(
                         port: Some(port),
                     },
                 );
-            } else if line == "[ Cryptic Mac 1.0 Launched running in Release Mode ]" {
+            } else if line.contains("[ Cryptic Mac ") && line.contains(" Launched running in Release Mode ]") {
                 let port = 5200;
                 let _ = app_handle_stdout.emit_to(
                     "main",
