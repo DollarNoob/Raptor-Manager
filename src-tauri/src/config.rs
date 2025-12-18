@@ -184,8 +184,9 @@ if executor == 'Hydrogen' or executor == 'Ronix' or executor == 'Cryptic Mac' th
 
     task.defer(function()
         local HttpService = game:GetService('HttpService')
+        local HttpGet = game.HttpGet -- Cache the function due to checkcaller not working reliably in Cryptic
         while task.wait(1) do
-            local response = game:HttpGet('http://localhost:' .. port .. '/queue/' .. profile)
+            local response = HttpGet(game, 'http://localhost:' .. port .. '/queue/' .. profile)
             local ok, queue = pcall(function()
                 return HttpService:JSONDecode(response)
             end)
