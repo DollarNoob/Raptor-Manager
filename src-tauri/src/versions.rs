@@ -176,6 +176,46 @@ pub async fn get_cryptic_version(app_handle: AppHandle) -> Result<CrypticVersion
     Ok(body)
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[allow(non_snake_case)]
+pub struct OpiumwareVersion {
+    pub CurrentVersion: String,
+    pub SupportedRobloxVersion: String,
+    pub Changelog: String,
+    pub RequiredUpd: bool,
+}
+
+#[tauri::command]
+pub async fn get_opiumware_version(app_handle: AppHandle) -> Result<OpiumwareVersion, String> {
+    let client = Client::new();
+    let url = format!(
+        "https://raw.githubusercontent.com/norbyv1/OpiumwareInstall/main/version.json"
+    );
+    let response = client
+        .get(url)
+        .header(
+            "User-Agent",
+            format!(
+                "RaptorManager/{}",
+                app_handle.package_info().version.to_string()
+            ),
+        )
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    let status = response.status();
+    if !status.is_success() {
+        return Err(status.to_string());
+    }
+
+    let body = response
+        .json::<OpiumwareVersion>()
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(body)
+}
+
 #[tauri::command]
 pub async fn get_delta_version(app_handle: AppHandle) -> Result<String, String> {
     let client = Client::new();

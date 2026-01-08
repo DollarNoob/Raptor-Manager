@@ -40,3 +40,10 @@ export interface ICrypticVersions {
     Software: string;
     Roblox: string;
 }
+
+export interface IOpiumwareVersion {
+    CurrentVersion: string;
+    SupportedRobloxVersion: string;
+    Changelog: string;
+    RequiredUpd: boolean;
+}

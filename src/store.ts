@@ -7,6 +7,7 @@ import type {
     ICrypticVersion,
     IHydrogenVersion,
     IMacsploitVersion,
+    IOpiumwareVersion,
     IRobloxVersion,
 } from "./types/version";
 
@@ -97,12 +98,14 @@ export interface VersionState {
     hydrogen: IHydrogenVersion;
     ronix: IHydrogenVersion;
     cryptic: ICrypticVersion;
+    opiumware: IOpiumwareVersion;
     delta: string;
     setRoblox: (version: IRobloxVersion) => void;
     setMacsploit: (version: IMacsploitVersion) => void;
     setHydrogen: (version: IHydrogenVersion) => void;
     setRonix: (version: IHydrogenVersion) => void;
     setCryptic: (version: ICrypticVersion) => void;
+    setOpiumware: (version: IOpiumwareVersion) => void;
     setDelta: (version: string) => void;
 }
 
@@ -146,12 +149,19 @@ export const useVersionStore = create<VersionState>()((set) => ({
         },
         Changelog: "",
     },
+    opiumware: {
+        CurrentVersion: "",
+        SupportedRobloxVersion: "",
+        Changelog: "",
+        RequiredUpd: false,
+    },
     delta: "",
     setRoblox: (version) => set(() => ({ roblox: version })),
     setMacsploit: (version) => set(() => ({ macsploit: version })),
     setHydrogen: (version) => set(() => ({ hydrogen: version })),
     setRonix: (version) => set(() => ({ ronix: version })),
     setCryptic: (version) => set(() => ({ cryptic: version })),
+    setOpiumware: (version) => set(() => ({ opiumware: version })),
     setDelta: (version) => set(() => ({ delta: version })),
 }));
 

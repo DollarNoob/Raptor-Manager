@@ -7,15 +7,17 @@ import {
     CLIENT_NAME_DELTA,
     CLIENT_NAME_HYDROGEN,
     CLIENT_NAME_MACSPLOIT,
-    CLIENT_NAME_RONIX,
+    CLIENT_NAME_OPIUMWARE,
+    // CLIENT_NAME_RONIX,
     CLIENT_NAME_VANILLA,
     DECOMPILER_LIST,
     URL_CRYPTIC,
     URL_DELTA,
     URL_HYDROGEN,
+    URL_OPIUMWARE,
     URL_RAPTOR_FUN,
     URL_ROBLOX_HOME,
-    URL_RONIX_STUDIOS,
+    // URL_RONIX_STUDIOS,
 } from "../../constants";
 import { useConfigStore, useModalStore, useVersionStore } from "../../store";
 import type { IInstallProgress } from "../../types/install";
@@ -234,7 +236,11 @@ export default function Settings(_props: Props) {
         modal.add({
             id: _id,
             title: `Installed ${client}`,
-            text: `${client} is now installed on your device!` + (client === CLIENT_NAME_DELTA ? "\nBecause this client is an iPad app, controls could be broken." : ""),
+            text:
+                `${client} is now installed on your device!` +
+                (client === CLIENT_NAME_DELTA
+                    ? "\nBecause this client is an iPad app, controls could be broken."
+                    : ""),
             buttons: [
                 {
                     text: "Okay",
@@ -353,6 +359,44 @@ export default function Settings(_props: Props) {
         });
     }
 
+    async function openClientFolder() {
+        const open = await invoke<number>("open_client_folder").catch(
+            (err) => new Error(err),
+        );
+
+        if (open instanceof Error) {
+            const id = crypto.randomUUID();
+            modal.add({
+                id,
+                title: "Failed to open client folder",
+                text: open.message,
+                buttons: [
+                    {
+                        text: "Okay",
+                        onClick: () => modal.remove(id),
+                    },
+                ],
+            });
+            return;
+        }
+
+        if (open !== 0) {
+            const id = crypto.randomUUID();
+            modal.add({
+                id,
+                title: "Failed to open client folder",
+                text: `Could not open client folder with code ${open}.`,
+                buttons: [
+                    {
+                        text: "Okay",
+                        onClick: () => modal.remove(id),
+                    },
+                ],
+            });
+            return;
+        }
+    }
+
     const style: React.CSSProperties = {
         display: "flex",
         flexDirection: "column",
@@ -377,11 +421,14 @@ export default function Settings(_props: Props) {
     const hydrogenInstallation = config.config.clients.find(
         (client) => client.name === CLIENT_NAME_HYDROGEN,
     );
-    const ronixInstallation = config.config.clients.find(
-        (client) => client.name === CLIENT_NAME_RONIX,
-    );
+    // const ronixInstallation = config.config.clients.find(
+    //     (client) => client.name === CLIENT_NAME_RONIX,
+    // );
     const crypticInstallation = config.config.clients.find(
         (client) => client.name === CLIENT_NAME_CRYPTIC,
+    );
+    const opiumwareInstallation = config.config.clients.find(
+        (client) => client.name === CLIENT_NAME_OPIUMWARE,
     );
     const deltaInstallation = config.config.clients.find(
         (client) => client.name === CLIENT_NAME_DELTA,
@@ -467,6 +514,23 @@ export default function Settings(_props: Props) {
                     style={{ flex: 1 }}
                 >
                     <Client
+                        installation={opiumwareInstallation}
+                        version={version.opiumware}
+                        thumbnail="/opiumware.jpg"
+                        onInstall={onInstall}
+                        onRemove={onRemove}
+                        href={URL_OPIUMWARE}
+                    >
+                        Opiumware
+                    </Client>
+                </motion.div>
+                {/* <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 4 * 0.05 }}
+                    style={{ flex: 1 }}
+                >
+                    <Client
                         installation={ronixInstallation}
                         version={version.ronix}
                         thumbnail="/ronix.png"
@@ -474,9 +538,9 @@ export default function Settings(_props: Props) {
                         onRemove={onRemove}
                         href={URL_RONIX_STUDIOS}
                     >
-                        Ronix
+                        Ronix -> (probably) discontinued, just hide from the frontend for future use
                     </Client>
-                </motion.div>
+                </motion.div> */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -499,20 +563,30 @@ export default function Settings(_props: Props) {
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 5 * 0.05 }}
+                    transition={{ delay: 6 * 0.05 }}
                     style={{ flex: 1 }}
                 >
-                    <Option
-                        title="Clean Installation Cache"
-                        onClick={cleanCache}
-                    >
-                        Clean Up
+                    <Option title="Installation Cache" onClick={cleanCache}>
+                        Clear
                     </Option>
                 </motion.div>
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 6 * 0.05 }}
+                    transition={{ delay: 7 * 0.05 }}
+                    style={{ flex: 1 }}
+                >
+                    <Option
+                        title="Open Client Folder"
+                        onClick={openClientFolder}
+                    >
+                        Open
+                    </Option>
+                </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 8 * 0.05 }}
                     style={{ flex: 1 }}
                 >
                     <Option title="Decompiler" onClick={switchDecompiler}>

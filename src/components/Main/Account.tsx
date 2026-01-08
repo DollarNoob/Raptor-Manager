@@ -6,6 +6,7 @@ import {
     CLIENT_NAME_CRYPTIC,
     CLIENT_NAME_HYDROGEN,
     CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_OPIUMWARE,
     CLIENT_NAME_RONIX,
     CONTEXT_MENU_ITEMS,
 } from "../../constants";
@@ -238,7 +239,11 @@ export default function Account({ active, profile, state, onClick }: Props) {
         if (state.port) {
             // modified clients
             statusText = state.client;
-            if (state.client === CLIENT_NAME_MACSPLOIT) {
+            if (
+                [CLIENT_NAME_MACSPLOIT, CLIENT_NAME_OPIUMWARE].includes(
+                    state.client,
+                )
+            ) {
                 statusText += ` ${state.port}`;
             } else if (
                 [
