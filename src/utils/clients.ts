@@ -4,6 +4,7 @@ import {
     CLIENT_NAME_DELTA,
     CLIENT_NAME_HYDROGEN,
     CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_OPIUMWARE,
     CLIENT_NAME_RONIX,
     CLIENT_NAME_VANILLA,
 } from "../constants";
@@ -79,11 +80,12 @@ export async function launchClient(
             toId: profileId,
         });
 
-    const entitlements = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>com.apple.security.app-sandbox</key><true/><key>com.apple.security.network.client</key><true/><key>com.apple.security.network.server</key><true/></dict></plist>";
+    const entitlements =
+        '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>com.apple.security.app-sandbox</key><true/><key>com.apple.security.network.client</key><true/><key>com.apple.security.network.server</key><true/></dict></plist>';
     const modified = await invoke<null>("modify_bundle_identifier", {
         client,
         profileId,
-        entitlements: client === CLIENT_NAME_DELTA ? entitlements : null
+        entitlements: client === CLIENT_NAME_DELTA ? entitlements : null,
     }).catch((err) => new Error(err));
     if (modified instanceof Error) throw modified;
 
@@ -181,6 +183,15 @@ export async function installClient(client: string) {
 
         clientVersion = version.cryptic.Versions.Roblox;
         dylibVersion = version.cryptic.Versions.Software;
+    } else if (client === CLIENT_NAME_OPIUMWARE) {
+        if (
+            !version.opiumware.SupportedRobloxVersion ||
+            !version.opiumware.CurrentVersion
+        )
+            throw new Error("Opiumware version is not fetched yet.");
+
+        clientVersion = version.opiumware.SupportedRobloxVersion;
+        dylibVersion = version.opiumware.CurrentVersion;
     }
 
     const installed = await invoke("install_client", {

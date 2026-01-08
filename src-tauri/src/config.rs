@@ -149,16 +149,18 @@ pub fn create_environment(app_handle: AppHandle, id: String) -> Result<(), Strin
         "-- Raptor Manager Init Script; DO NOT TOUCH!
 local profile = '{}'
 
--- Custom Decompiler
-getgenv().decompile = function(script)
-    return request({{
-        Url = 'http://localhost:6767/decompile',
-        Method = 'POST',
-        Body = getscriptbytecode(script)
-    }}).Body
-end
-
 local executor = identifyexecutor()
+
+-- Custom Decompiler
+if not executor:find('Opiumware') then -- disable custom decompiler for Opiumware because request function reads body as cstring thus breaks this
+    getgenv().decompile = function(script)
+        return request({{
+            Url = 'http://localhost:6767/decompile',
+            Method = 'POST',
+            Body = getscriptbytecode(script)
+        }}).Body
+    end
+end
 
 -- getcustomasset
 if executor == 'MacSploit' then
@@ -268,6 +270,20 @@ end",
     // Cryptic - Init Script
     let mut file =
         File::create(&cryptic_autoexe_dir.join("RaptorManager.lua")).map_err(|e| e.to_string())?;
+    file.write_all(&init_script.as_bytes())
+        .map_err(|e| e.to_string())?;
+
+    // Opiumware
+    let opiumware_dir = profile_dir.join("Opiumware");
+    fs::create_dir_all(&opiumware_dir).map_err(|e| e.to_string())?;
+
+    // Opiumware - Automatic Execution
+    let opiumware_autoexe_dir = opiumware_dir.join("autoexec");
+    fs::create_dir_all(&opiumware_autoexe_dir).map_err(|e| e.to_string())?;
+
+    // Opiumware - Init Script
+    let mut file =
+        File::create(&opiumware_autoexe_dir.join("RaptorManager.lua")).map_err(|e| e.to_string())?;
     file.write_all(&init_script.as_bytes())
         .map_err(|e| e.to_string())?;
 
@@ -496,6 +512,31 @@ pub fn open_container_folder(app_handle: AppHandle, id: String) -> Result<i32, S
 
     let mut child = Command::new("open")
         .args(&container_dir.to_str())
+        .spawn()
+        .map_err(|e| e.to_string())?;
+
+    let status = child.wait().map_err(|e| e.to_string())?;
+    if let Some(code) = status.code() {
+        Ok(code)
+    } else {
+        Ok(-1)
+    }
+}
+
+#[tauri::command]
+pub fn open_client_folder(app_handle: AppHandle) -> Result<i32, String> {
+    let app_data_dir = app_handle.path().app_data_dir().unwrap();
+
+    let client_dir = app_data_dir.join("clients");
+    let exists = fs::exists(&client_dir).map_err(|e| e.to_string())?;
+    if !exists {
+        return Err(
+            "Client folder does not exist.".into(),
+        );
+    }
+
+    let mut child = Command::new("open")
+        .args(&client_dir.to_str())
         .spawn()
         .map_err(|e| e.to_string())?;
 

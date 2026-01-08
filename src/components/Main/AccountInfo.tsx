@@ -4,6 +4,7 @@ import {
     CLIENT_NAME_CRYPTIC,
     CLIENT_NAME_HYDROGEN,
     CLIENT_NAME_MACSPLOIT,
+    CLIENT_NAME_OPIUMWARE,
     CLIENT_NAME_RONIX,
     CLIENT_NAME_VANILLA,
     PROFILE_CRASHED_SUFFIX,
@@ -257,7 +258,11 @@ export default function AccountInfo({ profile, state }: Props) {
         if (state.port) {
             // modified clients
             statusText = state.client;
-            if (state.client === CLIENT_NAME_MACSPLOIT) {
+            if (
+                [CLIENT_NAME_MACSPLOIT, CLIENT_NAME_OPIUMWARE].includes(
+                    state.client,
+                )
+            ) {
                 statusText += ` ${state.port}`;
             } else if (
                 [

@@ -3,6 +3,7 @@ import type {
     ICrypticVersion,
     IHydrogenVersion,
     IMacsploitVersion,
+    IOpiumwareVersion,
     IRobloxVersion,
 } from "../../types/version";
 import {
@@ -13,6 +14,7 @@ import {
     CLIENT_NAME_CRYPTIC,
     STATUS_NOT_INSTALLED,
     CLIENT_NAME_DELTA,
+    CLIENT_NAME_OPIUMWARE,
 } from "../../constants";
 import TrashIcon from "../icons/TrashIcon";
 import Button from "../Shared/Button";
@@ -27,6 +29,7 @@ interface Props {
         | IMacsploitVersion
         | IHydrogenVersion
         | ICrypticVersion
+        | IOpiumwareVersion
         | string;
     thumbnail: string;
     href?: string;
@@ -44,7 +47,8 @@ export default function Client({
     onRemove,
     children,
 }: Props) {
-    const client = children?.toString()?.replace(" iOS", "") ?? CLIENT_NAME_VANILLA;
+    const client =
+        children?.toString()?.replace(" iOS", "") ?? CLIENT_NAME_VANILLA;
 
     const currentVersion = installation?.version ?? null;
     let latestVersion = null;
@@ -60,6 +64,8 @@ export default function Client({
             (version as IHydrogenVersion).macos.exploit_version ?? null;
     } else if (client === CLIENT_NAME_CRYPTIC) {
         latestVersion = (version as ICrypticVersion).Versions.Software;
+    } else if (client === CLIENT_NAME_OPIUMWARE) {
+        latestVersion = (version as IOpiumwareVersion).CurrentVersion;
     } else if (client === CLIENT_NAME_DELTA) {
         latestVersion = version;
     }
@@ -78,7 +84,7 @@ export default function Client({
 
     const containerStyle: React.CSSProperties = {
         display: "flex",
-        gap: 0,
+        gap: 12,
         alignItems: "center",
     };
 
@@ -103,7 +109,7 @@ export default function Client({
                     }
                 >
                     {installation && currentVersion
-                        ? `v${currentVersion.replace("Version-", "")}`
+                        ? `v${currentVersion.replace("Version-", "").replace("v", "")}`
                         : STATUS_NOT_INSTALLED}
                 </Status>
             </div>

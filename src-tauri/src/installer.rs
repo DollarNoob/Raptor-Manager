@@ -382,6 +382,105 @@ pub async fn download_dylib(app_handle: &AppHandle, client: &str) -> Result<(), 
 
         let mut file = File::create(&dylib_dir).map_err(|e| e.to_string())?;
         file.write_all(&bytes).map_err(|e| e.to_string())?;
+    } else if client == "Opiumware" {
+        // we have to fetch the install script for the dylib download url
+        let url: String;
+        if std::env::consts::ARCH == "aarch64" {
+            url = "https://raw.githubusercontent.com/norbyv1/OpiumwareInstall/main/instarm".into();
+        } else {
+            url = "https://raw.githubusercontent.com/norbyv1/OpiumwareInstall/main/inst".into();
+        }
+
+        // First, fetch the install script.
+        let client = Client::new();
+        let response = client
+            .get(url)
+            .header(
+                "User-Agent",
+                format!(
+                    "RaptorManager/{}",
+                    app_handle.package_info().version.to_string()
+                ),
+            )
+            .send()
+            .await
+            .map_err(|e| e.to_string())?;
+
+        let status = response.status();
+        if !status.is_success() {
+            return Err(status.to_string());
+        }
+
+        let body = response.text().await.map_err(|e| e.to_string())?;
+
+        // Second, parse libOpiumware.zip download url.
+        let regex = Regex::new(r#"DYLIB_URL="(https:\/\/\w+\.ufs\.sh\/f\/\w+)""#).unwrap();
+        if let Some(capture) = regex.captures(&body) {
+            let libopiumware_zip_dir = app_data_dir.join("libOpiumware.zip");
+            let libopiumware_dir;
+            if std::env::consts::ARCH == "aarch64" {
+                libopiumware_dir = app_data_dir.join("libOpiumwareNative.dylib");
+            } else {
+                libopiumware_dir = app_data_dir.join("libOpiumware.dylib");
+            }
+
+            // Third, download libOpiumware.zip.
+            let mut file = File::create(&libopiumware_zip_dir).map_err(|e| e.to_string())?;
+
+            let mut response = client
+                .get(&capture[1])
+                .header(
+                    "User-Agent",
+                    format!(
+                        "RaptorManager/{}",
+                        app_handle.package_info().version.to_string()
+                    ),
+                )
+                .send()
+                .await
+                .map_err(|e| e.to_string())?;
+
+            let status = response.status();
+            if !status.is_success() {
+                return Err(status.to_string());
+            }
+
+            while let Some(chunk) = response.chunk().await.map_err(|err| err.to_string())? {
+                file.write_all(&chunk).map_err(|e| e.to_string())?;
+            }
+
+            // Fourth, unzip libOpiumware.zip. This will create libOpiumware.dylib or libOpiumwareNative.dylib.
+            let mut child = Command::new("/usr/bin/unzip")
+                .arg("-o")
+                .arg("-q")
+                .arg("-d")
+                .arg(&app_data_dir)
+                .arg(&libopiumware_zip_dir)
+                .spawn()
+                .map_err(|e| e.to_string())?;
+
+            let status = child.wait().map_err(|e| e.to_string())?;
+            if let Some(code) = status.code() {
+                if code != 0 {
+                    return Err(format!("Failed to unzip libOpiumware.zip with code {}.", code));
+                }
+
+                if !libopiumware_dir.exists() {
+                    return Err("Failed to download libOpiumware.dylib, dylib does not exist.".into());
+                }
+
+                fs::remove_file(&libopiumware_zip_dir).map_err(|e| e.to_string())?;
+
+                // Finally, rename libOpiumware dylib file to opiumware.dylib.
+                fs::rename(libopiumware_dir, dylib_dir).map_err(|e| e.to_string())?;
+
+                return Ok(());
+            } else {
+                return Err("Failed to unzip libOpiumware.zip with code -1.".into());
+            }
+        } else {
+            return Err("Failed to fetch libOpiumware.zip download URL.".into());
+        }
     }
 
     Ok(())
