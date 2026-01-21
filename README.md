@@ -26,7 +26,7 @@
 
 ## 🎯 About
 
-**Raptor Manager** is a native macOS application built with Tauri that supports multiple roblox executors and vanilla roblox, it revolutionizes how you manage multiple Roblox accounts. Provides a secure, automatic cookie handling via macOS Keychain, and a built-in Lua/Luau decompiler.
+**Raptor Manager** is a native macOS application built with Tauri that supports multiple roblox executors and vanilla roblox, it revolutionizes how you manage multiple Roblox accounts. Provides automatic cookie handling with environment sandboxing, and a built-in Lua/Luau decompiler.
 
 
 ## 📄 License
